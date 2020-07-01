@@ -163,9 +163,11 @@ public class EntityMinion extends AbstractMob{
 	}
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
+		System.out.println("hit mob");
 		// TODO Auto-generated method stub
 		if(!(source instanceof EntityDamageSourceIndirect)) {
 			if(source.getTrueSource() instanceof EntityPlayer) {
+
 				PlayerData attacker = main.game.getPlayerData(source.getTrueSource().getUniqueID());
 				RWAPI.util.DamageSource sourcee = RWAPI.util.DamageSource.causeAttack(attacker, data);
 				RWAPI.util.DamageSource.attackDamage(sourcee);
