@@ -1,5 +1,6 @@
 package RWAPI.Character.Leesin.entity;
 
+import RWAPI.Character.Leesin.skills.sonicwave;
 import RWAPI.main;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerClass;
@@ -15,6 +16,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
@@ -86,15 +88,14 @@ public class EntityUmpa extends SkillEntity {
 					RWAPI.util.DamageSource source =RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
 					RWAPI.util.DamageSource.attackDamage(source);
 					EnemyStatHandler.EnemyStatSetter(source);
-					makeEffect((EntityLivingBase) result.entityHit);
 				}
 				else if(result.entityHit instanceof EntityPlayer){
 					target = main.game.getPlayerData(result.entityHit.getUniqueID());
 					RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
 					RWAPI.util.DamageSource.attackDamage(source);
 					EnemyStatHandler.EnemyStatSetter(source);
-					makeEffect((EntityLivingBase) result.entityHit);
 				}
+				makeEffect((EntityLivingBase) result.entityHit, attacker.getPlayer());
 				result.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
 				setDead();
 			}
@@ -102,19 +103,22 @@ public class EntityUmpa extends SkillEntity {
 		
 	}
 	
-	public void makeEffect(EntityLivingBase entity) {
+	public void makeEffect(EntityLivingBase entity, EntityPlayerMP attacker) {
 		if(this.isDead) {
 			return;
 		}
-		Leesin _class; 
+		sonicwave wave;
+		EntityResonating resonating;
 		if(main.game.getPlayerData(this.thrower.getUniqueID()).get_class() instanceof Leesin) {
-			_class = (Leesin)main.game.getPlayerData(this.thrower.getUniqueID()).get_class();
-			_class.resonating = new EntityResonating(world,entity,1);
-			_class.resonating.shoot(entity, entity.rotationPitch, entity.rotationYaw, 0.0F, 0.0f, 0);
-			_class.resonating.setNoGravity(true);
-			_class.resonating.posY -= 1.2;
-			_class.resonating.posZ += 0.5;
-			entity.world.spawnEntity(_class.resonating);
+			wave = (sonicwave) main.game.getPlayerData(this.thrower.getUniqueID()).get_class().getSkill(1);
+			resonating = new EntityResonating(world,entity,1);
+			resonating.shoot(entity, entity.rotationPitch, entity.rotationYaw, 0.0F, 0.0f, 0);
+			resonating.setNoGravity(true);
+			resonating.posY -= 1.2;
+			resonating.posZ += 0.5;
+			entity.world.spawnEntity(resonating);
+			wave.setResonating(resonating);
+			wave.setResonatingtimer(resonating,attacker);
 		}
 		
 	}

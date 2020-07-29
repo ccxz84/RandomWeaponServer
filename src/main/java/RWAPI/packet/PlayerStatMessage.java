@@ -51,10 +51,10 @@ public class PlayerStatMessage implements IMessage{
 		@Override
 		public PlayerStatMessage onMessage(PlayerStatMessage message, MessageContext ctx) {
 			// TODO Auto-generated method stub
-			if(main.game.start != GameStatus.START) {
+			if(main.game.start == GameStatus.NONE || main.game.start == GameStatus.READY) {
 				return new PlayerStatMessage(main.defData);
 			}
-			else if(main.game.start == GameStatus.START) {
+			else if(main.game.start == GameStatus.START|| main.game.start == GameStatus.PRESTART) {
 				ClientData cdata = main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID()).getData();
 				//ClientData cdata = new ClientData(data,true, main.game.gettimerFlag(),main.game.gettimer());
 				return new PlayerStatMessage(cdata);

@@ -30,19 +30,21 @@ public class GameBaseEvent{
 	public void attackEvent(LivingAttackEvent event)
 	{
 		if(event.getEntity() instanceof EntityPlayer && event.getSource().getTrueSource() instanceof EntityPlayer && !(event.getSource() instanceof EntityDamageSourceIndirect)) {
+
 			PlayerData target = main.game.getPlayerData(event.getEntityLiving().getUniqueID());
 			PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
-				
-			DamageSource source = DamageSource.causeAttack(attacker, target);
-			DamageSource.attackDamage(source);
-			EnemyStatHandler.EnemyStatSetter(source);
+			if(attacker.nonWorking == false){
+				DamageSource source = DamageSource.causeAttack(attacker, target);
+				DamageSource.attackDamage(source);
+				EnemyStatHandler.EnemyStatSetter(source);
+			}
 		}
 	}
 	
 	@SubscribeEvent
 	public void PlayerAttackEvent(AttackEntityEvent event)
 	{
-		if(main.game.start == GameStatus.START) {
+		if(main.game.start != GameStatus.START) {
 			event.setCanceled(true);
 			return;
 		}

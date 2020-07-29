@@ -4,12 +4,15 @@ package RWAPI.game;
 import java.util.HashMap;
 import java.util.UUID;
 
+import RWAPI.Character.Skill;
 import RWAPI.main;
 import RWAPI.Character.PlayerData;
 import RWAPI.util.ClassList;
+import RWAPI.util.EntityStatus;
 import RWAPI.util.GameStatus;
 import RWAPI.util.spawnpoint;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.stats.StatBase;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -109,6 +112,9 @@ public class Game {
 			double[] point = spawnpoint.getRandomSpawnPoint();
 			player.getPlayer().connection.setPlayerLocation(point[0], point[1], point[2], player.getPlayer().rotationYaw, player.getPlayer().rotationPitch);
 			player.getData().setTimerFlag("게임 시간");
+			for(Skill skill :player.get_class().getSkills()){
+				skill.Skillset(player.getPlayer());
+			}
 		}
 		
 		this.initTimer("게임 시간", 420);
@@ -120,7 +126,9 @@ public class Game {
 				// TODO Auto-generated method stub
 				super.gameTimer(event);
 				for(PlayerData player : main.game.player().values()) {
-					player.getData().setTimer(main.game.timer);
+					if(player.getStatus().equals(EntityStatus.ALIVE)){
+						player.getData().setTimer(main.game.timer);
+					}
 					if(player.getCurrentHealth() < player.getMaxHealth()) {
 						player.setCurrentHealth(player.getCurrentHealth() + player.getRegenHealth()/40);
 					}

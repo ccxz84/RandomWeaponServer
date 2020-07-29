@@ -2,6 +2,7 @@ package RWAPI.util;
 
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
+import RWAPI.Character.monster.entity.AbstractMob;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
@@ -32,15 +33,22 @@ public class DamageSource {
 		target.setCurrentHealth(hp);
 		
 		if(target.getCurrentHealth() <= 0) {
+			target.setStatus(EntityStatus.DEATH);
+			target.setCurrentHealth(0);
 			if(attacker instanceof PlayerData) {
 				((PlayerData) attacker).setGold((int) target.getDeattGold() + ((PlayerData) attacker).getGold());
 				((PlayerData) attacker).setExp(target.getDeathExp() + ((PlayerData) attacker).getExp());
-				target.setCurrentHealth(0);
+				if(target instanceof PlayerData){
+					((PlayerData)attacker).setKill(((PlayerData)attacker).getKill()+1);
+					((PlayerData)target).setDeath(((PlayerData)target).getDeath()+1);
+				}
+				else{
+					((PlayerData)attacker).setCs(((PlayerData)attacker).getCs()+target.getKill_cs()) ;
+				}
 			}
 			if(target instanceof PlayerData) {
-				((PlayerData) target).getPlayer().connection.setPlayerLocation(-56,53,107, ((PlayerData) target).getPlayer().rotationYaw, ((PlayerData) target).getPlayer().rotationPitch);
+				((PlayerData) target).setRespawn();
 			}
-			target.setCurrentHealth(0);
 		}
 	}
 	

@@ -41,6 +41,11 @@ public class ClientData implements Serializable {
 	protected float[] cool = new float[14];
 	
 	protected String Enemy;
+
+	protected float total_score;
+	protected int kill;
+	protected int death;
+	protected int cs;
 	
 	public ClientData() {
 		
@@ -86,6 +91,10 @@ public class ClientData implements Serializable {
 		//this.cool = data.cool;
 		this.exp = data.getExp();
 		this.attackSpeed = data.getAttackSpeed();
+		this.total_score = data.getTotal_score();
+		this.kill = data.getKill();
+		this.death = data.getDeath();
+		this.cs = data.getCs();
 		
 		for(int i = 0; i<5;i++) {
 			skillSet[i] = Item.getIdFromItem(data.getSkill(i));

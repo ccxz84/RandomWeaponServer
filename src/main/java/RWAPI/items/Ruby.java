@@ -1,6 +1,7 @@
 package RWAPI.items;
 
 import RWAPI.Character.Leesin.entity.EntityUmpa;
+import RWAPI.Character.MasterYi.entity.EntityAlpha;
 import RWAPI.init.ModItems;
 import RWAPI.items.gameItem.ItemBase;
 import net.minecraft.creativetab.CreativeTabs;
@@ -25,7 +26,7 @@ public class Ruby extends ItemBase {
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerin, EnumHand handIn){
 		
-		EntityUmpa ls = new EntityUmpa(playerin.world,playerin,1);
+		EntityAlpha ls = new EntityAlpha(playerin.world,playerin,1);
 		ls.shoot(playerin, playerin.rotationPitch, playerin.rotationYaw, 0.0F, 0.0f, 0);
 		ls.setNoGravity(true);
 		ls.posY -= 1.3;

@@ -52,7 +52,7 @@ public class EntityMinion extends AbstractMob{
 	private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.<Boolean>createKey(EntityMinion.class, DataSerializers.BOOLEAN);
 
 	public EntityMinion(World worldIn) {
-		super(worldIn,new EntityData(900f,100f,150,30,"미니언"));
+		super(worldIn,new EntityData(900f,100f,150,30,"미니언",1));
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -163,7 +163,6 @@ public class EntityMinion extends AbstractMob{
 	}
 	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
-		System.out.println("hit mob");
 		// TODO Auto-generated method stub
 		if(!(source instanceof EntityDamageSourceIndirect)) {
 			if(source.getTrueSource() instanceof EntityPlayer) {

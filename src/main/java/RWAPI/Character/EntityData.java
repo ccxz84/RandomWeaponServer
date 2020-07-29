@@ -1,6 +1,7 @@
 package RWAPI.Character;
 
 import RWAPI.util.DamageSource.EnemyStatHandler;
+import RWAPI.util.EntityStatus;
 
 public class EntityData {
 	
@@ -14,8 +15,10 @@ public class EntityData {
 	protected ClientData Enemydata;
 
 	private float deathexp;
+	private EntityStatus status;
+	protected int kill_cs = 0;
 	
-	public EntityData(float MaxHealth, float ad,float deathexp,float deathgold, String name) {
+	public EntityData(float MaxHealth, float ad,float deathexp,float deathgold, String name,int kill_cs) {
 		this.data.MaxHealth = MaxHealth;
 		this.data.CurrentHealth = this.data.MaxHealth;
 		this.data.ad = ad;
@@ -23,6 +26,8 @@ public class EntityData {
 		this.deathgold = deathgold;
 		this.name = name;
 		this.Enemydata = new ClientData(this,false);
+		this.status = EntityStatus.ALIVE;
+		this.kill_cs = kill_cs;
 	}
 	
 	/* Getter
@@ -76,6 +81,14 @@ public class EntityData {
 	public ClientData getData() {
 		return this.data;
 	}
+
+	public EntityStatus getStatus(){
+		return this.status;
+	}
+
+	public int getKill_cs(){
+		return this.kill_cs;
+	}
 	
 	/*Getter End
 	 * 
@@ -127,6 +140,10 @@ public class EntityData {
 	
 	public void setDeathGold(float deathgold) {
 		this.deathgold = deathgold;
+	}
+
+	public void setStatus(EntityStatus stat){
+		this.status = stat;
 	}
 	
 	/*Setter End

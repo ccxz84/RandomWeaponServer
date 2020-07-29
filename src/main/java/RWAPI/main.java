@@ -2,12 +2,9 @@ package RWAPI;
 
 import RWAPI.Character.ClientData;
 import RWAPI.game.Game;
-import RWAPI.packet.PlayerStatMessage;
+import RWAPI.packet.*;
 import RWAPI.packet.EnemyStatPacket.EnemyStatHandler;
 import RWAPI.packet.InventoryOpenPacket.InventoryOpenHandler;
-import RWAPI.packet.EnemyStatPacket;
-import RWAPI.packet.InventoryOpenPacket;
-import RWAPI.packet.KeyInputPacket;
 import RWAPI.packet.KeyInputPacket.KeyInputHandler;
 import RWAPI.packet.PlayerStatMessage.HealthStatusHandler;
 import RWAPI.proxy.IProxy;
@@ -48,7 +45,7 @@ public class main {
 	public void init(FMLInitializationEvent event) {
 		System.out.println(Reference.MODID + ":init");
 		int channel = 1;
-		//network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.CLIENT);
+		network.registerMessage(AlphastrikePacket.AlphastrikeHandler.class,AlphastrikePacket.class,channel++,Side.CLIENT);
 		//network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.SERVER);
 		//network.registerMessage(KeyInputHandler.class, KeyInputPacket.class, channel++, Side.SERVER);
 		//network.registerMessage(InventoryOpenHandler.class, InventoryOpenPacket.class, channel++, Side.SERVER);
