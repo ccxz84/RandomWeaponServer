@@ -115,6 +115,7 @@ public class Game {
 			for(Skill skill :player.get_class().getSkills()){
 				skill.Skillset(player.getPlayer());
 			}
+			player.resetInvhandler();
 		}
 		
 		this.initTimer("게임 시간", 420);
@@ -148,10 +149,13 @@ public class Game {
 			@Override
 			public void TimerEnd() {
 				// TODO Auto-generated method stub
-				
+				for(PlayerData player : main.game.player().values()) {
+					player.resetInvhandler();
+				}
 			}
 			
 		});
+
 		MinecraftForge.EVENT_BUS.register(GameTimer);
 	}
 	
@@ -170,7 +174,7 @@ public class Game {
 				player.getPlayer().getFoodStats().setFoodLevel(20);
 				player.getPlayer().connection.setPlayerLocation(-56,53,107, player.getPlayer().rotationYaw, player.getPlayer().rotationPitch);
 			}
-			game.GameTimer = (new Timer(main.game,30) {
+			game.GameTimer = (new Timer(main.game,1) {
 				@Override
 				public void gameTimer(ServerTickEvent event) {
 					// TODO Auto-generated method stub

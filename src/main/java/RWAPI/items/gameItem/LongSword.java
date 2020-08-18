@@ -16,4 +16,8 @@ public class LongSword extends ItemBase {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	protected void initstat() {
+		this.stat[2] = 100;
+	}
 }

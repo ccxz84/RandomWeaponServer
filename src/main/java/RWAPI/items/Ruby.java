@@ -25,16 +25,7 @@ public class Ruby extends ItemBase {
 	
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerin, EnumHand handIn){
-		
-		EntityAlpha ls = new EntityAlpha(playerin.world,playerin,1);
-		ls.shoot(playerin, playerin.rotationPitch, playerin.rotationYaw, 0.0F, 0.0f, 0);
-		ls.setNoGravity(true);
-		ls.posY -= 1.3;
-		ls.posZ += 0.5;
-		playerin.world.spawnEntity(ls);
-		
-		//playerin.inventory.addItemStackToInventory(new ItemStack(ModItems.ITEMS.get(2)));
-		//playerin.openGui(main.instance, GuiHandler.MOD_SHOP_GUI, worldIn, (int)playerin.posX, (int)playerin.posY, (int)playerin.posZ);
+
 		
 		return super.onItemRightClick(worldIn, playerin, handIn);
 	}

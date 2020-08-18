@@ -88,7 +88,7 @@ public class meditation extends MasterYiS {
         int x,y,z;
         PlayerData pdata;
 
-        public bufftimer(double duration, EntityPlayerMP player, float... data) {
+        public bufftimer(double duration, EntityPlayerMP player, double... data) {
             super(duration, player, data);
         }
 

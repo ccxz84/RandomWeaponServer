@@ -72,14 +72,14 @@ public class flurry implements Skill {
             super(cool, id, player);
             this.attackspeed = attackspeed;
             this.data = main.game.getPlayerData(player.getUniqueID());
-            data.setAttackSpeed(this.data.getAttackSpeed() + (float)this.attackspeed);
+            data.setAttackSpeed(this.data.getAttackSpeed() + this.attackspeed);
         }
 
         @SubscribeEvent
         public void skillTimer(TickEvent.ServerTickEvent event) throws Throwable {
             if(skillTimer > cooldown) {
                 data.setCool(this.id, 0);
-                this.data.setAttackSpeed(this.data.getAttackSpeed() - (float)this.attackspeed);
+                this.data.setAttackSpeed(this.data.getAttackSpeed() - this.attackspeed);
                 MinecraftForge.EVENT_BUS.unregister(this);
                 handler = null;
                 return;

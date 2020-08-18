@@ -14,27 +14,38 @@ public class InventoryUI extends Container {
 	public InventoryUI(InventoryPlayer playerInv) {
 		inven = playerInv;
 		// Player Inventory, Slot 9-35, Slot IDs 9-35
-	    for (int y = 0; y < 3; ++y) {
-	        for (int x = 0; x < 9; ++x) {
-	            this.addSlotToContainer(new Slot(playerInv, x + y * 9 + 9, 8 + x * 18, 51+y * 18));
-	        }
-	    }
+		for (int y = 0; y < 3; ++y) {
+			for (int x = 0; x < 9; ++x) {
+				this.addSlotToContainer(new Slot(playerInv, x + y * 9 + 9, 8 + x * 18, 51+y * 18));
+			}
+		}
 
-	    // Player Inventory, Slot 0-8, Slot IDs 36-44
-	    for (int x = 0; x < 9; ++x) {
-	        this.addSlotToContainer(new Slot(playerInv, x, 8 + x * 18, 108));
-	    }
-	    
+		// Player Inventory, Slot 0-8, Slot IDs 36-44
+		for (int x = 0; x < 9; ++x) {
+			this.addSlotToContainer(new Slot(playerInv, x, 8 + x * 18, 108));
+		}
+		//this.addSlotToContainer(new Slot(playerInv,9,0,0));
 	}
-
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
 		// TODO Auto-generated method stub
 		return this.inven.isUsableByPlayer(playerIn);
 	}
-	
-	
+
+	@Override
+	public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+		// TODO Auto-generated method stub
+		//detectAndSendChanges();
+		if(slotId == 0)
+			return ItemStack.EMPTY;
+		return super.slotClick(slotId, dragType, clickTypeIn, player);
+	}
+
+	@Override
+	public void detectAndSendChanges() {
+		super.detectAndSendChanges();
+	}
 	
 
 }

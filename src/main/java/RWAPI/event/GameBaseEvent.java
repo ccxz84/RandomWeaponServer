@@ -1,7 +1,9 @@
 package RWAPI.event;
 
+import java.io.*;
 import java.util.UUID;
 
+import RWAPI.Character.ClientData;
 import RWAPI.main;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.monster.entity.AbstractMob;
@@ -9,11 +11,14 @@ import RWAPI.Character.monster.entity.EntityMinion;
 import RWAPI.util.DamageSource;
 import RWAPI.util.GameStatus;
 import RWAPI.util.DamageSource.EnemyStatHandler;
+import RWAPI.util.NetworkUtil;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -23,6 +28,7 @@ import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class GameBaseEvent{
 	
@@ -68,5 +74,13 @@ public class GameBaseEvent{
 			}
 		}
 	}
-	
+
+	@SubscribeEvent
+	public void PlayerDataEvent(TickEvent.ServerTickEvent event){
+		if(main.game != null && main.game.player() != null){
+			for(PlayerData player : main.game.player().values()) {
+				NetworkUtil.sendTo(player.getPlayer(), player.getData(), "data");
+			}
+		}
+	}
 }

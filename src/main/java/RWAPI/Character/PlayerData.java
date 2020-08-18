@@ -1,24 +1,30 @@
 package RWAPI.Character;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.UUID;
 
+import RWAPI.items.gameItem.ItemBase;
+import RWAPI.items.inventory.Inventory;
 import RWAPI.main;
 import RWAPI.init.ModWeapons;
 import RWAPI.items.skillItem.SkillBase;
 import RWAPI.items.weapon.WeaponBase;
 import RWAPI.packet.EnemyStatPacket;
-import RWAPI.util.EntityStatus;
-import RWAPI.util.ExpList;
-import RWAPI.util.Reference;
-import RWAPI.util.spawnpoint;
+import RWAPI.util.*;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -44,10 +50,21 @@ public class PlayerData extends EntityData{
 
 	private int Respawn_time = Reference.RESPAWNFUND_TIME;
 
-	private float total_score;
+	private double total_score;
 	private int kill;
 	private int death;
 	private int cs;
+
+	private InventoryChangeHandle invhandler;
+
+
+	private double item_hp;
+	private double item_mana;
+	private double item_ad;
+	private double item_ap;
+	private double item_move;
+	private double item_hpregen;
+	private double item_manaregen;
 
 	public void setRespawn(){
 		setStatus(EntityStatus.RESPANW);
@@ -72,19 +89,19 @@ public class PlayerData extends EntityData{
 		return this.data.level;
 	}
 
-	public float getExp() {
+	public double getExp() {
 		return this.data.exp;
 	}
 
-	public float getRegenHealth() {
+	public double getRegenHealth() {
 		return this.data.regenHealth;
 	}
 
-	public float getRegenMana() {
+	public double getRegenMana() {
 		return this.data.regenMana;
 	}
 
-	public float getAttackSpeed() {
+	public double getAttackSpeed() {
 		return this.data.attackSpeed;
 	}
 
@@ -92,7 +109,7 @@ public class PlayerData extends EntityData{
 		return this.data.Gold;
 	}
 	
-	public float getCool(int id) {
+	public double getCool(int id) {
 		return this.data.cool[id];
 	}
 	
@@ -104,7 +121,7 @@ public class PlayerData extends EntityData{
 		return Respawn_time;
 	}
 
-	public float getTotal_score() {
+	public double getTotal_score() {
 		return total_score;
 	}
 
@@ -133,7 +150,7 @@ public class PlayerData extends EntityData{
 		this.data.level = level;
 	}
 
-	public void setExp(float exp) {
+	public void setExp(double exp) {
 		if(this.data.level >= 12) {
 			return;
 		}
@@ -148,15 +165,15 @@ public class PlayerData extends EntityData{
 		}
 	}
 
-	public void setRegenHealth(float regenHealth) {
+	public void setRegenHealth(double regenHealth) {
 		this.data.regenHealth = regenHealth;
 	}
 
-	public void setRegenMana(float regenMana) {
+	public void setRegenMana(double regenMana) {
 		this.data.regenMana = regenMana;
 	}
 
-	public void setAttackSpeed(float attackSpeed) {
+	public void setAttackSpeed(double attackSpeed) {
 		this.data.attackSpeed = attackSpeed;
 		player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(4.0f*this.data.attackSpeed);
 		System.out.println(player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getBaseValue());
@@ -198,7 +215,7 @@ public class PlayerData extends EntityData{
 		Respawn_time = respawn_time;
 	}
 
-	public void setTotal_score(float total_score) {
+	public void setTotal_score(double total_score) {
 		this.total_score = total_score;
 		data.total_score = getTotal_score();
 	}
@@ -215,10 +232,14 @@ public class PlayerData extends EntityData{
 		data.death = getDeath();
 	}
 
-	public void setCs(int cs) {
-		setTotal_score(getTotal_score()+cs - this.cs);
+	public void setCs(int cs, double score) {
+		setTotal_score(getTotal_score()+score);
 		this.cs = cs;
 		data.cs = cs;
+	}
+
+	public void resetInvhandler(){
+		this.invhandler = new InventoryChangeHandle(this);
 	}
 
 	/*Setter End
@@ -257,6 +278,11 @@ public class PlayerData extends EntityData{
 		}
 		this.weapon = _class.weapon;
 		this.player.inventory.setInventorySlotContents(0, new ItemStack(weapon));
+		this.player.inventory.setInventorySlotContents(9, new ItemStack(weapon));
+	}
+
+	public void resetgame(){
+		this.invhandler.reset();
 	}
 
 	abstract class timer{
@@ -366,6 +392,82 @@ public class PlayerData extends EntityData{
 			data.setStatus(EntityStatus.ALIVE);
 			data.getData().setTimerFlag("게임 시간");
 			data.setRespawn_time(data.getRespawn_time()+Reference.RESPAWNFUND_TIME);
+		}
+	}
+
+	private class InventoryChangeHandle{
+
+		InventoryPlayer inven;
+		PlayerData data;
+
+		private InventoryChangeHandle(PlayerData data){
+			this.data = data;
+			inven = new InventoryPlayer(data.getPlayer());
+			copy();
+			MinecraftForge.EVENT_BUS.register(this);
+		}
+
+		@SubscribeEvent
+		public void itemHandler(TickEvent.ServerTickEvent event){
+			for(int i = 1; i < 9; i++){
+				if(!data.getPlayer().inventory.getStackInSlot(i).getItem().equals(inven.getStackInSlot(i).getItem())){
+					System.out.println(inven.getStackInSlot(i));
+					System.out.println(data.getPlayer().inventory.getStackInSlot(i));
+					//System.out.println(inven.getStackInSlot(i).equals();
+					if(inven.getStackInSlot(i).equals(ItemStack.EMPTY)){
+						System.out.println("run");
+						ItemBase item = (ItemBase) data.getPlayer().inventory.mainInventory.get(i).getItem();
+						double[] stat = item.getstat();
+						data.setAd(data.getAd() + stat[0]);
+						data.setAp(data.getAp() + stat[1]);
+
+						data.setMaxHealth(data.getMaxHealth()+ stat[2]);
+						data.setCurrentHealth(data.getCurrentHealth() + stat[2]);
+
+						data.setMaxMana(data.getMaxMana()+ stat[3]);
+						data.setCurrentMana(data.getCurrentMana() + stat[3]);
+
+						data.setMove(data.getMove() + stat[4]);
+						data.setAttackSpeed(data.getAttackSpeed() + stat[5]);
+						data.setRegenHealth(data.getRegenHealth() + stat[6]);
+						data.setRegenMana(data.getRegenMana() + stat[7]);
+					}
+					if(data.getPlayer().inventory.mainInventory.get(i).equals(ItemStack.EMPTY)){
+						//System.out.println(inven.mainInventory.get(i).getItem() + " " + data.getPlayer().inventory.mainInventory.get(i));
+						ItemBase item = (ItemBase) inven.mainInventory.get(i).getItem();
+						double[] stat = item.getstat();
+						data.setAd(data.getAd() - stat[0]);
+						data.setAp(data.getAp() - stat[1]);
+
+						data.setMaxHealth(data.getMaxHealth() - stat[2]);
+						data.setCurrentHealth(data.getCurrentHealth() - stat[2]);
+
+						data.setMaxMana(data.getMaxMana() - stat[3]);
+						data.setCurrentMana(data.getCurrentMana() - stat[3]);
+
+						data.setMove(data.getMove() - stat[4]);
+						data.setAttackSpeed(data.getAttackSpeed() - stat[5]);
+						data.setRegenHealth(data.getRegenHealth() - stat[6]);
+						data.setRegenMana(data.getRegenMana() - stat[7]);
+
+					}
+				}
+			}
+			copy();
+
+		}
+
+		private void copy(){
+			for(int i = 1 ; i < 9; i++){
+				if(data.getPlayer().inventory.getStackInSlot(i).equals(ItemStack.EMPTY)){
+					this.inven.setInventorySlotContents(i,ItemStack.EMPTY);
+					continue;
+				}
+				this.inven.setInventorySlotContents(i,data.getPlayer().inventory.getStackInSlot(i).copy());
+			}
+		}
+		public void reset(){
+			MinecraftForge.EVENT_BUS.unregister(this);
 		}
 	}
 }

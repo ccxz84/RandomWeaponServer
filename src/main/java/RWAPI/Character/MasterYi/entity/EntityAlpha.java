@@ -8,6 +8,7 @@ import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
 import RWAPI.packet.AlphastrikePacket;
 import RWAPI.util.DamageSource;
+import RWAPI.util.NetworkUtil;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -52,7 +53,8 @@ public class EntityAlpha extends SkillEntity {
 
     @Override
     public void onUpdate() {
-        main.network.sendToAll(new AlphastrikePacket(targetData.getData()));
+        NetworkUtil.sendToAll(targetData.getData(),"alphastrike");
+        //main.network.sendToAll(new AlphastrikePacket(targetData.getData()));
         if(ticksExisted > 41) {
             setDead();
         }
@@ -99,7 +101,8 @@ public class EntityAlpha extends SkillEntity {
             PlayerData attacker = main.game.getPlayerData(this.thrower.getUniqueID());
             attacker.nonWorking = false;
             this.targetData.resetData();
-            main.network.sendToAll(new AlphastrikePacket(targetData.getData()));
+            //NetworkUtil.sendToAll(targetData.getData(), "alphastrike");
+           // main.network.sendToAll(new AlphastrikePacket(targetData.getData()));
         }
         super.setDead();
 
@@ -107,7 +110,8 @@ public class EntityAlpha extends SkillEntity {
 
     class targetData{
         EntityLivingBase[] Entitys = new EntityLivingBase[alphastrike.target_num+1];
-        List<Double[]> data = new ArrayList<>();
+        message data = new message();
+        //List<Double[]> data = new ArrayList<>();
 
         public void setData(int idx, EntityLivingBase data){
             this.Entitys[idx] = data;
@@ -116,12 +120,12 @@ public class EntityAlpha extends SkillEntity {
         public void resetData(){
             for(int i =0;i<4;i++) {
                 Entitys[i] = null;
-                data.clear();
+                data.data.clear();
             }
         }
 
-        public List<Double[]> getData(){
-            data.clear();
+        public message getData(){
+            data.data.clear();
             for(int i = 0;i<alphastrike.target_num+1;i++){
                 if(Entitys[i] == null)
                     break;
@@ -129,9 +133,14 @@ public class EntityAlpha extends SkillEntity {
                 pos[0] = new Double(Entitys[i].posX);
                 pos[1] = new Double(Entitys[i].posY+1);
                 pos[2] = new Double(Entitys[i].posZ);
-                data.add(pos);
+                data.data.add(pos);
             }
             return data;
         }
+    }
+
+    public static class message extends NetworkUtil.Abstractmessage {
+        private static final long serialVersionUID = 2L;
+        public List<Double[]> data = new ArrayList<>();
     }
 }

@@ -26,8 +26,8 @@ public class joinEvent {
 		try {
 			int channel = 1;
 			SimpleNetworkWrapper network = NetworkRegistry.INSTANCE.newSimpleChannel(event.player.getName());
-			network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.CLIENT);
-			network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.SERVER);
+			//network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.CLIENT);
+			//network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.SERVER);
 			network.registerMessage(KeyInputHandler.class, KeyInputPacket.class, channel++, Side.SERVER);
 			network.registerMessage(InventoryOpenHandler.class, InventoryOpenPacket.class, channel++, Side.SERVER);
 			network.registerMessage(EnemyStatHandler.class, EnemyStatPacket.class, channel++, Side.CLIENT);

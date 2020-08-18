@@ -11,9 +11,9 @@ public abstract class Buff {
 	protected int duration;
 	protected int timer = 0;
 	protected EntityPlayerMP player;
-	protected float [] data;
+	protected double [] data;
 	
-	public Buff(double duration,EntityPlayerMP player,float ... data) {
+	public Buff(double duration,EntityPlayerMP player,double ... data) {
 		this.duration = (int)(duration*40);
 		this.player = player;
 		this.data = data;

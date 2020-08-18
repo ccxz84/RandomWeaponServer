@@ -12,9 +12,9 @@ import net.minecraft.item.Item;
 public class SkillBase extends Item{
 	public int SkillNumber;
 	
-	public SkillBase(String name, int SkillNumber) {
+	public SkillBase(String classname, String name, int SkillNumber) {
 		setUnlocalizedName(name);
-		setRegistryName(name);
+		setRegistryName("skills/"+classname+"/"+name);
 		this.maxStackSize = 1;
 		this.SkillNumber = SkillNumber;
 		ModSkills.skill.add(this);

@@ -50,7 +50,7 @@ public class wujustyle extends MasterYiS {
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(3) <= 0 && data.getCurrentMana() > skillcost[lv-1]&& data.nonWorking == false&& cool == null) {
             cool = new cool(cooldown[lv-1],3, (EntityPlayerMP) player);
-            buft = new bufftimer(5, (EntityPlayerMP) player,(float)skilldamage[lv-1] + (float)skillAdcoe[lv-1] * data.getAd());
+            buft = new bufftimer(5, (EntityPlayerMP) player,skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd());
         }
     }
 
@@ -83,7 +83,7 @@ public class wujustyle extends MasterYiS {
 
     class bufftimer extends Buff {
 
-        public bufftimer(double duration, EntityPlayerMP player, float... data) {
+        public bufftimer(double duration, EntityPlayerMP player, double... data) {
             super(duration, player, data);
         }
 

@@ -84,7 +84,7 @@ public class highlander extends MasterYiS {
 
     class bufftimer extends Buff {
 
-        public bufftimer(double duration, EntityPlayerMP player, float... data) {
+        public bufftimer(double duration, EntityPlayerMP player, double... data) {
             super(duration, player, data);
         }
 
