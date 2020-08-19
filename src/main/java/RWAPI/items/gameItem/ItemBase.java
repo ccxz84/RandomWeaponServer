@@ -28,13 +28,21 @@ public class ItemBase extends Item{
 		return stat;
 	}
 
-	protected abstract class handler{
+	public handler create_handler(){
+		return null;
+	};
 
-		protected handler(){
+	public static abstract class handler{
+
+		public handler(){
 			MinecraftForge.EVENT_BUS.register(this);
 		}
 
 		@SubscribeEvent
 		abstract public void itemHandler(TickEvent.ServerTickEvent event);
+
+		public void removeHandler(){
+			MinecraftForge.EVENT_BUS.unregister(this);
+		}
 	}
 }

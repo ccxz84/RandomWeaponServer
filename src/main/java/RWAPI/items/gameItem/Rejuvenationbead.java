@@ -3,13 +3,12 @@ package RWAPI.items.gameItem;
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 
-public class Dagger extends ItemBase {
+public class Rejuvenationbead extends ItemBase {
 
-	public Dagger(String name) {
+	public Rejuvenationbead(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
 		ModItems.ITEMS.add(this);
-		
 		down_item = new ItemBase[0];
 		
 		phase = 3;
@@ -18,6 +17,14 @@ public class Dagger extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[5] = 0.15;
+		this.stat[0] = 0;
+		this.stat[1] = 0;
+		this.stat[2] = 0;
+		this.stat[3] = 0;
+		this.stat[4] = 0;
+		this.stat[5] = 0;
+		this.stat[6] = 0.8;
+		this.stat[7] = 0;
 	}
+
 }

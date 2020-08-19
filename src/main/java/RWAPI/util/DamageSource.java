@@ -4,6 +4,8 @@ import RWAPI.Character.ClientData;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.game.event.PlayerAttackEventHandle;
+import RWAPI.main;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,7 +32,7 @@ public class DamageSource {
 		return new SkillDamageSource(attacker,target, skillDamage);
 	}
 	
-	public static void attackDamage(DamageSource source) {
+	public static void attackDamage(DamageSource source, boolean eventFlag) {
 		
 		EntityData attacker = source.attacker;
 		EntityData target = source.target;
@@ -41,6 +43,8 @@ public class DamageSource {
 			return;
 		hp -= damage;
 		target.setCurrentHealth(hp);
+		if(eventFlag == true)
+			Event(source);
 		
 		if(target.getCurrentHealth() <= 0) {
 			target.setStatus(EntityStatus.DEATH);
@@ -61,6 +65,11 @@ public class DamageSource {
 				((PlayerData) target).setRespawn();
 			}
 		}
+	}
+
+	private static void Event(DamageSource source){
+		PlayerAttackEventHandle.PlayerAttackEvent event = new PlayerAttackEventHandle.PlayerAttackEvent(source);
+		main.game.getEventHandler().RunEvent(event);
 	}
 
 	private static void Playerdeath(PlayerData target) {

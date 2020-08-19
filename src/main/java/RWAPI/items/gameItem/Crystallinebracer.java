@@ -3,21 +3,24 @@ package RWAPI.items.gameItem;
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 
-public class Dagger extends ItemBase {
+public class Crystallinebracer extends ItemBase {
 
-	public Dagger(String name) {
+	public Crystallinebracer(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
 		ModItems.ITEMS.add(this);
+		down_item = new ItemBase[2];
+		down_item[0] =ModItems.Rubycrystal;
+		down_item[1] =ModItems.Rejuvenationbead;
 		
-		down_item = new ItemBase[0];
-		
-		phase = 3;
+		phase = 2;
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected void initstat() {
-		this.stat[5] = 0.15;
+		this.stat[2] = 300;
+		this.stat[6] = 1.4;
 	}
+
 }

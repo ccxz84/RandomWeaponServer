@@ -3,21 +3,24 @@ package RWAPI.items.gameItem;
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 
-public class Dagger extends ItemBase {
+public class Caulfieldswarhammer extends ItemBase {
 
-	public Dagger(String name) {
+	public Caulfieldswarhammer(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
 		ModItems.ITEMS.add(this);
+		down_item = new ItemBase[2];
+		down_item[0] =ModItems.LongSword;
+		down_item[1] =ModItems.LongSword;
 		
-		down_item = new ItemBase[0];
-		
-		phase = 3;
+		phase = 2;
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected void initstat() {
-		this.stat[5] = 0.15;
+		this.stat[0] = 25;
+		this.stat[2] = 70;
+		this.stat[3] = 50;
 	}
 }

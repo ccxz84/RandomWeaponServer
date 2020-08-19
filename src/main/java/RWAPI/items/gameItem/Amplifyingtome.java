@@ -3,9 +3,9 @@ package RWAPI.items.gameItem;
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 
-public class Dagger extends ItemBase {
+public class Amplifyingtome extends ItemBase {
 
-	public Dagger(String name) {
+	public Amplifyingtome(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
 		ModItems.ITEMS.add(this);
@@ -18,6 +18,6 @@ public class Dagger extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[5] = 0.15;
+		this.stat[1] = 25;
 	}
 }

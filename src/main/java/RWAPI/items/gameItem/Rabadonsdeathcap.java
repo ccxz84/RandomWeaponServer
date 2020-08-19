@@ -3,14 +3,15 @@ package RWAPI.items.gameItem;
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 
-public class VampiricScepter extends ItemBase {
+public class Rabadonsdeathcap extends ItemBase {
 
-	public VampiricScepter(String name) {
+	public Rabadonsdeathcap(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
 		ModItems.ITEMS.add(this);
-		down_item = new ItemBase[1];
-		down_item[0] =ModItems.LongSword;
+		down_item = new ItemBase[2];
+		down_item[0] =ModItems.Needlesslylargerod;
+		down_item[1] =ModItems.Needlesslylargerod;
 		
 		phase = 2;
 		// TODO Auto-generated constructor stub
@@ -18,8 +19,8 @@ public class VampiricScepter extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 15;
-		this.stat[1] = 0;
+		this.stat[0] = 0;
+		this.stat[1] = 150;
 		this.stat[2] = 0;
 		this.stat[3] = 0;
 		this.stat[4] = 0;

@@ -57,14 +57,7 @@ public class PlayerData extends EntityData{
 
 	private InventoryChangeHandle invhandler;
 
-
-	private double item_hp;
-	private double item_mana;
-	private double item_ad;
-	private double item_ap;
-	private double item_move;
-	private double item_hpregen;
-	private double item_manaregen;
+	private ItemBase.handler itemhandler[] = new ItemBase.handler[8];
 
 	public void setRespawn(){
 		setStatus(EntityStatus.RESPANW);
@@ -413,9 +406,7 @@ public class PlayerData extends EntityData{
 				if(!data.getPlayer().inventory.getStackInSlot(i).getItem().equals(inven.getStackInSlot(i).getItem())){
 					System.out.println(inven.getStackInSlot(i));
 					System.out.println(data.getPlayer().inventory.getStackInSlot(i));
-					//System.out.println(inven.getStackInSlot(i).equals();
 					if(inven.getStackInSlot(i).equals(ItemStack.EMPTY)){
-						System.out.println("run");
 						ItemBase item = (ItemBase) data.getPlayer().inventory.mainInventory.get(i).getItem();
 						double[] stat = item.getstat();
 						data.setAd(data.getAd() + stat[0]);
@@ -431,9 +422,10 @@ public class PlayerData extends EntityData{
 						data.setAttackSpeed(data.getAttackSpeed() + stat[5]);
 						data.setRegenHealth(data.getRegenHealth() + stat[6]);
 						data.setRegenMana(data.getRegenMana() + stat[7]);
+
+						setItemhandler(i-1, item.create_handler());
 					}
 					if(data.getPlayer().inventory.mainInventory.get(i).equals(ItemStack.EMPTY)){
-						//System.out.println(inven.mainInventory.get(i).getItem() + " " + data.getPlayer().inventory.mainInventory.get(i));
 						ItemBase item = (ItemBase) inven.mainInventory.get(i).getItem();
 						double[] stat = item.getstat();
 						data.setAd(data.getAd() - stat[0]);
@@ -450,6 +442,8 @@ public class PlayerData extends EntityData{
 						data.setRegenHealth(data.getRegenHealth() - stat[6]);
 						data.setRegenMana(data.getRegenMana() - stat[7]);
 
+						itemhandler[i-1].removeHandler();
+						setItemhandler(i-1,null);
 					}
 				}
 			}
@@ -469,5 +463,9 @@ public class PlayerData extends EntityData{
 		public void reset(){
 			MinecraftForge.EVENT_BUS.unregister(this);
 		}
+	}
+
+	public void setItemhandler(int index, ItemBase.handler handler){
+		this.itemhandler[index] = handler;
 	}
 }

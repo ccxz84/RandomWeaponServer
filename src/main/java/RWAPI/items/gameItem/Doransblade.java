@@ -3,9 +3,9 @@ package RWAPI.items.gameItem;
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 
-public class Dagger extends ItemBase {
+public class Doransblade extends ItemBase {
 
-	public Dagger(String name) {
+	public Doransblade(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
 		ModItems.ITEMS.add(this);
@@ -15,9 +15,15 @@ public class Dagger extends ItemBase {
 		phase = 3;
 		// TODO Auto-generated constructor stub
 	}
-
 	@Override
 	protected void initstat() {
-		this.stat[5] = 0.15;
+		this.stat[0] = 8;
+		this.stat[1] = 0;
+		this.stat[2] = 150;
+		this.stat[3] = 0;
+		this.stat[4] = 0;
+		this.stat[5] = 0;
+		this.stat[6] = 0.2;
+		this.stat[7] = 0;
 	}
 }
