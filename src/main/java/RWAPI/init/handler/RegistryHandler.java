@@ -22,6 +22,8 @@ public class RegistryHandler {
 		event.getRegistry().registerAll(ModSkills.skill.toArray(new Item[0]));
 		event.getRegistry().registerAll(ModWeapons.weapon.toArray(new Item[0]));
 	}
+
+
 	
 	public static void preInitRegistries() {
 		EntityInit.addRegist();

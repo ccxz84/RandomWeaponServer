@@ -16,4 +16,16 @@ public class VampiricScepter extends ItemBase {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	protected void initstat() {
+		this.stat[0] = 15;
+		this.stat[1] = 0;
+		this.stat[2] = 0;
+		this.stat[3] = 0;
+		this.stat[4] = 0;
+		this.stat[5] = 0;
+		this.stat[6] = 0;
+		this.stat[7] = 0;
+	}
+
 }

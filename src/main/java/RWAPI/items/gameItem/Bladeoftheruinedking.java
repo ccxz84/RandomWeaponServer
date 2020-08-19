@@ -19,4 +19,9 @@ public class Bladeoftheruinedking extends ItemBase {
 		// TODO Auto-generated constructor stub
 	}
 
+	@Override
+	protected void initstat() {
+		this.stat[0] = 40;
+		this.stat[5] = 0.4;
+	}
 }

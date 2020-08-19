@@ -3,6 +3,7 @@ package RWAPI.init.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import RWAPI.Character.MasterYi.entity.EntityAlpha;
 import RWAPI.main;
 import RWAPI.Character.Leesin.entity.EntityTempest;
 import RWAPI.Character.Leesin.entity.EntityResonating;
@@ -49,5 +50,6 @@ private static List<registData> data = new ArrayList<registData>();
 		data.add(new registData("tempest",EntityTempest.class,Reference.ENTITY_TEMPEST));
 		data.add(new registData("merchant",EntityMerchant.class,Reference.ENTITY_MERCHANT));
 		data.add(new registData("minion",EntityMinion.class,Reference.ENTITY_MINION));
+		data.add(new registData("alphastrike", EntityAlpha.class,Reference.ENTITY_ALPHA));
 	}
 }

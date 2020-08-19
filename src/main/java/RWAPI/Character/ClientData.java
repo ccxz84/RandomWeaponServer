@@ -3,9 +3,10 @@ package RWAPI.Character;
 import java.io.Serializable;
 
 import RWAPI.util.ExpList;
+import RWAPI.util.NetworkUtil;
 import net.minecraft.item.Item;
 
-public class ClientData implements Serializable {
+public class ClientData extends NetworkUtil.Abstractmessage {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -13,23 +14,23 @@ public class ClientData implements Serializable {
 	
 	protected boolean EnemyStat = false;
 	
-	protected float MaxHealth = 100; 
-	protected float CurrentHealth= 100;
+	protected double MaxHealth = 100;
+	protected double CurrentHealth= 100;
 	
-	protected float MaxMana= 100;
-	protected float CurrentMana= 100;
+	protected double MaxMana= 100;
+	protected double CurrentMana= 100;
 	
-	protected float ad = 0;
-	protected float ap= 0;
-	protected float move = 100;
+	public double ad = 0;
+	protected double ap= 0;
+	protected double move = 100;
 	protected int level = 0;
-	protected float exp = 0;
-	protected float expmax = 0;
+	protected double exp = 0;
+	protected double expmax = 0;
 	
-	protected float regenHealth = 0;
-	protected float regenMana = 0;
+	protected double regenHealth = 0;
+	protected double regenMana = 0;
 	
-	protected float attackSpeed;
+	protected double attackSpeed;
 	
 	protected int Gold = 0;
 	
@@ -38,9 +39,14 @@ public class ClientData implements Serializable {
 	
 	protected int[] skillSet = new int[5];
 	
-	protected float[] cool = new float[14];
+	protected double[] cool = new double[14];
 	
-	protected String Enemy;
+	public String Enemy;
+
+	protected double total_score;
+	protected int kill;
+	protected int death;
+	protected int cs;
 	
 	public ClientData() {
 		
@@ -48,7 +54,7 @@ public class ClientData implements Serializable {
 	
 	public ClientData(boolean start, float playerMaxHealth, float playerCurrentHealth, float playerMaxMana,
 			float playerCurrentMana, float ad, float ap, float move, int level, float exp, float regenHealth,
-			float regenMana, int gold, String timerFlag, int timer, int[] skillSet,float[] cool) {
+			float regenMana, int gold, String timerFlag, int timer, int[] skillSet,double[] cool) {
 		this.start = start;
 		MaxHealth = playerMaxHealth;
 		CurrentHealth = playerCurrentHealth;
@@ -86,6 +92,12 @@ public class ClientData implements Serializable {
 		//this.cool = data.cool;
 		this.exp = data.getExp();
 		this.attackSpeed = data.getAttackSpeed();
+		this.total_score = data.getTotal_score();
+		this.kill = data.getKill();
+		this.death = data.getDeath();
+		this.cs = data.getCs();
+		this.Enemy = data.getName();
+
 		
 		for(int i = 0; i<5;i++) {
 			skillSet[i] = Item.getIdFromItem(data.getSkill(i));

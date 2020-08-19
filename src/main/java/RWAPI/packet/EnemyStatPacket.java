@@ -60,17 +60,17 @@ public class EnemyStatPacket implements IMessage{
 
 		@Override
 		public EnemyStatPacket onMessage(EnemyStatPacket message, MessageContext ctx) {
-			// TODO Auto-generated method stub
+			// TODO Auto-generated method 	stub
 			if(main.game.start != GameStatus.START) {
 				return new EnemyStatPacket(false);
 			}
 			else if(main.game.start == GameStatus.START) {
 				PlayerData data = main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID());
 				
-				if(data.getEnemyHandler() != null) {
-					return new EnemyStatPacket(data.getEnemyHandler().getEnemyData(data),true);
+				//if(data.getEnemyHandler() != null) {
+					//return new EnemyStatPacket(data.getEnemyHandler().getEnemyData(data),true);
 					
-				}
+				//}
 				return new EnemyStatPacket(false);
 			}
 			return null;

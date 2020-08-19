@@ -1,9 +1,13 @@
 package RWAPI.items.weapon;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+import RWAPI.Character.PlayerData;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -18,6 +22,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 
 public class WeaponBase extends ItemSword  {
@@ -25,6 +30,8 @@ public class WeaponBase extends ItemSword  {
 	public ClassList ClassCode;
 	
 	public double attack_speed = 0;
+
+	NBTTagCompound nbt;
 	
 	public WeaponBase(ToolMaterial material,String name) {
 		super(material);
@@ -75,13 +82,8 @@ public class WeaponBase extends ItemSword  {
 		}
 	}
 
-	
-	
-	/*public WeaponBase(String name) {
-		setUnlocalizedName(name);
-		setRegistryName(name);
-		this.maxStackSize = 1;
-	}*/
-	
-	
+	@Override
+	public boolean updateItemStackNBT(NBTTagCompound nbt) {
+		return super.updateItemStackNBT(nbt);
+	}
 }

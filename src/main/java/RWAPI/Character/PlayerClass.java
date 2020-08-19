@@ -1,22 +1,10 @@
 package RWAPI.Character;
 
-import java.util.HashMap;
-
-import RWAPI.main;
-import RWAPI.init.ModWeapons;
-import RWAPI.items.skillItem.SkillBase;
 import RWAPI.items.weapon.WeaponBase;
 import RWAPI.util.ClassList;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public class PlayerClass implements Cloneable {
 	
@@ -41,10 +29,18 @@ public class PlayerClass implements Cloneable {
 	public CooldownHandler handler[];
 	
 	protected Item[] skillSet = new Item[5];
+
+	protected Skill[] skills = new Skill[5];
+
+
 	
 	//public HashMap<Integer,CooldownHandler> cool = new HashMap<Integer,CooldownHandler>();
 	
 	public WeaponBase weapon;
+
+	public PlayerClass copyClass(){
+		return null;
+	}
 	
 	public void ActiveSkill(int num, EntityPlayer player) {
 		switch(num) {
@@ -62,7 +58,10 @@ public class PlayerClass implements Cloneable {
 			break;
 		}
 	}
-	
+
+	public void skill0(EntityPlayer player) {
+	}
+
 	public void skill1(EntityPlayer player) {
 		
 	}
@@ -93,39 +92,14 @@ public class PlayerClass implements Cloneable {
 		data.setAttackSpeed((float) (data.getAttackSpeed() - matrix.attackspeed[lv-1] + matrix.attackspeed[lv]));
 	}
 	
-	public class CooldownHandler{
-		protected int skillTimer = 0;
-		protected int cooldown;
-		protected int id;
-		protected EntityPlayerMP player;
-		protected PlayerData data;
-		
-		public CooldownHandler(double cool,int id,EntityPlayerMP player) {
-			this.cooldown = (int)(cool*40);
-			this.id = id;
-			this.player = player;
-			this.data = main.game.getPlayerData(player.getUniqueID());
-			MinecraftForge.EVENT_BUS.register(this);
-		}
-
-		@SubscribeEvent
-		public void skillTimer(ServerTickEvent event) throws Throwable {
-			if(skillTimer > cooldown) {
-				data.setCool(this.id, 0);
-				MinecraftForge.EVENT_BUS.unregister(this);
-			}
-			data.setCool(this.id, ((float)(cooldown-skillTimer)/40));
-			skillTimer++;
-			
-		}
-	}
-	
 	
 	@Override
 	public Object clone() throws CloneNotSupportedException { // public ���� �ٲ�����.
 		return super.clone();
 	}
-	
+
+
+
 	public abstract class StatMatrix{
 		public double[] hp;
 		public double[] mana;
@@ -136,5 +110,14 @@ public class PlayerClass implements Cloneable {
 		public double[] move;
 		public double[] attackspeed;
 	}
-	
+
+	public Skill getSkill(int idx) {
+		return skills[idx];
+	}
+	public Skill[] getSkills(){
+		return skills;
+	}
+	public void EndGame(EntityPlayerMP player){
+
+	}
 }

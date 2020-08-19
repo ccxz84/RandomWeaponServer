@@ -52,7 +52,7 @@ public class EntityMinion extends AbstractMob{
 	private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.<Boolean>createKey(EntityMinion.class, DataSerializers.BOOLEAN);
 
 	public EntityMinion(World worldIn) {
-		super(worldIn,new EntityData(900f,100f,150,30,"미니언"));
+		super(worldIn,new EntityData(900f,100f,150,30,"미니언",0.3));
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -166,6 +166,7 @@ public class EntityMinion extends AbstractMob{
 		// TODO Auto-generated method stub
 		if(!(source instanceof EntityDamageSourceIndirect)) {
 			if(source.getTrueSource() instanceof EntityPlayer) {
+
 				PlayerData attacker = main.game.getPlayerData(source.getTrueSource().getUniqueID());
 				RWAPI.util.DamageSource sourcee = RWAPI.util.DamageSource.causeAttack(attacker, data);
 				RWAPI.util.DamageSource.attackDamage(sourcee);

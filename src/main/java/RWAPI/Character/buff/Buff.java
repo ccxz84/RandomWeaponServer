@@ -8,12 +8,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public abstract class Buff {
-	public int duration;
-	int timer = 0;
-	EntityPlayerMP player;
-	public float [] data;
+	protected int duration;
+	protected int timer = 0;
+	protected EntityPlayerMP player;
+	protected double [] data;
 	
-	public Buff(double duration,EntityPlayerMP player,float ... data) {
+	public Buff(double duration,EntityPlayerMP player,double ... data) {
 		this.duration = (int)(duration*40);
 		this.player = player;
 		this.data = data;

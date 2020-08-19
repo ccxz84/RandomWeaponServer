@@ -1,5 +1,6 @@
 package RWAPI.packet;
 
+import RWAPI.Character.PlayerData;
 import org.lwjgl.input.Keyboard;
 
 import RWAPI.main;
@@ -33,6 +34,14 @@ public class KeyInputPacket implements IMessage {
 			if(message.keynum == Keyboard.KEY_Z || message.keynum == Keyboard.KEY_X || message.keynum == Keyboard.KEY_C|| message.keynum == Keyboard.KEY_V) {
 				if(main.game.start == GameStatus.START) {
 					main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID()).get_class().ActiveSkill(message.keynum-Keyboard.KEY_Z+1, main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID()).getPlayer());
+				}
+			}
+			if(message.keynum == Keyboard.KEY_B){
+				if(main.game.start == GameStatus.START) {
+					PlayerData data = main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID());
+					if(data.recallFlag != true){
+						data.setRecall(true);
+					}
 				}
 			}
 			return null;

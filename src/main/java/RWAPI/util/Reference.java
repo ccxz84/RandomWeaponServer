@@ -18,6 +18,11 @@ public class Reference {
 	public static final int ENTITY_RESONATING = 201;
 	public static final int ENTITY_STRIKE = 202;
 	public static final int ENTITY_TEMPEST = 203;
+	public static final int ENTITY_ALPHA = 204;
+
+
+	public static final int SHOPUSAGE_TIME = 30;
+	public static final int RESPAWNFUND_TIME = 15;
 	
 
 }

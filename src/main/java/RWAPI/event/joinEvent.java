@@ -2,10 +2,7 @@ package RWAPI.event;
 
 import RWAPI.main;
 import RWAPI.Character.PlayerData;
-import RWAPI.packet.EnemyStatPacket;
-import RWAPI.packet.InventoryOpenPacket;
-import RWAPI.packet.KeyInputPacket;
-import RWAPI.packet.PlayerStatMessage;
+import RWAPI.packet.*;
 import RWAPI.packet.EnemyStatPacket.EnemyStatHandler;
 import RWAPI.packet.InventoryOpenPacket.InventoryOpenHandler;
 import RWAPI.packet.KeyInputPacket.KeyInputHandler;
@@ -29,12 +26,13 @@ public class joinEvent {
 		try {
 			int channel = 1;
 			SimpleNetworkWrapper network = NetworkRegistry.INSTANCE.newSimpleChannel(event.player.getName());
-			network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.CLIENT);
-			network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.SERVER);
+			//network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.CLIENT);
+			//network.registerMessage(HealthStatusHandler.class, PlayerStatMessage.class, channel++, Side.SERVER);
 			network.registerMessage(KeyInputHandler.class, KeyInputPacket.class, channel++, Side.SERVER);
 			network.registerMessage(InventoryOpenHandler.class, InventoryOpenPacket.class, channel++, Side.SERVER);
 			network.registerMessage(EnemyStatHandler.class, EnemyStatPacket.class, channel++, Side.CLIENT);
 			network.registerMessage(EnemyStatHandler.class, EnemyStatPacket.class, channel++, Side.SERVER);
+
 		}
 		catch (Exception e){
 			System.out.println("already regist channel");
