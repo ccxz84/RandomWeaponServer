@@ -41,7 +41,7 @@ public class GameBaseEvent{
 			PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
 			if(attacker.nonWorking == false){
 				DamageSource source = DamageSource.causeAttack(attacker, target);
-				DamageSource.attackDamage(source);
+				DamageSource.attackDamage(source,true);
 				EnemyStatHandler.EnemyStatSetter(source);
 			}
 		}

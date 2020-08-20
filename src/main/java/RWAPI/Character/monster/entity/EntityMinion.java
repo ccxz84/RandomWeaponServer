@@ -169,7 +169,7 @@ public class EntityMinion extends AbstractMob{
 
 				PlayerData attacker = main.game.getPlayerData(source.getTrueSource().getUniqueID());
 				RWAPI.util.DamageSource sourcee = RWAPI.util.DamageSource.causeAttack(attacker, data);
-				RWAPI.util.DamageSource.attackDamage(sourcee);
+				RWAPI.util.DamageSource.attackDamage(sourcee,true);
 				EnemyStatHandler.EnemyStatSetter(sourcee);
 			}
 		}
@@ -183,7 +183,7 @@ public class EntityMinion extends AbstractMob{
 		if(entityIn instanceof EntityPlayer) {
 			PlayerData target = main.game.getPlayerData(entityIn.getUniqueID());
 			RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeAttack(data, target);
-			RWAPI.util.DamageSource.attackDamage(source);
+			RWAPI.util.DamageSource.attackDamage(source,true);
 			EnemyStatHandler.EnemyStatSetter(source);
 		}
 		

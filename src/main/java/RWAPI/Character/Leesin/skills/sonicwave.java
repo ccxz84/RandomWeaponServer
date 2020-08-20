@@ -79,7 +79,7 @@ public class sonicwave implements Skill {
                 timer.resonating.getThrower().attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(player, timer.resonating), (float)1);
                 RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
-                RWAPI.util.DamageSource.attackDamage(source);
+                RWAPI.util.DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }else if(timer.resonating.getThrower() instanceof AbstractMob){
                 AbstractMob mob = (AbstractMob) timer.resonating.getThrower();
@@ -87,7 +87,7 @@ public class sonicwave implements Skill {
                 ((EntityPlayerMP) player).connection.setPlayerLocation(mob.posX - player.getLookVec().x *1.1, mob.posY, mob.posZ - player.getLookVec().z *1.1, player.rotationYaw, player.rotationPitch);
                 RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
-                RWAPI.util.DamageSource.attackDamage(source);
+                RWAPI.util.DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }
 

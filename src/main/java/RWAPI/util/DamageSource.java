@@ -67,6 +67,10 @@ public class DamageSource {
 		}
 	}
 
+	public void setDamage(double damage){
+		this.damage = damage;
+	}
+
 	private static void Event(DamageSource source){
 		PlayerAttackEventHandle.PlayerAttackEvent event = new PlayerAttackEventHandle.PlayerAttackEvent(source);
 		main.game.getEventHandler().RunEvent(event);

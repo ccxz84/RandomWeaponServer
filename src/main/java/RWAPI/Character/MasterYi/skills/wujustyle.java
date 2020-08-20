@@ -112,8 +112,9 @@ public class wujustyle extends MasterYiS {
                     }
                     if(target != null) {
                         PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
-                        DamageSource source = new DamageSource(attacker,target, data[0]);
-                        DamageSource.attackDamage(source);
+                        DamageSource source = DamageSource.causeAttack(attacker,target);
+                        source.setDamage(data[0]);
+                        DamageSource.attackDamage(source,true);
                         DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     }
                 }

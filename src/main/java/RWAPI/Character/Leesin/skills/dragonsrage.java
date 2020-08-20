@@ -91,13 +91,12 @@ public class dragonsrage implements Skill {
         public void PlayerAttackEvent(AttackEntityEvent event)
         {
             if(event.getEntityPlayer().getUniqueID().equals(player.getUniqueID())) {
-
                 EntityLivingBase etarget = (EntityLivingBase) event.getTarget();
                 etarget.knockBack(event.getEntityLiving(), 2, -event.getEntityPlayer().getLookVec().x, -event.getEntityPlayer().getLookVec().z);
                 PlayerData attacker = main.game.getPlayerData(event.getEntityPlayer().getUniqueID());
                 EntityData target = (etarget instanceof EntityPlayer) ? main.game.getPlayerData(etarget.getUniqueID()) : ((AbstractMob)etarget).getData();
                 RWAPI.util.DamageSource sourcee = RWAPI.util.DamageSource.causeSkill(attacker, target, skilldamage1);
-                RWAPI.util.DamageSource.attackDamage(sourcee);
+                RWAPI.util.DamageSource.attackDamage(sourcee,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);
                 new CooldownHandler(cool, 4, (EntityPlayerMP) player);
                 MinecraftForge.EVENT_BUS.unregister(this);

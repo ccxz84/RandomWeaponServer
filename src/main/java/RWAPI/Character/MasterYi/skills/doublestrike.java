@@ -84,10 +84,11 @@ public class doublestrike implements Skill {
                         attack = (attack+1) % 4;
                         PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
                         if(attack == 3 && target.getCurrentHealth() > 0){
-                            DamageSource source = new DamageSource(attacker,target,attacker.getAd()/2);
+                            DamageSource source = DamageSource.causeAttack(attacker,target);
+                            source.setDamage(attacker.getAd()/2);
                             attack = (attack+1) % 4;
 
-                            DamageSource.attackDamage(source);
+                            DamageSource.attackDamage(source,true);
                             DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                         }
                         attacker.setCool(0,attack);

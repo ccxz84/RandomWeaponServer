@@ -85,7 +85,7 @@ public class EntityAlpha extends SkillEntity {
             if(target != null && attacker != null && target.getCurrentHealth() > 0) {
                 this.targetData.setData(idx++,mini.get(count));
                 RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-                RWAPI.util.DamageSource.attackDamage(source);
+                RWAPI.util.DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                 mini.get(count).attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
             }

@@ -87,7 +87,7 @@ public class EntityTempest extends SkillEntity{
 				}
 				if(target != null && attacker != null) {
 					RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-					RWAPI.util.DamageSource.attackDamage(source);
+					RWAPI.util.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 					mi.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
 				}

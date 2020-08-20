@@ -54,13 +54,13 @@ public class EntityStrike extends SkillEntity{
 					AbstractMob mob = (AbstractMob) result.entityHit;
 					target = mob.getData();
 					RWAPI.util.DamageSource source =RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-					RWAPI.util.DamageSource.attackDamage(source);
+					RWAPI.util.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 				}
 				else if(result.entityHit instanceof EntityPlayer){
 					target = main.game.getPlayerData(result.entityHit.getUniqueID());
 					RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-					RWAPI.util.DamageSource.attackDamage(source);
+					RWAPI.util.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 				}
 				result.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
