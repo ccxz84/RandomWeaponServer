@@ -1,10 +1,8 @@
 package RWAPI.items.inventory;
 
-
-import RWAPI.init.ModItems;
+import RWAPI.items.gameItem.ItemBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
@@ -12,16 +10,21 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Inventory extends TileEntity implements IInventory{
 	
 	private final NonNullList<ItemStack> inventoryContents;
 	private String CusName;
+	private List<ItemStack> items = new ArrayList<ItemStack>();
+	private List<ItemBase> list;
 	
 	
 
-	public Inventory() {
+	public Inventory(List<ItemBase> list) {
 		this.inventoryContents = NonNullList.<ItemStack>withSize(getSizeInventory(), ItemStack.EMPTY);
-		
+		this.list = list;
 		
 	}
 
@@ -127,6 +130,7 @@ public class Inventory extends TileEntity implements IInventory{
 	        stack = null;
 
 	    this.inventoryContents.set(index, stack);
+		//this.getUpdateTag();
 	    this.markDirty();
 	}
 
@@ -185,14 +189,19 @@ public class Inventory extends TileEntity implements IInventory{
 	}
 	
 	public void setLowerLimit(int lim) {
-		
 		this.inventoryContents.clear();
 		int x = 0;
 		for(int i = lim; i<lim+30;i++) {
-			this.inventoryContents.set(x++, new ItemStack(ModItems.temp.get(i)));
+			if(i >=list.size()){
+				this.inventoryContents.set(x++,ItemStack.EMPTY);
+			}
+			else{
+				this.inventoryContents.set(x++, new ItemStack(list.get(i)));
+			}
 		}
 		
 	}
+
 	
 	
 }

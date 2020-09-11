@@ -2,8 +2,9 @@ package RWAPI.items.gameItem;
 
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 
-public class Ninjatabi extends ItemBase {
+public class Ninjatabi extends ItemBase implements ItemBase.shoes {
 
 	public Ninjatabi(String name) {
 		super(name);
@@ -14,6 +15,9 @@ public class Ninjatabi extends ItemBase {
 		down_item[1] =ModItems.Rubycrystal;
 		
 		phase = 2;
+		this.name = "닌자의 신발";
+		this.gold = 1100;
+		refund_gold = 770;
 		// TODO Auto-generated constructor stub
 	}
 

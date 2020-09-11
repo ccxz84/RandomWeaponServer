@@ -92,7 +92,7 @@ public class doublestrike implements Skill {
                             DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                         }
                         attacker.setCool(0,attack);
-                        if(target.getCurrentHealth() <= 0) {
+                        if(target.getCurrentHealth() <= 0 && target instanceof PlayerData) {
                             for(MasterYiS skill : skills) {
                                 skill.reduceCool();
                             }
@@ -105,5 +105,30 @@ public class doublestrike implements Skill {
         public void closeHandler(){
             MinecraftForge.EVENT_BUS.unregister(this);
         }
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return null;
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return null;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return null;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return null;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return null;
     }
 }

@@ -6,13 +6,13 @@ import java.util.List;
 import RWAPI.items.Ruby;
 import RWAPI.items.gameItem.*;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 public class ModItems {
-	public static final List<Item> ITEMS = new ArrayList<Item>();
-	public static final List<ItemBase> temp = new ArrayList<ItemBase>();
+	public static final List<ItemBase> ITEMS = new ArrayList<ItemBase>();
 	
 	
-	public static final ItemBase RUBY = new Ruby("ruby");
+	public static final Item RUBY = new Ruby("baseitem");
 	public static final ItemBase LongSword = new LongSword("longsword");
 	public static final ItemBase Dagger = new Dagger("dagger");
 	public static final ItemBase Recurvebow = new Recurvebow("recurvebow");
@@ -44,5 +44,9 @@ public class ModItems {
 	public static final ItemBase Doransring = new Doransring("doran'sring");
 	public static final ItemBase Huntersmachete = new Huntersmachete("hunter'smachete");
 	public static final ItemBase Hunterstalisman = new Hunterstalisman("hunter'stalisman");
+
+	public static ItemStack findStack(){
+		return null;
+	}
 
 }

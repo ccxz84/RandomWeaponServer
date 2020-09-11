@@ -52,9 +52,12 @@ public class dragonsrage implements Skill {
         PlayerData data = main.game.getPlayerData(player.getUniqueID());
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(4) <= 0&& data.getCurrentMana() > skillcost[lv-1]) {
+            data.nonWorking = true;
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
+            data.nonWorking = false;
             this.handler = new cool(3, 4, (EntityPlayerMP) player,(float) (skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd() - data.getAd()),cooldown[lv-1]);
             _class.skill0(player);
+
         }
     }
 
@@ -103,5 +106,30 @@ public class dragonsrage implements Skill {
 
             }
         }
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage;
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
     }
 }

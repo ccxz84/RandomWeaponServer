@@ -2,6 +2,7 @@ package RWAPI.items.gameItem;
 
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 
 public class Doransring extends ItemBase {
 
@@ -13,6 +14,9 @@ public class Doransring extends ItemBase {
 		down_item = new ItemBase[0];
 		
 		phase = 3;
+		this.name = "도란의 반지";
+		this.gold = 400;
+		refund_gold = 160;
 		// TODO Auto-generated constructor stub
 	}
 

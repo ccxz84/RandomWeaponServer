@@ -22,33 +22,12 @@ public class leesin extends WeaponBase{
 		setCreativeTab(CreativeTabs.MATERIALS);
 		this.ClassCode = ClassList.Leesin;
 		ModWeapons.weapon.add(this);
+		basename = "리 신";
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-		super.addInformation(stack, worldIn, tooltip, flagIn);
-		tooltip.add("테스트");
-	}
 
-	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-		ItemStack stack = playerIn.getHeldItem(handIn);
-		NBTTagCompound nbt = stack.getTagCompound();
-		if(nbt == null){
-			nbt = new NBTTagCompound();
-			System.out.println("create");
-		}
-		if(nbt.hasKey("test")){
-
-			nbt.setInteger("test",nbt.getInteger("test")+1);
-			System.out.println(nbt.getInteger("test"));
-		}
-		else{
-			nbt.setInteger("test",1);
-			System.out.println("create test");
-		}
-		stack.setTagCompound(nbt);
-		return super.onItemRightClick(worldIn, playerIn, handIn);
 	}
 }

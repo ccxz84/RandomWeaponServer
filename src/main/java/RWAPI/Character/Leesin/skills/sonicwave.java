@@ -62,9 +62,13 @@ public class sonicwave implements Skill {
         PlayerData data = main.game.getPlayerData(player.getUniqueID());
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(1) <= 0 && data.getSkill(1).equals(ModSkills.skill.get(ModSkills.sonicwave.SkillNumber)) && data.getCurrentMana() > skillcost[0][lv-1]){
+            data.nonWorking = true;
+            data.nonWorking = false;
+            System.out.println(player.getName());
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[0][lv-1]));
-            EntityUmpa ls = new EntityUmpa(player.world,player,(float) (skilldamage[1][lv-1]+ skillAdcoe[lv-1] * data.getAd()));
+            EntityUmpa ls = new EntityUmpa(player.world,player,(float) (skilldamage[0][lv-1]+ skillAdcoe[lv-1] * data.getAd()));
             ls.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.7f, 0);
+            ls.posY -= 1;
             ls.setNoGravity(true);
             player.world.spawnEntity(ls);
 
@@ -72,6 +76,8 @@ public class sonicwave implements Skill {
             _class.skill0(player);
         }
         else if(data.getSkill(1).equals(ModSkills.skill.get(ModSkills.resonatingstrike.SkillNumber)) && data.getCurrentMana() > skillcost[1][lv-1]){
+            data.nonWorking = true;
+            data.nonWorking = false;
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[1][lv-1]));
             if(timer.resonating.getThrower() instanceof EntityPlayer) {
                 PlayerData target = main.game.getPlayerData(timer.resonating.getThrower().getUniqueID());
@@ -85,7 +91,7 @@ public class sonicwave implements Skill {
                 AbstractMob mob = (AbstractMob) timer.resonating.getThrower();
                 EntityData target = mob.getData();
                 ((EntityPlayerMP) player).connection.setPlayerLocation(mob.posX - player.getLookVec().x *1.1, mob.posY, mob.posZ - player.getLookVec().z *1.1, player.rotationYaw, player.rotationPitch);
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
+                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[0][lv-1] * data.getAd()
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
                 RWAPI.util.DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
@@ -99,6 +105,8 @@ public class sonicwave implements Skill {
             System.out.println(_class);
             _class.skill0(player);
         }
+
+
     }
 
     @Override
@@ -180,5 +188,38 @@ public class sonicwave implements Skill {
             MinecraftForge.EVENT_BUS.unregister(this);
         }
 
+    }
+
+    public double[] getskilldamage2(){
+        return this.skilldamage[1];
+    }
+
+    public double[][] getskill1coe(){
+        return this.skill1coe;
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage[0];
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost[0];
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
     }
 }

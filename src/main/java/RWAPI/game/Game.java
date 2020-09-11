@@ -125,11 +125,12 @@ public class Game {
 			for(Skill skill :player.get_class().getSkills()){
 				skill.Skillset(player.getPlayer());
 			}
-			player.resetInvhandler();
+			player.setKeyinputListener();
+
 		}
 		
-		this.initTimer("게임 시간", 420);
-		this.GameTimer = (new Timer(main.game, 420) {
+		this.initTimer("게임 시간", 900);
+		this.GameTimer = (new Timer(main.game, 900) {
 			int timer = 0;
 
 			@Override
@@ -137,6 +138,7 @@ public class Game {
 				// TODO Auto-generated method stub
 				super.gameTimer(event);
 				for(PlayerData player : main.game.player().values()) {
+
 					if(player.getStatus().equals(EntityStatus.ALIVE)){
 						player.getData().setTimer(main.game.timer);
 					}
@@ -152,8 +154,9 @@ public class Game {
 					if(timer % 60 == 0) {
 						player.setGold(player.getGold() + 1);
 					}
-					timer++;
+
 				}
+				timer++;
 			}
 
 			@Override
@@ -183,8 +186,9 @@ public class Game {
 				player.getPlayer().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1024);
 				player.getPlayer().getFoodStats().setFoodLevel(20);
 				player.getPlayer().connection.setPlayerLocation(-56,53,107, player.getPlayer().rotationYaw, player.getPlayer().rotationPitch);
+				player.resetInvhandler();
 			}
-			game.GameTimer = (new Timer(main.game,1) {
+			game.GameTimer = (new Timer(main.game,30) {
 				@Override
 				public void gameTimer(ServerTickEvent event) {
 					// TODO Auto-generated method stub
@@ -228,6 +232,13 @@ public class Game {
 				TimerEnd();
 			}
 		}
+
+		public void reset(){
+			for(PlayerData player : main.game.player().values()) {
+				player.resetgame();
+			}
+			MinecraftForge.EVENT_BUS.unregister(this);
+		}
 		
 		abstract public void TimerEnd();
 	}
@@ -243,6 +254,20 @@ public class Game {
 			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
 			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
 			eventcodeList.put(1,map);
+			map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
+			eventcodeList.put(2,map);
+			map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
+			eventcodeList.put(3,map);
 		}
 
 		public void register(BaseEvent eventObject){
@@ -265,14 +290,12 @@ public class Game {
 			}
 		}
 
-		public void RunEvent(BaseEvent.AbstractBaseEvent event){
+		public void RunEvent(BaseEvent.AbstractBaseEvent event, BaseEvent.EventPriority priority){
 			HashMap<BaseEvent.EventPriority,List<BaseEvent>> map = eventcodeList.get(event.EventCode());
 			if(map != null){
-				for(BaseEvent.EventPriority priority :BaseEvent.EventPriority.values()){
-					List<BaseEvent> list = map.get(priority);
-					for(BaseEvent bevent : list){
-						bevent.EventListener(event);
-					}
+				List<BaseEvent> list = map.get(priority);
+				for(BaseEvent bevent : list){
+					bevent.EventListener(event);
 				}
 			}
 		}

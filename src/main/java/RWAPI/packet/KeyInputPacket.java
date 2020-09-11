@@ -31,17 +31,17 @@ public class KeyInputPacket implements IMessage {
 		@Override
 		public IMessage onMessage(KeyInputPacket message, MessageContext ctx) {
 			// TODO Auto-generated method stub
-			if(message.keynum == Keyboard.KEY_Z || message.keynum == Keyboard.KEY_X || message.keynum == Keyboard.KEY_C|| message.keynum == Keyboard.KEY_V) {
-				if(main.game.start == GameStatus.START) {
-					main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID()).get_class().ActiveSkill(message.keynum-Keyboard.KEY_Z+1, main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID()).getPlayer());
-				}
-			}
-			if(message.keynum == Keyboard.KEY_B){
+			if(message.keynum == Keyboard.KEY_Z || message.keynum == Keyboard.KEY_X || message.keynum == Keyboard.KEY_C|| message.keynum == Keyboard.KEY_V || message.keynum == Keyboard.KEY_B) {
 				if(main.game.start == GameStatus.START) {
 					PlayerData data = main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID());
-					if(data.recallFlag != true){
-						data.setRecall(true);
-					}
+					data.inputKey(message.keynum);
+					//.get_class().ActiveSkill(message.keynum-Keyboard.KEY_Z+1, main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID()).getPlayer());
+				}
+			}
+			if(message.keynum == Keyboard.KEY_G){
+				if(main.game.start == GameStatus.PRESTART || main.game.start == GameStatus.START) {
+					PlayerData data = main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID());
+					data.get_class().classInformation(data);
 				}
 			}
 			return null;

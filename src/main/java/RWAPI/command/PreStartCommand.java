@@ -3,6 +3,7 @@ package RWAPI.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import RWAPI.Character.shop.entity.EntityMerchant;
 import RWAPI.main;
 import RWAPI.Character.PlayerData;
 import RWAPI.game.Game;
@@ -44,7 +45,10 @@ public class PreStartCommand implements ICommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		
+
+		if(main.game != null){
+			main.game.GameTimer.reset();
+		}
 		main.game = new Game();
 		main.game.start = GameStatus.READY;
 		server.getWorld(0).getGameRules().setOrCreateGameRule("disableElytraMovementCheck", "true");
@@ -63,6 +67,12 @@ public class PreStartCommand implements ICommand {
 		for(EntityPlayerMP player : players) {
 			server.getPlayerList().sendMessage(new TextComponentString(player.getName()));
 		}
+		/*EntityMerchant en = new EntityMerchant(server.getWorld(0));
+		en.posX = -62;
+		en.posY = 53;
+		en.posZ = 109;
+		//en.attemptTeleport(-62,53,109);
+		server.getWorld(0).spawnEntity(en);*/
 	}
 
 	@Override

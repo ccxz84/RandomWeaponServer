@@ -49,14 +49,17 @@ public class wujustyle extends MasterYiS {
         PlayerData data = main.game.getPlayerData(player.getUniqueID());
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(3) <= 0 && data.getCurrentMana() > skillcost[lv-1]&& data.nonWorking == false&& cool == null) {
+            data.nonWorking = true;
             cool = new cool(cooldown[lv-1],3, (EntityPlayerMP) player);
             buft = new bufftimer(5, (EntityPlayerMP) player,skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd());
+            data.nonWorking = false;
         }
     }
 
     @Override
     public void Skillset(EntityPlayer player) {
         buft = null;
+        cool = null;
     }
 
     @Override
@@ -120,5 +123,30 @@ public class wujustyle extends MasterYiS {
                 }
             }
         }
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage;
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
     }
 }

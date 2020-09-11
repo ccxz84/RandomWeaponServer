@@ -73,6 +73,8 @@ public class EntityTempest extends SkillEntity{
 	
 	@Override
 	public void setDead() {
+		if(main.game == null)
+			return;
 		List<EntityLivingBase> mini =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(3,0,3));
 		EntityData target = null;
 		EntityData attacker = null;

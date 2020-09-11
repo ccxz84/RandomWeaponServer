@@ -2,6 +2,7 @@ package RWAPI.items.gameItem;
 
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 
 public class Crystallinebracer extends ItemBase {
 
@@ -14,6 +15,9 @@ public class Crystallinebracer extends ItemBase {
 		down_item[1] =ModItems.Rejuvenationbead;
 		
 		phase = 2;
+		this.name = "수정팔 보호구";
+		this.gold = 650;
+		refund_gold = 455;
 		// TODO Auto-generated constructor stub
 	}
 

@@ -3,10 +3,13 @@ package RWAPI.Character.MasterYi.skills;
 import RWAPI.Character.*;
 import RWAPI.Character.buff.Buff;
 import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.game.event.EntityDeathEventHandle;
 import RWAPI.main;
+import RWAPI.util.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -49,15 +52,19 @@ public class highlander extends MasterYiS {
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
 
         if(data.getCool(4) <= 0 && data.getCurrentMana() > skillcost[lv-1] && data.nonWorking == false && cool == null) {
+            data.nonWorking = true;
+
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
             cool = new cool(cooldown[lv-1],4, (EntityPlayerMP) player);
             buft = new bufftimer(7, (EntityPlayerMP) player,(float)skilldamage[0][lv-1],(float)skilldamage[1][lv-1]);
+            data.nonWorking = false;
         }
     }
 
     @Override
     public void Skillset(EntityPlayer player) {
         buft = null;
+        cool = null;
     }
 
     @Override
@@ -84,6 +91,8 @@ public class highlander extends MasterYiS {
 
     class bufftimer extends Buff {
 
+        private eventHandle handle;
+
         public bufftimer(double duration, EntityPlayerMP player, double... data) {
             super(duration, player, data);
         }
@@ -94,6 +103,7 @@ public class highlander extends MasterYiS {
             PlayerData data = main.game.getPlayerData(player.getUniqueID());
             data.setAttackSpeed(data.getAttackSpeed()-this.data[1]);
             data.setMove(data.getMove() - this.data[0]);
+            main.game.getEventHandler().unregister(handle);
             Skillset(player);
         }
 
@@ -102,10 +112,38 @@ public class highlander extends MasterYiS {
             // TODO Auto-generated method stub
             PlayerData data = main.game.getPlayerData(player.getUniqueID());
             data.setAttackSpeed(this.data[1] + data.getAttackSpeed());
+            handle = new eventHandle(data);
+            main.game.getEventHandler().register(handle);
             data.setMove(this.data[0] + data.getMove());
         }
 
-        @SubscribeEvent(priority = EventPriority.LOW)
+        private class eventHandle extends EntityDeathEventHandle {
+
+            PlayerData data;
+
+            private eventHandle(PlayerData data){
+                this.data = data;
+
+            }
+
+            @Override
+            public void EventListener(AbstractBaseEvent event) {
+                EntityData attacker = ((EntityDeathEvent)event).getSource().getAttacker();
+                EntityData target = ((EntityDeathEvent)event).getSource().getTarget();
+
+                if(attacker.equals(data) && !(target instanceof PlayerData)){
+                    System.out.println("highlander run");
+                    duration += 5 * 40;
+                }
+            }
+
+            @Override
+            public EventPriority getPriority() {
+                return EventPriority.HIGHTEST;
+            }
+        }
+
+        /*@SubscribeEvent(priority = EventPriority.LOW)
         public void attack(LivingAttackEvent event) {
             if(event.getSource().getTrueSource() != null) {
                 if(event.getSource().getTrueSource().equals(player) && (event.getEntityLiving() instanceof AbstractMob || event.getEntityLiving() instanceof EntityPlayer)) {
@@ -125,8 +163,35 @@ public class highlander extends MasterYiS {
                     }
                 }
             }
-        }
+        }*/
+    }
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage[0];
+    }
+    
+    public double[] getskilldamage2(){
+        return this.skilldamage[1];
     }
 
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
+    }
 
 }

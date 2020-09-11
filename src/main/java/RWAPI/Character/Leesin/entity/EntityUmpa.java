@@ -79,6 +79,8 @@ public class EntityUmpa extends SkillEntity {
 	protected void onImpact(RayTraceResult result) {
 		// TODO Auto-generated method stub
 		if(result.entityHit != null && result.entityHit instanceof EntityLivingBase) {
+			if(main.game == null )
+				setDead();
 			if(!(result.entityHit.getUniqueID().equals(this.thrower.getUniqueID()))) {
 				PlayerData attacker = main.game.getPlayerData(this.thrower.getUniqueID());
 				EntityData target;

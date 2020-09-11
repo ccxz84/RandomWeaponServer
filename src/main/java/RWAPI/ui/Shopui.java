@@ -1,24 +1,52 @@
 package RWAPI.ui;
 
+import RWAPI.Character.PlayerData;
 import RWAPI.init.ModItems;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.items.inventory.Inventory;
 import RWAPI.items.inventory.ItemButton;
+import RWAPI.main;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.*;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.SPacketSetSlot;
+import net.minecraft.util.NonNullList;
 
-public class Shopui extends Container{
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class Shopui extends Container implements IContainerListener {
 	public int scroll = 0;
-	public int scrollMax = 7;
+	public int scrollMax = ModItems.ITEMS.size()%32 == 0 ? ModItems.ITEMS.size()/32:(ModItems.ITEMS.size()/32) + 1;
 	private Inventory inven;
+	private EntityPlayerMP player;
+	private List<ItemBase> list;
+	public  ItemStack currentstack;
 	
 	public Shopui(InventoryPlayer playerInv) {
-		inven = new Inventory();
+
+		player = (EntityPlayerMP) playerInv.player;
+		list = new ArrayList<>(ModItems.ITEMS);
+		list.sort(new Comparator<ItemBase>() {
+			@Override
+			public int compare(ItemBase o1, ItemBase o2) {
+				if(o1.getGold() < o2.getGold()){
+					return -1;
+				}
+				else if(o1.getGold() == o2.getGold()){
+					return 0;
+				}
+				else
+					return 1;
+			}
+		});
+		inven = new Inventory(list);
 		// Player Inventory, Slot 9-35, Slot IDs 9-35
+
 		for (int y = 0; y < 5; ++y) {
 			for (int x = 0; x < 6; ++x) {
 				this.addSlotToContainer(new Slot(inven, x + y * 6, 8 + x * 18, 18+y * 18));
@@ -38,18 +66,11 @@ public class Shopui extends Container{
 		for (int x = 0; x < 9; ++x) {
 			this.addSlotToContainer(new Slot(playerInv, x, 8 + x * 18, 179));
 		}
-	    
+
+
 	    //this.addSlotToContainer(new Slot(new ItemButton(ItemStack.EMPTY),0,190,18));
 	    scrollTo(0);
-	    
-	}
-	
-	
-	
-	@Override
-	public Slot addSlotToContainer(Slot slotIn) {
-		// TODO Auto-generated method stub
-		return super.addSlotToContainer(slotIn);
+		this.addListener(this);
 	}
 
 
@@ -58,7 +79,16 @@ public class Shopui extends Container{
     {
         this.scroll = pos;
         inven.setLowerLimit(scroll * 6);
+
     }
+
+    public void sync(){
+		//System.out.println("run sync");
+		for(int i = 0; i < this.inventorySlots.size();i++) {
+			player.connection.sendPacket(new SPacketSetSlot(this.windowId, i, this.getInventory().get(i)));
+		}
+	}
+
 	
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
@@ -69,7 +99,6 @@ public class Shopui extends Container{
 	@Override
 	public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
 		// TODO Auto-generated method stub
-		
 		if(slotId<30) {
 			
 			if(dragType==1) {//right click
@@ -78,7 +107,7 @@ public class Shopui extends Container{
 			if(dragType==0) {//left click
 				ItemStack stack = inven.getStackInSlot(slotId);
 				
-				if(stack == null) {
+				if(stack == null || stack.equals(ItemStack.EMPTY)) {
 					return ItemStack.EMPTY;
 				}
 				itemButton(stack);
@@ -87,13 +116,25 @@ public class Shopui extends Container{
 			
 			return ItemStack.EMPTY;
 		}
+
+		if(slotId == 30 || slotId == 57)
+			return ItemStack.EMPTY;
+		if(slotId > 30 && slotId < 57){
+			if(dragType==1) {//right click
+				if(this.inventorySlots.get(slotId).getStack().getItem() instanceof ItemBase){
+					ItemBase item = (ItemBase) this.inventorySlots.get(slotId).getStack().getItem();
+					PlayerData data = main.game.getPlayerData(player.getUniqueID());
+					data.setGold(data.getGold() + item.getRefund_gold());
+					this.inventorySlots.get(slotId).getStack().setCount(0);
+				}
+			}
+		}
 		
 		if(slotId > 65) {
 			if(dragType==0) {//left click
 				ItemStack stack = this.getSlot(slotId).getStack();
 				
-				if(stack == null) {
-					System.out.println("test");
+				if(stack == null || stack.equals(ItemStack.EMPTY)) {
 					return ItemStack.EMPTY;
 				}
 				itemButton(stack);
@@ -114,11 +155,13 @@ public class Shopui extends Container{
 			inventorySlots.remove(inventorySlots.get(66));
 			
 		}
-		DrawButton(stack,ModItems.temp.get(ModItems.temp.indexOf(stack.getItem())).down_item,187,18,ModItems.temp.get(ModItems.temp.indexOf(stack.getItem())).phase);
+		currentstack = stack;
+		DrawButton(stack,ModItems.ITEMS.get(ModItems.ITEMS.indexOf(stack.getItem())).down_item,187,18,ModItems.ITEMS.get(ModItems.ITEMS.indexOf(stack.getItem())).phase);
+
 		addSlotToContainer(new Slot(new ItemButton(stack),0,145,97));
 	}
 	
-	private void DrawButton(ItemStack stack, ItemBase[] down_item, int x, int y,int phase) {
+	private void DrawButton(ItemStack stack, ItemBase[] down_item, int x, int y,int phase){
 		addSlotToContainer(new Slot(new ItemButton(stack),0,x,y));
 		
 		if(phase == 1) {
@@ -156,5 +199,34 @@ public class Shopui extends Container{
 				return;
 			}
 		}
+	}
+
+	@Override
+	public void detectAndSendChanges() {
+		super.detectAndSendChanges();
+
+
+		//System.out.println("test");
+	}
+
+	@Override
+	public void sendAllContents(Container containerToSend, NonNullList<ItemStack> itemsList) {
+		//System.out.println(containerToSend.inventorySlots.get(0));
+	}
+
+	@Override
+	public void sendSlotContents(Container containerToSend, int slotInd, ItemStack stack) {
+		//System.out.println("stack : " + stack + " index : " + slotInd);
+
+	}
+
+	@Override
+	public void sendWindowProperty(Container containerIn, int varToUpdate, int newValue) {
+		//System.out.println("sendWindowProperty");
+	}
+
+	@Override
+	public void sendAllWindowProperties(Container containerIn, IInventory inventory) {
+		//System.out.println("sendAllWindowProperties");
 	}
 }

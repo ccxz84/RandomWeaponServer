@@ -3,6 +3,7 @@ package RWAPI.Character.shop.entity;
 import RWAPI.main;
 import RWAPI.Character.Leesin.entity.EntityUmpa;
 import RWAPI.init.handler.GuiHandler;
+import RWAPI.util.GameStatus;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityVillager;
@@ -25,5 +26,13 @@ public class EntityMerchant extends EntityLiving{
 		
 	}
 
-	
+	@Override
+	public void onEntityUpdate() {
+		super.onEntityUpdate();
+	}
+
+	@Override
+	public void setDead() {
+		super.setDead();
+	}
 }

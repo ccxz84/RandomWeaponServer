@@ -5,6 +5,13 @@ import RWAPI.util.ClassList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentBase;
+import net.minecraft.util.text.TextComponentString;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class PlayerClass implements Cloneable {
 	
@@ -118,6 +125,10 @@ public class PlayerClass implements Cloneable {
 		return skills;
 	}
 	public void EndGame(EntityPlayerMP player){
+
+	}
+
+	public void classInformation(PlayerData data){
 
 	}
 }

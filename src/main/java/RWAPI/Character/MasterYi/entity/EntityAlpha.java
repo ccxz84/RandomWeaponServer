@@ -43,6 +43,7 @@ public class EntityAlpha extends SkillEntity {
 
     private void growHitbox() {
         mini =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(2,0,2));
+        mini.remove(this.thrower);
     }
 
     @Override
@@ -53,6 +54,11 @@ public class EntityAlpha extends SkillEntity {
 
     @Override
     public void onUpdate() {
+        if(main.game == null){
+            setDead();
+            return;
+        }
+
         NetworkUtil.sendToAll(targetData.getData(),"alphastrike");
         //main.network.sendToAll(new AlphastrikePacket(targetData.getData()));
         if(ticksExisted > 41) {
@@ -70,16 +76,10 @@ public class EntityAlpha extends SkillEntity {
         EntityData attacker = null;
         if(this.thrower instanceof EntityPlayer) {
             attacker = main.game.getPlayerData(this.thrower.getUniqueID());
+            if(mini.size() == 0)
+                return;
 
-            for(;mini.get(count).equals(this.thrower);count++) {
-                if (mini.size()-1 == count){
-                    break;
-                }
-            }
-            if(mini.get(count) instanceof EntityPlayerMP && !(mini.get(count).equals(this.thrower))) {
-                target = main.game.getPlayerData(((EntityPlayer) mini.get(count)).getUniqueID());
-            }
-            else if(mini.get(count) instanceof AbstractMob) {
+            if(mini.get(count) instanceof AbstractMob) {
                 target = ((AbstractMob) mini.get(count)).getData();
             }
             if(target != null && attacker != null && target.getCurrentHealth() > 0) {
@@ -96,6 +96,10 @@ public class EntityAlpha extends SkillEntity {
 
     @Override
     public void setDead() {
+        if(main.game ==null){
+            super.setDead();
+            return;
+        }
 
         if(this.thrower instanceof EntityPlayer) {
             PlayerData attacker = main.game.getPlayerData(this.thrower.getUniqueID());

@@ -28,7 +28,7 @@ public class meditation extends MasterYiS {
             0,0,0,0,0,0,0,0,0,0,0,0
     };
     protected final double[] skillApcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0.2,0.2,0.2,0.2,0.2,0.3,0.3,0.3,0.3,0.3,0.3,0.4
     };
     protected final double[] skillcost={
             50,50,50,50,50,70,70,70,70,70,70,80
@@ -47,9 +47,10 @@ public class meditation extends MasterYiS {
     public void skillExecute(EntityPlayer player) {
         PlayerData data = main.game.getPlayerData(player.getUniqueID());
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
-        if(data.getCool(2) <= 0 && data.getCurrentMana() > skillcost[lv-1]&& data.nonWorking == false && cool == null) {
+        if(data.getCool(2) <= 0 && data.getCurrentMana() > skillcost[lv-1]/*&& data.nonWorking == false*/ && cool == null) {
             data.nonWorking = true;
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
+            data.nonWorking = false;
             cool = new cool(cooldown[lv-1],2, (EntityPlayerMP) player);
             buft =  new bufftimer(4, (EntityPlayerMP) player,(float)skilldamage[lv-1] + ((float)skillApcoe[lv-1] * data.getAp())/40);
 
@@ -58,7 +59,10 @@ public class meditation extends MasterYiS {
 
     @Override
     public void Skillset(EntityPlayer player) {
+        PlayerData data = main.game.getPlayerData(player.getUniqueID());
         buft = null;
+        cool = null;
+        data.nonWorking = false;
     }
 
     @Override
@@ -114,5 +118,30 @@ public class meditation extends MasterYiS {
             super.BuffTimer(event);
             pdata.setCurrentHealth((pdata.getCurrentHealth() + data[0]) > pdata.getMaxHealth() ? pdata.getMaxHealth() : pdata.getCurrentHealth() + data[0]);
         }
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage;
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
     }
 }

@@ -47,6 +47,8 @@ public class safeguard implements Skill {
         PlayerData data = main.game.getPlayerData(player.getUniqueID());
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(2) <= 0 && data.getCurrentMana() > skillcost[lv-1]) {
+            data.nonWorking = true;
+            data.nonWorking = false;
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
             this.handler = new cool(cooldown[lv-1], 2, (EntityPlayerMP) player);
             _class.skill0(player);
@@ -89,5 +91,30 @@ public class safeguard implements Skill {
             }
             super.skillTimer(event);
         }
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage;
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
     }
 }

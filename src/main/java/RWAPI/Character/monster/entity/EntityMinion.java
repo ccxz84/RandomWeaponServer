@@ -52,7 +52,7 @@ public class EntityMinion extends AbstractMob{
 	private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.<Boolean>createKey(EntityMinion.class, DataSerializers.BOOLEAN);
 
 	public EntityMinion(World worldIn) {
-		super(worldIn,new EntityData(900f,100f,150,30,"미니언",0.3));
+		super(worldIn,new EntityData(900f,110f,50,30,"미니언",0.3));
 		// TODO Auto-generated constructor stub
 	}
 	

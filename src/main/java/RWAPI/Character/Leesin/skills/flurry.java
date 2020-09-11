@@ -65,6 +65,32 @@ public class flurry implements Skill {
     public void skillEnd(EntityPlayer player) {
 
     }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage;
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
+    }
+
     class cool extends CooldownHandler {
         double attackspeed;
 

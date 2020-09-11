@@ -4,6 +4,8 @@ import RWAPI.Character.ClientData;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.EntityDeathEventHandle;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.main;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,23 +34,30 @@ public class DamageSource {
 		return new SkillDamageSource(attacker,target, skillDamage);
 	}
 	
-	public static void attackDamage(DamageSource source, boolean eventFlag) {
+	public static void attackDamage(DamageSource source, boolean attackeventFlag) {
+		if(main.game.start == GameStatus.PRESTART)
+			return;
 		
 		EntityData attacker = source.attacker;
 		EntityData target = source.target;
 		double damage = source.damage;
+
+		if(attacker.getStatus() != EntityStatus.ALIVE && target.getStatus() != EntityStatus.ALIVE){
+			return;
+		}
 
 		double hp = target.getCurrentHealth();
 		if(hp <= 0)
 			return;
 		hp -= damage;
 		target.setCurrentHealth(hp);
-		if(eventFlag == true)
-			Event(source);
+		if(attackeventFlag == true)
+			AttackEvent(source);
 		
 		if(target.getCurrentHealth() <= 0) {
 			target.setStatus(EntityStatus.DEATH);
 			target.setCurrentHealth(0);
+			DeathEvent(source);
 			if(attacker instanceof PlayerData) {
 				((PlayerData) attacker).setGold((int) target.getDeattGold() + ((PlayerData) attacker).getGold());
 				((PlayerData) attacker).setExp(target.getDeathExp() + ((PlayerData) attacker).getExp());
@@ -67,13 +76,29 @@ public class DamageSource {
 		}
 	}
 
+
+
 	public void setDamage(double damage){
 		this.damage = damage;
 	}
 
-	private static void Event(DamageSource source){
+	public double getDamage(){
+		return this.damage;
+	}
+
+	private static void AttackEvent(DamageSource source){
 		PlayerAttackEventHandle.PlayerAttackEvent event = new PlayerAttackEventHandle.PlayerAttackEvent(source);
-		main.game.getEventHandler().RunEvent(event);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event,priority);
+		}
+
+	}
+
+	private static void DeathEvent(DamageSource source) {
+		EntityDeathEventHandle.EntityDeathEvent event = new EntityDeathEventHandle.EntityDeathEvent(source);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event,priority);
+		}
 	}
 
 	private static void Playerdeath(PlayerData target) {
