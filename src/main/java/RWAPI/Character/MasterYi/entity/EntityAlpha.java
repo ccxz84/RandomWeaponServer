@@ -82,6 +82,9 @@ public class EntityAlpha extends SkillEntity {
             if(mini.get(count) instanceof AbstractMob) {
                 target = ((AbstractMob) mini.get(count)).getData();
             }
+            else if(mini.get(count) instanceof EntityPlayer){
+                target = main.game.getPlayerData(mini.get(count).getUniqueID());
+            }
             if(target != null && attacker != null && target.getCurrentHealth() > 0) {
                 this.targetData.setData(idx++,mini.get(count));
                 RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);

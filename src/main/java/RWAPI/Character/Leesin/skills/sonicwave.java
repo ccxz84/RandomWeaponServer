@@ -68,7 +68,7 @@ public class sonicwave implements Skill {
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[0][lv-1]));
             EntityUmpa ls = new EntityUmpa(player.world,player,(float) (skilldamage[0][lv-1]+ skillAdcoe[lv-1] * data.getAd()));
             ls.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.7f, 0);
-            ls.posY -= 1;
+            //ls.posY -= 1;
             ls.setNoGravity(true);
             player.world.spawnEntity(ls);
 

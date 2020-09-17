@@ -59,7 +59,7 @@ public class PlayerData extends EntityData{
 
 	public void setRespawn(){
 		setStatus(EntityStatus.RESPANW);
-		getPlayer().connection.setPlayerLocation(-56, 53, 107, getPlayer().rotationYaw, getPlayer().rotationPitch);
+		getPlayer().connection.setPlayerLocation(Reference.SHOPPOS[0],Reference.SHOPPOS[1],Reference.SHOPPOS[2], getPlayer().rotationYaw, getPlayer().rotationPitch);
 		getData().setTimerFlag("부활 대기 시간");
 		resetPlayer();
 		deathTimer = new deathTimer(this,getPlayer());
@@ -196,7 +196,7 @@ public class PlayerData extends EntityData{
 	public void setShop(boolean flag){
 		if(flag == true && getStatus().equals(EntityStatus.ALIVE)){
 			this.shopTimer = new shopTimer(this,player);
-			this.player.connection.setPlayerLocation(-56,53,107,this.player.rotationYaw, this.player.rotationPitch);
+			this.player.connection.setPlayerLocation(Reference.SHOPPOS[0],Reference.SHOPPOS[1],Reference.SHOPPOS[2],this.player.rotationYaw, this.player.rotationPitch);
 			this.getData().setTimerFlag("상점 시간");
 			//상점으로 텔레포트
 		}
@@ -286,7 +286,7 @@ public class PlayerData extends EntityData{
 		this.setRegenHealth(_class.default_regenHealth);
 		this.setRegenMana(_class.default_regenMana);
 		this.setMove(_class.default_move);
-		this.setGold(500);
+		this.setGold(5000);
 		for(int i = 0; i< 5; i++) {
 			this.setSkill(i, (SkillBase) _class.skillSet[i]);
 		}
@@ -501,8 +501,11 @@ public class PlayerData extends EntityData{
 		@SubscribeEvent
 		public void InventoryHandler(TickEvent.ServerTickEvent event){
 			if(data.getPlayer().inventory.currentItem != 0){
-				if(data.itemhandler[data.getPlayer().inventory.currentItem-1] != null)
+
+				if(data.itemhandler[data.getPlayer().inventory.currentItem-1] != null){
 					data.itemhandler[data.getPlayer().inventory.currentItem-1].ItemUse();
+				}
+
 	    		data.getPlayer().inventory.currentItem = 0;
 			}
 		}
@@ -537,26 +540,30 @@ public class PlayerData extends EntityData{
 					if(inven.getStackInSlot(i).equals(ItemStack.EMPTY)){
 						ItemChangeEvent(data,BaseEvent.EventPriority.HIGHTEST);
 						ItemChangeEvent(data,BaseEvent.EventPriority.HIGH);
-						ItemBase item = (ItemBase) data.getPlayer().inventory.mainInventory.get(i).getItem();
-						double[] stat = item.getstat();
-						data.setAd(data.getAd() + stat[0]);
-						data.setAp(data.getAp() + stat[1]);
+						if(!(data.getPlayer().inventory.mainInventory.get(i).getItem() instanceof ItemBase))
+							data.getPlayer().inventory.mainInventory.set(i,ItemStack.EMPTY);
+						else{
+							ItemBase item = (ItemBase) data.getPlayer().inventory.mainInventory.get(i).getItem();
+							double[] stat = item.getstat();
+							data.setAd(data.getAd() + stat[0]);
+							data.setAp(data.getAp() + stat[1]);
 
-						data.setMaxHealth(data.getMaxHealth()+ stat[2]);
-						data.setCurrentHealth(data.getCurrentHealth() + stat[2]);
+							data.setMaxHealth(data.getMaxHealth()+ stat[2]);
+							data.setCurrentHealth(data.getCurrentHealth() + stat[2]);
 
-						data.setMaxMana(data.getMaxMana()+ stat[3]);
-						data.setCurrentMana(data.getCurrentMana() + stat[3]);
+							data.setMaxMana(data.getMaxMana()+ stat[3]);
+							data.setCurrentMana(data.getCurrentMana() + stat[3]);
 
-						data.setMove(data.getMove() + stat[4]);
-						data.setAttackSpeed(data.getAttackSpeed() + stat[5]);
-						data.setRegenHealth(data.getRegenHealth() + stat[6]);
-						data.setRegenMana(data.getRegenMana() + stat[7]);
+							data.setMove(data.getMove() + stat[4]);
+							data.setAttackSpeed(data.getAttackSpeed() + stat[5]);
+							data.setRegenHealth(data.getRegenHealth() + stat[6]);
+							data.setRegenMana(data.getRegenMana() + stat[7]);
 
-						ItemChangeEvent(data,BaseEvent.EventPriority.NORMAL);
-						ItemChangeEvent(data,BaseEvent.EventPriority.LOW);
-						setItemhandler(i-1, item.create_handler(data,data.getPlayer().inventory.mainInventory.get(i)));
-						ItemChangeEvent(data,BaseEvent.EventPriority.LOWEST);
+							ItemChangeEvent(data,BaseEvent.EventPriority.NORMAL);
+							ItemChangeEvent(data,BaseEvent.EventPriority.LOW);
+							setItemhandler(i-1, item.create_handler(data,data.getPlayer().inventory.mainInventory.get(i)));
+							ItemChangeEvent(data,BaseEvent.EventPriority.LOWEST);
+						}
 					}
 					if(data.getPlayer().inventory.mainInventory.get(i).equals(ItemStack.EMPTY)){
 						ItemChangeEvent(data,BaseEvent.EventPriority.HIGHTEST);
@@ -632,7 +639,7 @@ public class PlayerData extends EntityData{
 
 			while(iterator.hasNext()){
 				int key = iterator.next();
-				if(key == Keyboard.KEY_Z || key == Keyboard.KEY_X || key == Keyboard.KEY_C|| key == Keyboard.KEY_V){
+				if(key == Keyboard.KEY_Z || key == Keyboard.KEY_X || key == Keyboard.KEY_C|| key == Keyboard.KEY_V && data.getStatus() == EntityStatus.ALIVE){
 					data.get_class().ActiveSkill(key-Keyboard.KEY_Z+1,data.getPlayer());
 				}
 				else if(key ==Keyboard.KEY_B){

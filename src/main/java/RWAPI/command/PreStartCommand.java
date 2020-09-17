@@ -49,7 +49,7 @@ public class PreStartCommand implements ICommand {
 		if(main.game != null){
 			main.game.GameTimer.reset();
 		}
-		main.game = new Game();
+		main.game = new Game(server);
 		main.game.start = GameStatus.READY;
 		server.getWorld(0).getGameRules().setOrCreateGameRule("disableElytraMovementCheck", "true");
 		List<EntityPlayerMP> players = server.getPlayerList().getPlayers();

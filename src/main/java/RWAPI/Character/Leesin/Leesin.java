@@ -279,21 +279,24 @@ public class Leesin extends PlayerClass{
 	public void classInformation(PlayerData data) {
 		int lv = data.getLevel();
 		sonicwave wave = (sonicwave) skills[1];
+		flurry flurry = (flurry) skills[0];
 		data.getPlayer().sendMessage(new TextComponentString("리 신 : "));
-		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.RESET +"질풍격"+
+		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"질풍격"+
 				TextFormatting.RESET +" : 스킬 사용 시, 3초 동안 2회의 기본 공격에 대해 공격속도가 "
-				+ skills[0].getskilldamage()[lv-1] + " 만큼 증가합니다."));
+				+ String.format("%.1f",skills[0].getskilldamage()[lv-1]) + " 만큼 증가합니다. 활성화 된 상태에서 적을 공격 시, " +
+				TextFormatting.AQUA + flurry.getSkilldamage2()[lv-1]+
+				TextFormatting.RESET + "의 기력이 회복됩니다."));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"음파"+
 				TextFormatting.RESET +" : 리 신이 불협화음으로 된 음파를 발사하여 적에게 " +
-				skills[1].getskilldamage()[lv-1] +"(+"+TextFormatting.RED +(skills[1].getskillAdcoe()[lv-1]*data.getAd()) +
+				String.format("%.1f",skills[1].getskilldamage()[lv-1]) +"(+"+TextFormatting.RED +String.format("%.1f",(skills[1].getskillAdcoe()[lv-1]*data.getAd())) +
 				TextFormatting.RESET + ")의 데미지를 입힙니다. 음파가 적에게 명중하면 3초 안에 공명의 일격을 시전할 수 있습니다. 쿨타임 " +
 				TextFormatting.GOLD +skills[1].getcooldown()[lv-1]+
 				TextFormatting.RESET+"초" ));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"공명의 일격"+
-				TextFormatting.RESET +" : 리 신이 음파를 맞은 적에게 돌진하여 " + wave.getskilldamage2()[lv-1] + "(+"
-				+TextFormatting.RED +(wave.getskill1coe()[0][lv-1] * data.getAd())+
+				TextFormatting.RESET +" : 리 신이 음파를 맞은 적에게 돌진하여 " + String.format("%.1f",wave.getskilldamage2()[lv-1]) + "(+"
+				+TextFormatting.RED +String.format("%.1f",(wave.getskill1coe()[0][lv-1] * data.getAd()))+
 				TextFormatting.RESET +")의 데미지를 입히고, 추가로 적 최대체력의 " +
-				TextFormatting.DARK_RED + (wave.getskill1coe()[1][lv-1] *100)+"%"+
+				TextFormatting.DARK_RED + String.format("%.1f",(wave.getskill1coe()[1][lv-1] *100))+"%"+
 				TextFormatting.RESET + "의 데미지를 입힙니다."));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"방호"+
 				TextFormatting.RESET +" : 리 신이 바라보고 있는 방향으로 일정거리 순간이동 합니다. 쿨타임 : " +
@@ -301,7 +304,7 @@ public class Leesin extends PlayerClass{
 				TextFormatting.RESET+"초"));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"폭풍" +
 				TextFormatting.RESET +" : 리 신이 1초 동안 정신을 집중하여 바닥을 내리쳐 " + skills[3].getskilldamage()[lv-1] +"(+"+
-				TextFormatting.RED +(skills[3].getskillAdcoe()[lv-1] * data.getAd())+
+				TextFormatting.RED +String.format("%.1f",(skills[3].getskillAdcoe()[lv-1] * data.getAd()))+
 				TextFormatting.RESET +")의 데미지를 입힙니다. 정신 집중 시간에는 " +
 				TextFormatting.DARK_PURPLE + "70%"+
 				TextFormatting.RESET +"의 이동속도가 감소합니다. 쿨타임 : "+
@@ -309,7 +312,7 @@ public class Leesin extends PlayerClass{
 				TextFormatting.RESET+"초"));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"용의 분노" +
 				TextFormatting.RESET +" : 리 신이 스킬 사용 후, 2초 안에 기본 공격 시 적에게 " + skills[4].getskilldamage()[lv-1] + "(+"+
-				TextFormatting.RED + (skills[4].getskillAdcoe()[lv-1] * data.getAd())+
+				TextFormatting.RED + String.format("%.1f",(skills[4].getskillAdcoe()[lv-1] * data.getAd()))+
 				TextFormatting.RESET +")의 데미지를 입히며 뒤로 날려보냅니다. 쿨타임 : "+
 				TextFormatting.GOLD + skills[4].getcooldown()[lv-1]+
 				TextFormatting.RESET+"초"));

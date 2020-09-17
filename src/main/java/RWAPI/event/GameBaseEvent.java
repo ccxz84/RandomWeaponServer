@@ -4,14 +4,17 @@ import java.io.*;
 import java.util.UUID;
 
 import RWAPI.Character.ClientData;
+import RWAPI.items.weapon.WeaponBase;
 import RWAPI.main;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.Character.monster.entity.EntityMinion;
 import RWAPI.util.DamageSource;
+import RWAPI.util.EntityStatus;
 import RWAPI.util.GameStatus;
 import RWAPI.util.DamageSource.EnemyStatHandler;
 import RWAPI.util.NetworkUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
@@ -20,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -54,6 +58,14 @@ public class GameBaseEvent{
 			event.setCanceled(true);
 			return;
 		}
+		if(event.getEntityPlayer() instanceof EntityPlayerMP){
+			EntityPlayerMP player = (EntityPlayerMP) event.getEntityPlayer();
+			PlayerData data = main.game.getPlayerData(player.getUniqueID());
+			if(data.getStatus() != EntityStatus.ALIVE){
+				event.setCanceled(true);
+				return;
+			}
+		}
 	}
 	
 	@SubscribeEvent
@@ -81,6 +93,14 @@ public class GameBaseEvent{
 			for(PlayerData player : main.game.player().values()) {
 				NetworkUtil.sendTo(player.getPlayer(), player.getData(), "data");
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void PlayerDropEvent(ItemTossEvent event){
+		if(event.getEntityItem().getItem().getItem() instanceof WeaponBase){
+			event.getPlayer().inventory.setInventorySlotContents(0,event.getEntityItem().getItem());
+			event.setCanceled(true);
 		}
 	}
 }

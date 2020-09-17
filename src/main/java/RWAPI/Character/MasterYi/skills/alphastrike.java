@@ -23,7 +23,7 @@ public class alphastrike extends MasterYiS {
     private cool cool;
 
     protected final double[] skilldamage={
-            90,93,96,102,105,1110,113,116,119,122,125,128
+            90,93,96,102,105,111,113,116,119,122,125,128
     };
     protected final double[] skillAdcoe={
             1,1,1,1,1,1,1,1,1,1,1,1

@@ -1,20 +1,16 @@
 package RWAPI.game;
 
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import RWAPI.Character.Skill;
 import RWAPI.game.event.*;
 import RWAPI.main;
 import RWAPI.Character.PlayerData;
-import RWAPI.util.ClassList;
-import RWAPI.util.EntityStatus;
-import RWAPI.util.GameStatus;
-import RWAPI.util.spawnpoint;
+import RWAPI.util.*;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -37,12 +33,15 @@ public class Game {
 	private int timer;
 
 	private EventHandler event;
+
+	private MinecraftServer server;
 	
 	
 	//constructor
-	public Game() {
+	public Game(MinecraftServer server) {
 		playerList = new HashMap<UUID,PlayerData>();
 		event = new EventHandler();
+		this.server = server;
 	}
 	//
 	
@@ -156,12 +155,101 @@ public class Game {
 					}
 
 				}
+
+				if((currentTime % 2400) == 0){
+					List<PlayerData> killlist = new ArrayList<PlayerData>(main.game.player().values());
+					List<PlayerData> totlalist = new ArrayList<PlayerData>(main.game.player().values());
+					killlist.sort(new Comparator<PlayerData>() {
+						@Override
+						public int compare(PlayerData o1, PlayerData o2) {
+							if(o1.getKill() < o2.getKill()){
+								return 1;
+							}
+							else if(o1.getKill() == o2.getKill()){
+								return 0;
+							}
+							else
+								return -1;
+						}
+					});
+					totlalist.sort(new Comparator<PlayerData>() {
+						@Override
+						public int compare(PlayerData o1, PlayerData o2) {
+							if(o1.getTotal_score() < o2.getTotal_score()){
+								return 1;
+							}
+							else if(o1.getTotal_score() == o2.getTotal_score()){
+								return 0;
+							}
+							else
+								return -1;
+						}
+					});
+					server.getPlayerList().sendMessage(new TextComponentString("현재 킬 순위 : "));
+					int i = 1;
+					for(PlayerData player : totlalist){
+						server.getPlayerList().sendMessage(new TextComponentString(i+"위. "+player.getPlayer().getName()));
+						i++;
+					}
+					server.getPlayerList().sendMessage(new TextComponentString("----------------"));
+					server.getPlayerList().sendMessage(new TextComponentString("현재 점수 순위 : "));
+					i = 1;
+					for(PlayerData player : totlalist){
+						server.getPlayerList().sendMessage(new TextComponentString(i+"위. "+player.getPlayer().getName()));
+						i++;
+					}
+				}
 				timer++;
 			}
 
 			@Override
 			public void TimerEnd() {
 				// TODO Auto-generated method stub
+				List<PlayerData> killlist = new ArrayList<PlayerData>(main.game.player().values());
+				List<PlayerData> totlalist = new ArrayList<PlayerData>(main.game.player().values());
+				killlist.sort(new Comparator<PlayerData>() {
+					@Override
+					public int compare(PlayerData o1, PlayerData o2) {
+						if(o1.getKill() < o2.getKill()){
+							return 1;
+						}
+						else if(o1.getKill() == o2.getKill()){
+							return 0;
+						}
+						else
+							return -1;
+					}
+				});
+				killlist.get(0).setTotal_score(killlist.get(0).getTotal_score() + 5);
+				totlalist.sort(new Comparator<PlayerData>() {
+					@Override
+					public int compare(PlayerData o1, PlayerData o2) {
+						if(o1.getTotal_score() < o2.getTotal_score()){
+							return 1;
+						}
+						else if(o1.getTotal_score() == o2.getTotal_score()){
+							return 0;
+						}
+						else
+							return -1;
+					}
+				});
+				server.getPlayerList().sendMessage(new TextComponentString("최종 순위 : "));
+				for(int i = 0; i < totlalist.size();i++){
+					PlayerData data = totlalist.get(i);
+					if(i == 0){
+						data.getPlayer().connection.setPlayerLocation(Reference._1stPOS[0], Reference._1stPOS[1], Reference._1stPOS[2], data.getPlayer().rotationYaw, data.getPlayer().rotationPitch);
+					}else if(i == 1){
+						data.getPlayer().connection.setPlayerLocation(Reference._2ndPOS[0], Reference._2ndPOS[1], Reference._2ndPOS[2], data.getPlayer().rotationYaw, data.getPlayer().rotationPitch);
+					}else if(i == 2){
+						data.getPlayer().connection.setPlayerLocation(Reference._3rdPOS[0], Reference._3rdPOS[1], Reference._3rdPOS[2], data.getPlayer().rotationYaw, data.getPlayer().rotationPitch);
+					}
+					else{
+						data.getPlayer().connection.setPlayerLocation(Reference.OTHERPOS[0], Reference.OTHERPOS[1], Reference.OTHERPOS[2], data.getPlayer().rotationYaw, data.getPlayer().rotationPitch);
+					}
+					server.getPlayerList().sendMessage(new TextComponentString((i+1)+"위. "+data.getPlayer().getName() + " 최종 점수 : " + String.format("%.2f",data.getTotal_score()) + (killlist.get(0).equals(data)?" 킬 순위 1등":"")));
+				}
+
 				for(PlayerData player : main.game.player().values()) {
 					player.resetgame();
 				}
@@ -185,7 +273,7 @@ public class Game {
 				player.getPlayer().inventory.clear();
 				player.getPlayer().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1024);
 				player.getPlayer().getFoodStats().setFoodLevel(20);
-				player.getPlayer().connection.setPlayerLocation(-56,53,107, player.getPlayer().rotationYaw, player.getPlayer().rotationPitch);
+				player.getPlayer().connection.setPlayerLocation(Reference.SHOPPOS[0],Reference.SHOPPOS[1],Reference.SHOPPOS[2], player.getPlayer().rotationYaw, player.getPlayer().rotationPitch);
 				player.resetInvhandler();
 			}
 			game.GameTimer = (new Timer(main.game,30) {
@@ -215,7 +303,7 @@ public class Game {
 		private Game game;
 		
 		private int MaxTime;
-		private int currentTime = 0;
+		protected int currentTime = 0;
 		
 		public Timer(Game game, int Timer) {
 			this.game = game;

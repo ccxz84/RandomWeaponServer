@@ -35,6 +35,10 @@ public class flurry implements Skill {
             3,3,3,3,3,3,3,3,3,3,3,3
     };
 
+    protected final double[] skilldamage2={
+        20,20,20,20,20,30,30,30,40,40,40,40
+    };
+
     public flurry(PlayerClass _class){
         this._class = _class;
     }
@@ -91,6 +95,10 @@ public class flurry implements Skill {
         return this.cooldown;
     }
 
+    public double[] getSkilldamage2(){
+        return this.skilldamage2;
+    }
+
     class cool extends CooldownHandler {
         double attackspeed;
 
@@ -118,6 +126,9 @@ public class flurry implements Skill {
         {
             if(event.getEntityPlayer().getUniqueID().equals(player.getUniqueID())) {
                 attack--;
+                PlayerData data = main.game.getPlayerData(player.getUniqueID());
+                int lv = data.getLevel();
+                data.setCurrentMana(data.getCurrentMana() + skilldamage2[lv-1]);
                 if(attack <= 0) {
                     this.data.setAttackSpeed(this.data.getAttackSpeed() - (float)this.attackspeed);
                     data.setCool(this.id, 0);

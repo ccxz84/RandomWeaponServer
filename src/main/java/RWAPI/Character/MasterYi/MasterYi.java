@@ -219,23 +219,23 @@ public class MasterYi extends PlayerClass {
 		data.getPlayer().sendMessage(new TextComponentString("마스터 이 : "));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"2연속 공격"+
 				TextFormatting.RESET +" : 매 4회 공격마다 "+
-				TextFormatting.RED+ (0.5 * data.getAd())+
+				TextFormatting.RED+ String.format("%.1f",(0.5 * data.getAd()))+
 				TextFormatting.RESET + "(공격력의 50%) 의 추가 데미지를 입힙니다. 적을 처치 시, 모든 스킬의 쿨타임이 70% 감소합니다."));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"일격 필살"+
 				TextFormatting.RESET +" : 마스터 이가 주변에 있는 4명의 적에게 " +
-				skills[1].getskilldamage()[lv-1] +"(+"+TextFormatting.RED +(skills[1].getskillAdcoe()[lv-1]*data.getAd()) +
+				skills[1].getskilldamage()[lv-1] +"(+"+TextFormatting.RED +String.format("%.1f",(skills[1].getskillAdcoe()[lv-1]*data.getAd())) +
 				TextFormatting.RESET + ")의 데미지를 입힙니다. 주변의 적이 4명이 아닌경우 마지막 공격 대상에게 나머지 공격을 적중합니다. 쿨타임 " +
 				TextFormatting.GOLD +skills[1].getcooldown()[lv-1]+
 				TextFormatting.RESET+"초" ));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"명상"+
-				TextFormatting.RESET +" : 마스터 이가 정신을 집중해 4초동안 "+ (skills[2].getskilldamage()[lv-1]*160)+ "(+"+
-				TextFormatting.BLUE +(skills[2].getskillApcoe()[lv-1] * data.getAp()*160)
+				TextFormatting.RESET +" : 마스터 이가 정신을 집중해 4초동안 "+ String.format("%.1f",(skills[2].getskilldamage()[lv-1]*160))+ "(+"+
+				TextFormatting.BLUE +String.format("%.1f",(skills[2].getskillApcoe()[lv-1] * data.getAp()*160))
 				+TextFormatting.RESET+") 체력을 회복합니다. 쿨타임 : " +
 				TextFormatting.GOLD +skills[2].getcooldown()[lv-1]+
 				TextFormatting.RESET+"초"));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"우주류 검술" +
 				TextFormatting.RESET +" : 마스터 이가 5초동안 기본 공격으로 " + skills[3].getskilldamage()[lv-1] +"(+"+
-				TextFormatting.RED +(skills[3].getskillAdcoe()[lv-1] * data.getAd())+
+				TextFormatting.RED +String.format("%.1f",(skills[3].getskillAdcoe()[lv-1] * data.getAd()))+
 				TextFormatting.RESET +")의 데미지를 입힙니다. 쿨타임 : "+
 				TextFormatting.GOLD + skills[3].getcooldown()[lv-1]+
 				TextFormatting.RESET+"초"));

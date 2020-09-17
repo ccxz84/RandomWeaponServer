@@ -5,6 +5,7 @@ import RWAPI.Character.Leesin.entity.EntityUmpa;
 import RWAPI.init.handler.GuiHandler;
 import RWAPI.util.GameStatus;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +26,13 @@ public class EntityMerchant extends EntityLiving{
 		return super.processInteract(player, hand);
 		
 	}
+
+	@Override
+	public boolean canAttackClass(Class<? extends EntityLivingBase> cls) {
+		return false;
+	}
+
+
 
 	@Override
 	public void onEntityUpdate() {
