@@ -24,7 +24,7 @@ public class Kindlegem extends ItemBase {
 	protected void initstat() {
 		this.stat[0] = 0;
 		this.stat[1] = 0;
-		this.stat[2] = 400;
+		this.stat[2] = 650;
 		this.stat[3] = 0;
 		this.stat[4] = 0;
 		this.stat[5] = 0;

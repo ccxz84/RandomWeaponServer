@@ -15,6 +15,8 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class Huntersmachete extends ItemBase {
 
+	private final double expPer = 50;
+
 	public Huntersmachete(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
@@ -33,7 +35,7 @@ public class Huntersmachete extends ItemBase {
 	protected void initstat() {
 		this.stat[0] = 0;
 		this.stat[1] = 0;
-		this.stat[2] = 50;
+		this.stat[2] = 100;
 		this.stat[3] = 0;
 		this.stat[4] = 0;
 		this.stat[5] = 0;
@@ -47,7 +49,7 @@ public class Huntersmachete extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","미니언 처치 시, 50%의 경험치를 추가로 제공합니다.");
+		nbt.setString("basic","미니언 처치 시, "+String.format("%.0f",expPer)+"%의 경험치를 추가로 제공합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -93,7 +95,7 @@ public class Huntersmachete extends ItemBase {
 				EntityData data = source.getAttacker();
 
 				if(data.equals(this.data)){
-					((PlayerData)data).setExp(source.getTarget().getDeathExp()/2 + ((PlayerData)data).getExp());
+					((PlayerData)data).setExp((source.getTarget().getDeathExp()/100) * expPer + ((PlayerData)data).getExp());
 				}
 			}
 

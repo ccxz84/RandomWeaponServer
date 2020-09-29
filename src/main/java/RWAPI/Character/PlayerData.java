@@ -13,19 +13,13 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.client.CPacketHeldItemChange;
-import net.minecraft.network.play.server.SPacketHeldItemChange;
-import net.minecraft.util.EnumHand;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import org.lwjgl.input.Keyboard;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class PlayerData extends EntityData{
 	
@@ -56,6 +50,11 @@ public class PlayerData extends EntityData{
 	private InventoryChangeHandle invhandler;
 
 	private ItemBase.handler itemhandler[] = new ItemBase.handler[8];
+
+	private boolean firstDeath = false;
+
+	private double baseAttackspeed = 0;
+	private double plusAttackspeed = 0;
 
 	public void setRespawn(){
 		setStatus(EntityStatus.RESPANW);
@@ -92,8 +91,12 @@ public class PlayerData extends EntityData{
 		return this.data.regenMana;
 	}
 
-	public double getAttackSpeed() {
-		return this.data.attackSpeed;
+	public double getBaseAttackspeed(){
+		return this.baseAttackspeed;
+	}
+
+	public double getPlusAttackspeed(){
+		return this.plusAttackspeed;
 	}
 
 	public int getGold() {
@@ -128,6 +131,13 @@ public class PlayerData extends EntityData{
 		return cs;
 	}
 
+	public boolean getfirstDeath(){
+		return firstDeath;
+	}
+
+	public double gettotalAttackSpeed() {
+		return this.data.attackSpeed;
+	}
 	/*Getter End
 	 * 
 	 */
@@ -142,7 +152,7 @@ public class PlayerData extends EntityData{
 	}
 
 	public void setExp(double exp) {
-		if(this.data.level >= 12) {
+		if(this.data.level >= ExpList.values().length) {
 			return;
 		}
 		if(exp >= ExpList.getLevelMaxExp(this.data.level)) {
@@ -164,10 +174,16 @@ public class PlayerData extends EntityData{
 		this.data.regenMana = regenMana;
 	}
 
-	public void setAttackSpeed(double attackSpeed) {
-		this.data.attackSpeed = attackSpeed;
+	public void setPlusAttackspeed(double plusAttackspeed){
+		this.plusAttackspeed = plusAttackspeed;
+		this.data.attackSpeed = this.baseAttackspeed + this.baseAttackspeed * plusAttackspeed;
 		player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(4.0f*this.data.attackSpeed);
-		System.out.println(player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getBaseValue());
+	}
+
+	public void setBaseAttackspeed(double baseAttackspeed){
+		this.baseAttackspeed = baseAttackspeed;
+		this.data.attackSpeed = this.baseAttackspeed + this.baseAttackspeed * plusAttackspeed;
+		player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(4.0f*this.data.attackSpeed);
 	}
 
 	public void setGold(int gold) {
@@ -237,6 +253,10 @@ public class PlayerData extends EntityData{
 		this.keyinputListener = new keyinputListener(this);
 	}
 
+	public void setFirstDeath(boolean death){
+		this.firstDeath = death;
+	}
+
 	public void inputKey(int keynum){
 		if(this.keyinputListener != null){
 			this.keyinputListener.inputkey(keynum);
@@ -280,13 +300,13 @@ public class PlayerData extends EntityData{
 		this.setMaxMana(_class.default_mana);
 		this.setCurrentHealth(_class.default_health);
 		this.setCurrentMana(_class.default_mana);
-		this.setAttackSpeed(_class.attackSpeed);
+		this.setBaseAttackspeed(_class.attackSpeed);
 		this.setAd(_class.default_ad);
 		this.setAp(_class.default_ap);
 		this.setRegenHealth(_class.default_regenHealth);
 		this.setRegenMana(_class.default_regenMana);
 		this.setMove(_class.default_move);
-		this.setGold(5000);
+		this.setGold(500);
 		for(int i = 0; i< 5; i++) {
 			this.setSkill(i, (SkillBase) _class.skillSet[i]);
 		}
@@ -367,6 +387,8 @@ public class PlayerData extends EntityData{
 		}
 	}
 
+
+
 	abstract class timer{
 		protected int timer = 0;
 		protected int time;
@@ -430,7 +452,7 @@ public class PlayerData extends EntityData{
 
 		public shopTimer(PlayerData data, EntityPlayerMP player){
 			super(Reference.SHOPUSAGE_TIME,data,player);
-
+			data.setCurrentHealth(data.getMaxHealth());
 		}
 
 		@SubscribeEvent
@@ -478,7 +500,10 @@ public class PlayerData extends EntityData{
 			data.getPlayer().connection.setPlayerLocation(point[0], point[1], point[2], data.getPlayer().rotationYaw, data.getPlayer().rotationPitch);
 			data.setStatus(EntityStatus.ALIVE);
 			data.getData().setTimerFlag("게임 시간");
-			data.setRespawn_time(data.getRespawn_time()+Reference.RESPAWNFUND_TIME);
+			if(!(data.getRespawn_time() > 60)){
+				data.setRespawn_time(data.getRespawn_time()+5);
+			}
+
 		}
 
 		public void remove(){
@@ -538,8 +563,10 @@ public class PlayerData extends EntityData{
 					}
 
 					if(inven.getStackInSlot(i).equals(ItemStack.EMPTY)){
-						ItemChangeEvent(data,BaseEvent.EventPriority.HIGHTEST);
-						ItemChangeEvent(data,BaseEvent.EventPriority.HIGH);
+						if(!(data.getPlayer().inventory.mainInventory.get(i).getItem() instanceof ItemBase))
+							continue;
+						ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.HIGHTEST);
+						ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.HIGH);
 						if(!(data.getPlayer().inventory.mainInventory.get(i).getItem() instanceof ItemBase))
 							data.getPlayer().inventory.mainInventory.set(i,ItemStack.EMPTY);
 						else{
@@ -555,21 +582,25 @@ public class PlayerData extends EntityData{
 							data.setCurrentMana(data.getCurrentMana() + stat[3]);
 
 							data.setMove(data.getMove() + stat[4]);
-							data.setAttackSpeed(data.getAttackSpeed() + stat[5]);
+							data.setPlusAttackspeed(data.getPlusAttackspeed() + stat[5]);
 							data.setRegenHealth(data.getRegenHealth() + stat[6]);
 							data.setRegenMana(data.getRegenMana() + stat[7]);
 
-							ItemChangeEvent(data,BaseEvent.EventPriority.NORMAL);
-							ItemChangeEvent(data,BaseEvent.EventPriority.LOW);
+							ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.NORMAL);
+							ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.LOW);
 							setItemhandler(i-1, item.create_handler(data,data.getPlayer().inventory.mainInventory.get(i)));
-							ItemChangeEvent(data,BaseEvent.EventPriority.LOWEST);
+							ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.LOWEST);
 						}
 					}
 					if(data.getPlayer().inventory.mainInventory.get(i).equals(ItemStack.EMPTY)){
-						ItemChangeEvent(data,BaseEvent.EventPriority.HIGHTEST);
-						ItemChangeEvent(data,BaseEvent.EventPriority.HIGH);
+
+						if(!(inven.mainInventory.get(i).getItem() instanceof ItemBase))
+							continue;
+						ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.HIGHTEST);
+						ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.HIGH);
 						ItemBase item = (ItemBase) inven.mainInventory.get(i).getItem();
 						double[] stat = item.getstat();
+
 						data.setAd(data.getAd() - stat[0]);
 						data.setAp(data.getAp() - stat[1]);
 
@@ -580,15 +611,15 @@ public class PlayerData extends EntityData{
 						data.setCurrentMana(data.getCurrentMana() - stat[3]);
 
 						data.setMove(data.getMove() - stat[4]);
-						data.setAttackSpeed(data.getAttackSpeed() - stat[5]);
+						data.setPlusAttackspeed(data.getPlusAttackspeed() - stat[5]);
 						data.setRegenHealth(data.getRegenHealth() - stat[6]);
 						data.setRegenMana(data.getRegenMana() - stat[7]);
-						ItemChangeEvent(data,BaseEvent.EventPriority.NORMAL);
-						ItemChangeEvent(data,BaseEvent.EventPriority.LOW);
+						ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.NORMAL);
+						ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.LOW);
 						if(data.itemhandler[i-1] != null)
 							data.itemhandler[i-1].removeHandler();
 						setItemhandler(i-1,null);
-						ItemChangeEvent(data,BaseEvent.EventPriority.LOWEST);
+						ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.LOWEST);
 					}
 				}
 			}
@@ -596,8 +627,8 @@ public class PlayerData extends EntityData{
 
 		}
 
-		private void ItemChangeEvent(PlayerData data, BaseEvent.EventPriority priority) {
-			ItemChangeEventHandle.ItemChangeEvent event = new ItemChangeEventHandle.ItemChangeEvent(data);
+		private void ItemChangeEvent(PlayerData data,ItemStack stack,boolean flag, BaseEvent.EventPriority priority) {
+			ItemChangeEventHandle.ItemChangeEvent event = new ItemChangeEventHandle.ItemChangeEvent(data,stack,flag);
 			main.game.getEventHandler().RunEvent(event,priority);
 		}
 
@@ -621,11 +652,11 @@ public class PlayerData extends EntityData{
 
 	private class keyinputListener{
 		private PlayerData data;
-		private List<Integer> list;
+		private Queue<Integer> list;
 
 		private keyinputListener(PlayerData data){
 			this.data = data;
-			list = new ArrayList<Integer>();
+			list = new ArrayDeque<Integer>();
 			MinecraftForge.EVENT_BUS.register(this);
 		}
 
@@ -635,11 +666,14 @@ public class PlayerData extends EntityData{
 
 		@SubscribeEvent
 		public void keyRunEvent(TickEvent.ServerTickEvent event){
-			Iterator<Integer> iterator = list.iterator();
 
-			while(iterator.hasNext()){
-				int key = iterator.next();
-				if(key == Keyboard.KEY_Z || key == Keyboard.KEY_X || key == Keyboard.KEY_C|| key == Keyboard.KEY_V && data.getStatus() == EntityStatus.ALIVE){
+			while(!list.isEmpty()){
+				int key = list.poll();
+				if(key == -1 && data.getStatus() == EntityStatus.ALIVE) {
+					data.get_class().clickEvent(data);
+					//System.out.println(data.getPlayer().getCooledAttackStrength(0f));
+				}
+				else if(key == Keyboard.KEY_Z || key == Keyboard.KEY_X || key == Keyboard.KEY_C|| key == Keyboard.KEY_V && data.getStatus() == EntityStatus.ALIVE){
 					data.get_class().ActiveSkill(key-Keyboard.KEY_Z+1,data.getPlayer());
 				}
 				else if(key ==Keyboard.KEY_B){
@@ -652,7 +686,6 @@ public class PlayerData extends EntityData{
 						}
 					}
 				}
-				iterator.remove();
 			}
 		}
 

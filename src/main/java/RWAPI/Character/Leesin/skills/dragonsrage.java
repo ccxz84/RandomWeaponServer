@@ -8,13 +8,18 @@ import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.Character.Skill;
 import RWAPI.main;
 import RWAPI.util.DamageSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import java.util.Random;
 
 public class dragonsrage implements Skill {
 
@@ -22,20 +27,107 @@ public class dragonsrage implements Skill {
     private cool handler;
 
     protected final double[] skilldamage={
-            250, 250, 270, 270, 270, 330, 330, 330, 350, 350, 350, 380
+            250,
+            250,
+            290,
+            290,
+            290,
+            340,
+            340,
+            340,
+            400,
+            400,
+            400,
+            450,
+            450,
+            450,
+            460,
+            460,
+            460,
+            470
     };
     protected final double[] skillAdcoe={
-            1.2, 1.2, 1.3, 1.3, 1.3, 1.5, 1.5, 1.5, 1.6, 1.6, 1.6, 1.8
+            0.8,
+            0.8,
+            0.8,
+            0.8,
+            0.8,
+            0.8,
+            0.8,
+            0.8,
+            0.9,
+            0.9,
+            0.9,
+            0.9,
+            0.9,
+            0.9,
+            0.9,
+            0.9,
+            0.9,
+            0.9
+
     };
     protected final double[] skillApcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
     protected final double[] skillcost={
-            30,30,30,30,30,35,35,35,40,40,40,45
+            40,
+            40,
+            40,
+            40,
+            40,
+            45,
+            45,
+            45,
+            45,
+            45,
+            45,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50,
+            50
     };
 
     protected final double[] cooldown = {
-            90, 90, 80, 80, 80, 65, 65, 65, 60, 60, 60, 45
+            100,
+            100,
+            95,
+            95,
+            95,
+            90,
+            90,
+            90,
+            85,
+            85,
+            85,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80
+
     };
 
     public dragonsrage(PlayerClass _class){
@@ -95,6 +187,8 @@ public class dragonsrage implements Skill {
         {
             if(event.getEntityPlayer().getUniqueID().equals(player.getUniqueID())) {
                 EntityLivingBase etarget = (EntityLivingBase) event.getTarget();
+                System.out.println("test");
+                etarget.hurtResistantTime = 0;
                 etarget.knockBack(event.getEntityLiving(), 2, -event.getEntityPlayer().getLookVec().x, -event.getEntityPlayer().getLookVec().z);
                 PlayerData attacker = main.game.getPlayerData(event.getEntityPlayer().getUniqueID());
                 EntityData target = (etarget instanceof EntityPlayer) ? main.game.getPlayerData(etarget.getUniqueID()) : ((AbstractMob)etarget).getData();

@@ -24,21 +24,129 @@ public class highlander extends MasterYiS {
     }
 
     protected final double[][] skilldamage={
-            {30,30,40,40,40,55,55,55,65,65,65,80},
-            {0.3,0.3,0.4,0.4,0.4,0.55,0.55,0.55,0.65,0.65,0.65,0.85}
+            {
+                    10,
+                    10,
+                    10,
+                    10,
+                    10,
+                    12,
+                    12,
+                    12,
+                    14,
+                    14,
+                    14,
+                    16,
+                    16,
+                    16,
+                    20,
+                    20,
+                    20,
+                    20
+            },
+            {
+                    0.2,
+                    0.2,
+                    0.2,
+                    0.2,
+                    0.2,
+                    0.25,
+                    0.25,
+                    0.25,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.4,
+                    0.4,
+                    0.4,
+                    0.4
+            }
     };
     protected final double[] skillAdcoe={
-            0.3,0.3,0.3,0.3,0.3,0.4,0.4,0.4,0.4,0.4,0.4,0.6
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+
     };
     protected final double[] skillApcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+
     };
     protected final double[] skillcost={
-            100,100,150,150,150,200,200,200,250,250,250,250
+            100,
+            100,
+            100,
+            100,
+            100,
+            120,
+            120,
+            120,
+            120,
+            120,
+            120,
+            140,
+            140,
+            140,
+            140,
+            140,
+            140,
+            140
     };
 
     protected final double[] cooldown = {
-            85,85,80,80,80,75,75,75,70,70,70,60
+            70,
+            70,
+            70,
+            70,
+            70,
+            65,
+            65,
+            65,
+            65,
+            65,
+            65,
+            60,
+            60,
+            60,
+            60,
+            60,
+            60,
+            60
     };
 
     @Override
@@ -57,6 +165,7 @@ public class highlander extends MasterYiS {
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
             cool = new cool(cooldown[lv-1],4, (EntityPlayerMP) player);
             buft = new bufftimer(7, (EntityPlayerMP) player,(float)skilldamage[0][lv-1],(float)skilldamage[1][lv-1]);
+            data.addBuff(buft);
             data.nonWorking = false;
         }
     }
@@ -101,9 +210,10 @@ public class highlander extends MasterYiS {
         public void resetEffect() {
             // TODO Auto-generated method stub
             PlayerData data = main.game.getPlayerData(player.getUniqueID());
-            data.setAttackSpeed(data.getAttackSpeed()-this.data[1]);
+            data.setPlusAttackspeed(data.getPlusAttackspeed()-this.data[1]);
             data.setMove(data.getMove() - this.data[0]);
             main.game.getEventHandler().unregister(handle);
+            data.removeBuff(this);
             Skillset(player);
         }
 
@@ -111,7 +221,7 @@ public class highlander extends MasterYiS {
         public void setEffect() {
             // TODO Auto-generated method stub
             PlayerData data = main.game.getPlayerData(player.getUniqueID());
-            data.setAttackSpeed(this.data[1] + data.getAttackSpeed());
+            data.setPlusAttackspeed(this.data[1] + data.getPlusAttackspeed());
             handle = new eventHandle(data);
             main.game.getEventHandler().register(handle);
             data.setMove(this.data[0] + data.getMove());

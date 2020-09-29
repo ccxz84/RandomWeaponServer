@@ -24,7 +24,7 @@ public class Caulfieldswarhammer extends ItemBase {
 	@Override
 	protected void initstat() {
 		this.stat[0] = 25;
-		this.stat[2] = 70;
+		this.stat[2] = 120;
 		this.stat[3] = 50;
 	}
 }

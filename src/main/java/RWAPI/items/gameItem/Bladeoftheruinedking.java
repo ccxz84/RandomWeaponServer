@@ -18,6 +18,9 @@ import java.io.ObjectOutputStream;
 
 public class Bladeoftheruinedking extends ItemBase {
 
+	private final double vamPercent = 15;
+	private final double reducePercent = 6;
+
 	public Bladeoftheruinedking(String name) {
 		super(name);
 		
@@ -40,13 +43,13 @@ public class Bladeoftheruinedking extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","기본 공격 시, 데미지의 15% 회복합니다.\n대상의 최대 체력의 8%에 해당하는 추가 피해를 입힙니다.");
+		nbt.setString("basic","기본 공격 시, 데미지의 "+String.format("%.0f",vamPercent)+"% 회복합니다.\n대상의 현재 체력의 "+String.format("%.0f",reducePercent)+"%에 해당하는 추가 피해를 입힙니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 40;
+		this.stat[0] = 30;
 		this.stat[5] = 0.4;
 	}
 
@@ -93,12 +96,12 @@ public class Bladeoftheruinedking extends ItemBase {
 
 				if(data.equals(this.data) && source instanceof AttackDamageSource){
 					if(source.getAttacker().getCurrentHealth() < source.getAttacker().getMaxHealth()){
-						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * 10 > source.getAttacker().getMaxHealth() ?
-								source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * 10;
+						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent > source.getAttacker().getMaxHealth() ?
+								source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent;
 						source.getAttacker().setCurrentHealth(heal);
 					}
-					double aDamage = source.getTarget().getCurrentHealth() - (source.getTarget().getMaxHealth()/100)*8 > 0 ?
-							(source.getTarget().getMaxHealth()/100)*8 : source.getTarget().getCurrentHealth();
+					double aDamage = source.getTarget().getCurrentHealth() - (source.getTarget().getCurrentHealth()/100)*reducePercent > 0 ?
+							(source.getTarget().getCurrentHealth()/100)*reducePercent : source.getTarget().getCurrentHealth();
 					source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() - aDamage);
 					//System.out.println("추가 데미지 : " + aDamage);
 

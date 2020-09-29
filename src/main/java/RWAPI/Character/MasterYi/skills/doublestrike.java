@@ -8,6 +8,7 @@ import RWAPI.Character.Skill;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
 import RWAPI.util.DamageSource;
+import RWAPI.util.EntityStatus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EntityDamageSourceIndirect;
@@ -21,7 +22,28 @@ public class doublestrike implements Skill {
 
     private MasterYi _class;
     private MasterYiS[] skills = new MasterYiS[4];
-    private highlanderCool handler = null;
+    private doublestrikeHan handler = null;
+
+    protected final double[] skillAdcoe={
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.35,
+            0.35,
+            0.35,
+            0.35,
+            0.4,
+            0.4,
+            0.45,
+            0.45,
+            0.45,
+            0.45,
+            0.45,
+            0.45,
+            0.45
+    };
 
     public doublestrike(MasterYi _class){
         this._class = _class;
@@ -45,20 +67,23 @@ public class doublestrike implements Skill {
             skills[i-1] = (MasterYiS) _class.getSkill(i);
         }
         data.setCool(0,0);
-        handler = new highlanderCool(0,0, (EntityPlayerMP) player,skills);
+        handler = new doublestrikeHan(0,0, (EntityPlayerMP) player,skills);
     }
 
     @Override
     public void skillEnd(EntityPlayer player) {
-        handler.closeHandler();
+        if(handler != null){
+            handler.closeHandler();
+        }
+
     }
 
-    class highlanderCool extends CooldownHandler {
+    class doublestrikeHan extends CooldownHandler {
 
         private MasterYiS[] skills;
         private int attack;
 
-        public highlanderCool(double cool, int id, EntityPlayerMP player, MasterYiS[] skills) {
+        public doublestrikeHan(double cool, int id, EntityPlayerMP player, MasterYiS[] skills) {
             super(cool, id, player);
             this.skills = skills;
             this.attack = 0;
@@ -83,9 +108,10 @@ public class doublestrike implements Skill {
                     if(target != null && !(event.getSource() instanceof EntityDamageSourceIndirect)) {
                         attack = (attack+1) % 4;
                         PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
-                        if(attack == 3 && target.getCurrentHealth() > 0){
+                        int lv = attacker.getLevel();
+                        if((attack == 3 && target.getCurrentHealth() > 0 && target.getStatus() == EntityStatus.ALIVE)){
                             DamageSource source = DamageSource.causeAttack(attacker,target);
-                            source.setDamage(attacker.getAd()/2);
+                            source.setDamage(attacker.getAd() * skillAdcoe[lv-1]);
                             attack = (attack+1) % 4;
 
                             DamageSource.attackDamage(source,true);
@@ -114,7 +140,7 @@ public class doublestrike implements Skill {
 
     @Override
     public double[] getskillAdcoe() {
-        return null;
+        return this.skillAdcoe;
     }
 
     @Override

@@ -25,7 +25,8 @@ public class Game {
 	public static GameStatus start = GameStatus.NONE;
 	
 	public Timer GameTimer = null;
-	
+	public MinecraftServer server;
+
 	private HashMap<UUID,PlayerData> playerList;
 	private HashMap<UUID,PlayerData> playerReady;
 	
@@ -33,8 +34,6 @@ public class Game {
 	private int timer;
 
 	private EventHandler event;
-
-	private MinecraftServer server;
 	
 	
 	//constructor
@@ -121,21 +120,24 @@ public class Game {
 			double[] point = spawnpoint.getRandomSpawnPoint();
 			player.getPlayer().connection.setPlayerLocation(point[0], point[1], point[2], player.getPlayer().rotationYaw, player.getPlayer().rotationPitch);
 			player.getData().setTimerFlag("게임 시간");
-			for(Skill skill :player.get_class().getSkills()){
-				skill.Skillset(player.getPlayer());
-			}
+			player.get_class().initSkill(player);
 			player.setKeyinputListener();
 
 		}
 		
-		this.initTimer("게임 시간", 900);
-		this.GameTimer = (new Timer(main.game, 900) {
+		this.initTimer("게임 시간", Reference.GAMEITME);
+		this.GameTimer = (new Timer(main.game, Reference.GAMEITME) {
 			int timer = 0;
 
 			@Override
 			public void gameTimer(ServerTickEvent event) {
 				// TODO Auto-generated method stub
 				super.gameTimer(event);
+				if(currentTime == 2400){
+					for(PlayerData player : main.game.player().values()) {
+						player.setFirstDeath(true);
+					}
+				}
 				for(PlayerData player : main.game.player().values()) {
 
 					if(player.getStatus().equals(EntityStatus.ALIVE)){
@@ -259,24 +261,30 @@ public class Game {
 
 		MinecraftForge.EVENT_BUS.register(GameTimer);
 	}
-	
-	
+
+	public void endgame() {
+		this.GameTimer.TimerEnd();
+	}
+
+
 	public static class gameStart{
 		
 		private Game game;
 		
 		public gameStart(Game game) {
 			this.game = game;
-			game.initTimer("게임 대기 시간", 30);
+			game.initTimer("게임 대기 시간", Reference.GAMEWAITTIME);
 			for(PlayerData player : main.game.player().values()) {
 				player.getData().setTimerFlag("게임 대기 시간");
 				player.getPlayer().inventory.clear();
 				player.getPlayer().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1024);
 				player.getPlayer().getFoodStats().setFoodLevel(20);
+				player.getPlayer().maxHurtResistantTime = 0;
 				player.getPlayer().connection.setPlayerLocation(Reference.SHOPPOS[0],Reference.SHOPPOS[1],Reference.SHOPPOS[2], player.getPlayer().rotationYaw, player.getPlayer().rotationPitch);
 				player.resetInvhandler();
+
 			}
-			game.GameTimer = (new Timer(main.game,30) {
+			game.GameTimer = (new Timer(main.game,Reference.GAMEWAITTIME) {
 				@Override
 				public void gameTimer(ServerTickEvent event) {
 					// TODO Auto-generated method stub
@@ -296,6 +304,7 @@ public class Game {
 		
 		public void appointedClass(PlayerData data) throws CloneNotSupportedException {
 			data.appointed_Class(ClassList.getRandomClass());
+			data.get_class().preinitSkill(data);
 		}
 	}
 	

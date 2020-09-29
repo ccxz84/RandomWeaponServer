@@ -23,7 +23,7 @@ public class Crystallinebracer extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[2] = 300;
+		this.stat[2] = 500;
 		this.stat[6] = 1.4;
 	}
 

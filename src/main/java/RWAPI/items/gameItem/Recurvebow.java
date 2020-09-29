@@ -15,6 +15,8 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class Recurvebow extends ItemBase {
 
+	private final double plusdmg = 10;
+
 	public Recurvebow(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
@@ -48,7 +50,7 @@ public class Recurvebow extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","기본 공격 시, 추가로 10의 피해를 입힙니다.");
+		nbt.setString("basic","기본 공격 시, 추가로 "+String.format("%.0f",plusdmg)+"의 피해를 입힙니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -94,8 +96,8 @@ public class Recurvebow extends ItemBase {
 				EntityData data = source.getAttacker();
 
 				if(data.equals(this.data) && source instanceof AttackDamageSource){
-					double aDamage = source.getTarget().getCurrentHealth() - 10 > 0 ?
-							10 : source.getTarget().getCurrentHealth();
+					double aDamage = source.getTarget().getCurrentHealth() - plusdmg > 0 ?
+							plusdmg : source.getTarget().getCurrentHealth();
 					source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() - aDamage);
 					//System.out.println("추가 데미지 : " + aDamage);
 

@@ -38,14 +38,7 @@ public class EntityUmpa extends SkillEntity {
 
 	public EntityUmpa(World worldIn, EntityPlayer playerin, float skilldamage) {
 		super(worldIn,playerin, skilldamage);
-		//System.out.println("pre : " +this.getEntityBoundingBox().maxX);
-		//this.setEntityBoundingBox(this.getEntityBoundingBox().expand(100,100,100));
-		//System.out.println("current : " +this.getEntityBoundingBox().maxX);
-		System.out.println("max X : " +this.getEntityBoundingBox().maxX+" min X : " +this.getEntityBoundingBox().minX
-				+" max Y : " +this.getEntityBoundingBox().maxY
-				+" min Y : " +this.getEntityBoundingBox().minY
-				+" max Z : " +this.getEntityBoundingBox().maxZ
-				+" min Z : " +this.getEntityBoundingBox().minZ);
+		this.d1 = 0.75d;
 	}
 
 	@Override
@@ -72,98 +65,14 @@ public class EntityUmpa extends SkillEntity {
 
 	@Override
 	public void onUpdate() {
-		this.setEntityBoundingBox(this.getEntityBoundingBox().grow(10d));
-		if(ticksExisted >30) {
+		if(ticksExisted >20) {
 			setDead();
 		}
 		super.onUpdate();
-		//System.out.println("motion x : " + motionX + "motion Y : " + motionY +"motion z : " + motionZ);
-		test();
-		/*System.out.println("max X : " +this.getEntityBoundingBox().maxX+" min X : " +this.getEntityBoundingBox().minX
-				+" max Y : " +this.getEntityBoundingBox().maxY
-				+" min Y : " +this.getEntityBoundingBox().minY
-				+" max Z : " +this.getEntityBoundingBox().maxZ
-				+" min Z : " +this.getEntityBoundingBox().minZ);*/
 		
 	}
 
-	public void test(){
 
-		Vec3d vec3d = new Vec3d(this.posX, this.posY, this.posZ);
-		Vec3d vec3d1 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-		RayTraceResult raytraceresult = this.world.rayTraceBlocks(vec3d, vec3d1);
-		vec3d = new Vec3d(this.posX, this.posY, this.posZ);
-		vec3d1 = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-
-		if (raytraceresult != null)
-		{
-			vec3d1 = new Vec3d(raytraceresult.hitVec.x, raytraceresult.hitVec.y, raytraceresult.hitVec.z);
-		}
-
-		Entity entity = null;
-		List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(this.motionX, this.motionY, this.motionZ).grow(1.0D));
-		/*System.out.println("max X : " +box.maxX+" min X : " +box.minX
-				+" max Y : " +box.maxY
-				+" min Y : " +box.minY
-				+" max Z : " +box.maxZ
-				+" min Z : " +box.minZ);*/
-		double d0 = 0.0D;
-		boolean flag = false;
-
-		for (int i = 0; i < list.size(); ++i)
-		{
-			Entity entity1 = list.get(i);
-
-			if (entity1.canBeCollidedWith())
-			{
-
-				if (entity1 == this.ignoreEntity)
-				{
-					flag = true;
-				}
-				else if (this.thrower != null && this.ticksExisted < 2 && this.ignoreEntity == null)
-				{
-					this.ignoreEntity = entity1;
-					flag = true;
-				}
-				else
-				{
-					flag = false;
-					AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(1.0D);
-					RayTraceResult raytraceresult1 = axisalignedbb.calculateIntercept(vec3d, vec3d1);
-
-					if (raytraceresult1 != null)
-					{
-						double d1 = vec3d.squareDistanceTo(raytraceresult1.hitVec);
-
-						if (d1 < d0 || d0 == 0.0D)
-						{
-							entity = entity1;
-							d0 = d1;
-						}
-					}
-				}
-			}
-		}
-
-		if (entity != null)
-		{
-			raytraceresult = new RayTraceResult(entity);
-		}
-
-		if (raytraceresult != null)
-		{
-			System.out.println(raytraceresult.entityHit);
-			if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK && this.world.getBlockState(raytraceresult.getBlockPos()).getBlock() == Blocks.PORTAL)
-			{
-				this.setPortal(raytraceresult.getBlockPos());
-			}
-			else if (!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
-			{
-				this.onImpact1(raytraceresult);
-			}
-		}
-	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -178,8 +87,7 @@ public class EntityUmpa extends SkillEntity {
 		
 	}
 
-	private void onImpact1(RayTraceResult result){
-		System.out.println("impact : " +this.getEntityBoundingBox().maxX);
+	protected void SkillImpact(RayTraceResult result){
 		if(result.entityHit != null && result.entityHit instanceof EntityLivingBase) {
 			if(main.game == null )
 				setDead();

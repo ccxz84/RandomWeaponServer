@@ -2,11 +2,13 @@ package RWAPI.util;
 
 import java.util.Random;
 
+import RWAPI.Character.ForceMaster.ForceMaster;
 import RWAPI.Character.PlayerClass;
 
 public enum ClassList {
 	Leesin(new RWAPI.Character.Leesin.Leesin()),
-	MasterYi(new RWAPI.Character.MasterYi.MasterYi());
+	MasterYi(new RWAPI.Character.MasterYi.MasterYi()),
+	ForceMaster(new ForceMaster());
 	
 	
 	PlayerClass _class;
@@ -21,7 +23,7 @@ public enum ClassList {
 	}
 	
 	public static PlayerClass getRandomClass() throws CloneNotSupportedException {
-        //return (PlayerClass) values()[random.nextInt(values().length)].getPlayerClass().copyClass();
-		return MasterYi.getPlayerClass().copyClass();
+        return (PlayerClass) values()[random.nextInt(values().length)].getPlayerClass().copyClass();
+		//return ForceMaster.getPlayerClass().copyClass();
     }
 }

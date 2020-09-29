@@ -16,6 +16,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class Spiritvisage extends ItemBase {
 
+	private final double passiveTime = 5;
+	private final double plusHregen = 15;
+
 	public Spiritvisage(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
@@ -35,7 +38,7 @@ public class Spiritvisage extends ItemBase {
 	protected void initstat() {
 		this.stat[0] = 0;
 		this.stat[1] = 0;
-		this.stat[2] = 800;
+		this.stat[2] = 1000;
 		this.stat[3] = 0;
 		this.stat[4] = 0;
 		this.stat[5] = 0;
@@ -49,7 +52,7 @@ public class Spiritvisage extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","피격 시, 5초 동안 체력 재생이 7 증가합니다.");
+		nbt.setString("basic","피격 시,"+passiveTime+" 초 동안 체력 재생이 "+String.format("%.1f",plusHregen)+" 증가합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -97,7 +100,7 @@ public class Spiritvisage extends ItemBase {
 				EntityData target = source.getTarget();
 
 				if(target.equals(this.data) && timer == null){
-					timer = new Timer(data, 5,this);
+					timer = new Timer(data, (int) passiveTime,this);
 				}
 			}
 
@@ -122,7 +125,7 @@ public class Spiritvisage extends ItemBase {
 				MaxTime = time;
 				this.eventClass = eventClass;
 				MinecraftForge.EVENT_BUS.register(this);
-				data.setRegenHealth(data.getRegenHealth() + 7);
+				data.setRegenHealth(data.getRegenHealth() + plusHregen);
 			}
 
 			@SubscribeEvent
@@ -135,7 +138,7 @@ public class Spiritvisage extends ItemBase {
 			}
 
 			private void TimerEnd() {
-				data.setRegenHealth(data.getRegenHealth() - 7);
+				data.setRegenHealth(data.getRegenHealth() - plusHregen);
 				eventClass.resetTimer();
 			}
 		}

@@ -16,6 +16,8 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class Rabadonsdeathcap extends ItemBase {
 
+	private final double APPer = 40;
+
 	public Rabadonsdeathcap(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
@@ -49,7 +51,7 @@ public class Rabadonsdeathcap extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","주문력이 추가로 40% 증가합니다.");
+		nbt.setString("basic","주문력이 추가로 "+String.format("%.0f",APPer)+"% 증가합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -98,10 +100,10 @@ public class Rabadonsdeathcap extends ItemBase {
 
 				if(data.equals(data)){
 					if(this.priority == EventPriority.HIGHTEST){
-						data.setAp(data.getAp()-(data.getAp()/140) * 40);
+						data.setAp(data.getAp()-(data.getAp()/140) * APPer);
 					}
 					else if(this.priority == EventPriority.LOWEST){
-						data.setAp(data.getAp()+(data.getAp()/100) * 40);
+						data.setAp(data.getAp()+(data.getAp()/100) * APPer);
 					}
 				}
 			}

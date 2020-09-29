@@ -26,26 +26,177 @@ public class sonicwave implements Skill {
     private ResonatingTimer timer;
 
     protected final double[][] skilldamage={
-            {100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122},
-            {110, 114, 118, 122, 124, 130, 132, 134, 136, 138, 140, 200}
+            {
+                    98,
+                    100,
+                    102,
+                    104,
+                    106,
+                    109,
+                    112,
+                    115,
+                    118,
+                    121,
+                    124,
+                    128,
+                    132,
+                    136,
+                    140,
+                    144,
+                    148,
+                    152
+
+            },
+            {
+                    80,
+                    82,
+                    84,
+                    86,
+                    88,
+                    100,
+                    102,
+                    104,
+                    106,
+                    108,
+                    110,
+                    113,
+                    116,
+                    119,
+                    122,
+                    125,
+                    128,
+                    131
+            }
     };
     protected final double[] skillAdcoe={
-            0.4, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.8
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.6,
+            0.6,
+            0.6,
+            0.6,
+            0.6,
+            0.6,
+            0.6
     };
     protected final double[] skillApcoe={
             0,0,0,0,0,0,0,0,0,0,0,0
     };
     protected final double[][] skillcost={
-            {50,50,55,55,55,70,70,70,75,75,75,90},
-            {50,50,55,55,55,70,70,70,75,75,75,90}
+            {
+                    50,
+                    50,
+                    50,
+                    50,
+                    50,
+                    60,
+                    60,
+                    60,
+                    70,
+                    70,
+                    70,
+                    80,
+                    80,
+                    80,
+                    80,
+                    80,
+                    80,
+                    80
+            },
+            {
+                    50,
+                    50,
+                    50,
+                    50,
+                    50,
+                    55,
+                    55,
+                    55,
+                    60,
+                    60,
+                    60,
+                    65,
+                    65,
+                    65,
+                    65,
+                    65,
+                    65,
+                    65
+
+            }
     };
     protected final double[][] skill1coe={
-            {0.4, 0.4, 0.4, 0.4, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5},
-            {0.4, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.7}
+            {
+                    0.4,
+                    0.4,
+                    0.4,
+                    0.4,
+                    0.4,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.6,
+                    0.6,
+                    0.6,
+                    0.6,
+                    0.6,
+                    0.6,
+                    0.6
+            },
+            {
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35
+            }
     };
 
     protected final double[] cooldown = {
-            8, 7.9, 7.9, 7.7, 7.4, 6.5, 6.3, 6.1, 6, 5.8, 5.6, 5
+            11,
+            11,
+            11,
+            11,
+            11,
+            10,
+            10,
+            10,
+            9,
+            9,
+            9,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+
     };
 
     public sonicwave(Leesin _class){
@@ -67,7 +218,7 @@ public class sonicwave implements Skill {
             System.out.println(player.getName());
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[0][lv-1]));
             EntityUmpa ls = new EntityUmpa(player.world,player,(float) (skilldamage[0][lv-1]+ skillAdcoe[lv-1] * data.getAd()));
-            ls.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.7f, 0);
+            ls.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.9f, 0);
             //ls.posY -= 1;
             ls.setNoGravity(true);
             player.world.spawnEntity(ls);

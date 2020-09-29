@@ -5,17 +5,23 @@ import RWAPI.Character.PlayerClass;
 public enum ExpList {
 	LV1(0),
 	LV2(150),
-	LV3(220),
-	LV4(270),
-	LV5(320),
-	LV6(600),
-	LV7(700),
-	LV8(800),
-	LV9(900),
-	LV10(1000),
-	LV11(1100),
-	LV12(1600),
-	LV13(0);
+	LV3(350),
+	LV4(450),
+	LV5(550),
+	LV6(700),
+	LV7(850),
+	LV8(950),
+	LV9(1050),
+	LV10(1150),
+	LV11(1400),
+	LV12(1500),
+	LV13(1600),
+	LV14(1700),
+	LV15(1800),
+	LV16(1900),
+	LV17(2000),
+	LV18(0),
+	;
 	
 	private float exp;
 	

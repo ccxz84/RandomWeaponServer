@@ -1,9 +1,12 @@
 package RWAPI.Character;
 
+import RWAPI.Character.buff.Buff;
 import RWAPI.util.DamageSource.EnemyStatHandler;
 import RWAPI.util.EntityStatus;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityData implements Serializable {
 
@@ -19,6 +22,10 @@ public class EntityData implements Serializable {
 	private EntityStatus status;
 	protected double kill_cs = 0;
 
+	private List<Buff> buffList;
+
+	protected boolean godmode = false;
+
 	public EntityData(double MaxHealth, double ad,double deathexp,double deathgold, String name,double kill_cs) {
 		this.data.MaxHealth = MaxHealth;
 		this.data.CurrentHealth = this.data.MaxHealth;
@@ -29,6 +36,7 @@ public class EntityData implements Serializable {
 		this.name = name;
 		this.status = EntityStatus.ALIVE;
 		this.kill_cs = kill_cs;
+		buffList = new ArrayList<Buff>();
 	}
 
 	/* Getter
@@ -91,6 +99,17 @@ public class EntityData implements Serializable {
 		return this.kill_cs;
 	}
 
+	public boolean getgodmod(){
+		return this.godmode;
+	}
+
+
+
+
+	public Buff getbuff(int idx){
+		return buffList.get(idx);
+	}
+
 	/*Getter End
 	 *
 	 */
@@ -145,6 +164,22 @@ public class EntityData implements Serializable {
 
 	public void setStatus(EntityStatus stat){
 		this.status = stat;
+	}
+
+	public void setGodmode(boolean godmode){
+		this.godmode = godmode;
+	}
+
+	public void addBuff(Buff buff){
+		this.buffList.add(buff);
+	}
+
+	public void setBuff(int idx, Buff buff){
+		this.buffList.set(idx,buff);
+	}
+
+	public void removeBuff(Buff buff){
+		this.buffList.remove(buff);
 	}
 
 	/*Setter End

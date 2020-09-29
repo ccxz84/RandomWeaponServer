@@ -42,7 +42,7 @@ public class EntityAlpha extends SkillEntity {
     }
 
     private void growHitbox() {
-        mini =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(2,0,2));
+        mini =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(2.5,0.75,2.5));
         mini.remove(this.thrower);
     }
 
@@ -59,7 +59,9 @@ public class EntityAlpha extends SkillEntity {
             return;
         }
 
-        NetworkUtil.sendToAll(targetData.getData(),"alphastrike");
+        if(targetData != null){
+            NetworkUtil.sendToAll(targetData.getData(),"alphastrike");
+        }
         //main.network.sendToAll(new AlphastrikePacket(targetData.getData()));
         if(ticksExisted > 41) {
             setDead();

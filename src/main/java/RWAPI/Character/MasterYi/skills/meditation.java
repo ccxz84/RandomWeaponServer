@@ -1,13 +1,15 @@
 package RWAPI.Character.MasterYi.skills;
 
-import RWAPI.Character.CooldownHandler;
-import RWAPI.Character.PlayerClass;
+import RWAPI.Character.*;
+import RWAPI.game.event.PlayerAttackEventHandle;
+import RWAPI.items.gameItem.Recurvebow;
 import RWAPI.main;
-import RWAPI.Character.PlayerData;
-import RWAPI.Character.Skill;
 import RWAPI.Character.buff.Buff;
+import RWAPI.util.AttackDamageSource;
+import RWAPI.util.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.stats.StatBase;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -17,25 +19,114 @@ public class meditation extends MasterYiS {
     private bufftimer buft;
     private cool cool;
 
+
     public meditation(PlayerClass _class){
         this._class = _class;
     }
 
     protected final double[] skilldamage={
-            1,1.1,1.2,1.3,1.4,1.6,1.7,1.8,1.9,2,2.2,2.4
+            0.2,
+            0.25,
+            0.3,
+            0.35,
+            0.4,
+            0.45,
+            0.5,
+            0.55,
+            0.6,
+            0.65,
+            0.7,
+            0.8,
+            0.9,
+            1,
+            1.1,
+            1.2,
+            1.3,
+            1.4
+
     };
     protected final double[] skillAdcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
     protected final double[] skillApcoe={
-            0.2,0.2,0.2,0.2,0.2,0.3,0.3,0.3,0.3,0.3,0.3,0.4
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.2,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3
+
     };
     protected final double[] skillcost={
-            50,50,50,50,50,70,70,70,70,70,70,80
+            50,
+            50,
+            50,
+            50,
+            50,
+            70,
+            70,
+            70,
+            70,
+            70,
+            70,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80
     };
 
     protected final double[] cooldown = {
-            28,27,26,25,24,22,21,20,19,18,17,15
+            25,
+            25,
+            25,
+            25,
+            25,
+            22,
+            22,
+            22,
+            19,
+            19,
+            19,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16,
+            16
+
     };
 
     @Override
@@ -53,7 +144,7 @@ public class meditation extends MasterYiS {
             data.nonWorking = false;
             cool = new cool(cooldown[lv-1],2, (EntityPlayerMP) player);
             buft =  new bufftimer(4, (EntityPlayerMP) player,(float)skilldamage[lv-1] + ((float)skillApcoe[lv-1] * data.getAp())/40);
-
+            data.addBuff(buft);
         }
     }
 
@@ -91,10 +182,19 @@ public class meditation extends MasterYiS {
 
         int x,y,z;
         PlayerData pdata;
+        EventClass eventClass;
 
         public bufftimer(double duration, EntityPlayerMP player, double... data) {
             super(duration, player, data);
+            registerAttackEvent();
         }
+
+        private void registerAttackEvent() {
+            this.eventClass = new EventClass(pdata);
+            main.game.getEventHandler().register(this.eventClass);
+        }
+
+
 
         @Override
         public void setEffect() {
@@ -102,10 +202,16 @@ public class meditation extends MasterYiS {
             y = (int) player.posY;
             z = (int) player.posZ;
             pdata = main.game.getPlayerData(player.getUniqueID());
+            pdata.getPlayer().maxHurtResistantTime = 10;
+            pdata.getPlayer().hurtResistantTime = 10;
         }
 
         @Override
         public void resetEffect() {
+            pdata.getPlayer().hurtResistantTime=0;
+            pdata.getPlayer().maxHurtResistantTime = 0;
+            main.game.getEventHandler().unregister(eventClass);
+            pdata.removeBuff(this);
             Skillset(player);
         }
 
@@ -116,7 +222,39 @@ public class meditation extends MasterYiS {
                 MinecraftForge.EVENT_BUS.unregister(this);
             }
             super.BuffTimer(event);
-            pdata.setCurrentHealth((pdata.getCurrentHealth() + data[0]) > pdata.getMaxHealth() ? pdata.getMaxHealth() : pdata.getCurrentHealth() + data[0]);
+            pdata.getPlayer().hurtResistantTime = 10;
+            double dehealth = pdata.getMaxHealth() - pdata.getCurrentHealth();
+            pdata.setCurrentHealth((pdata.getCurrentHealth() + data[0] + dehealth * 0.003) > pdata.getMaxHealth() ? pdata.getMaxHealth() : pdata.getCurrentHealth() + data[0] + dehealth * 0.003);
+        }
+
+        private class EventClass extends PlayerAttackEventHandle {
+            PlayerData data;
+
+            public EventClass(PlayerData data) {
+                super();
+                this.data = data;
+            }
+
+            @Override
+            public void EventListener(AbstractBaseEvent event) {
+                DamageSource source = ((PlayerAttackEvent)event).getSource();
+                double damage = source.getDamage();
+
+                EntityData target = source.getTarget();
+
+                if(data.equals(target)){
+                    double health = source.getTarget().getCurrentHealth() + (((PlayerAttackEvent) event).getSource().getDamage() * 0.2) > 0 ?
+                            (((PlayerAttackEvent) event).getSource().getDamage() * 0.2) : source.getTarget().getMaxHealth();
+                    source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() + health);
+                    //System.out.println("추가 데미지 : " + aDamage);
+
+                }
+            }
+
+            @Override
+            public EventPriority getPriority() {
+                return EventPriority.NORMAL;
+            }
         }
     }
 

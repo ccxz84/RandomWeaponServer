@@ -22,6 +22,6 @@ public class Bootsofswiftness extends ItemBase implements ItemBase.shoes {
 
 	@Override
 	protected void initstat() {
-		this.stat[4] = 45;
+		this.stat[4] = 25;
 	}
 }

@@ -19,7 +19,24 @@ public class flurry implements Skill {
     private cool handler;
 
     protected final double[] skilldamage={
-            0.5, 0.54, 0.59, 0.6, 0.6, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.75
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3
     };
     protected final double[] skillAdcoe={
             0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -32,11 +49,45 @@ public class flurry implements Skill {
     };
 
     protected final double[] cooldown = {
-            3,3,3,3,3,3,3,3,3,3,3,3
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
     };
 
     protected final double[] skilldamage2={
-        20,20,20,20,20,30,30,30,40,40,40,40
+            20,
+            20,
+            20,
+            20,
+            20,
+            25,
+            25,
+            25,
+            30,
+            30,
+            30,
+            40,
+            40,
+            40,
+            40,
+            40,
+            40,
+            40
     };
 
     public flurry(PlayerClass _class){
@@ -106,14 +157,14 @@ public class flurry implements Skill {
             super(cool, id, player);
             this.attackspeed = attackspeed;
             this.data = main.game.getPlayerData(player.getUniqueID());
-            data.setAttackSpeed(this.data.getAttackSpeed() + this.attackspeed);
+            data.setPlusAttackspeed(this.data.getPlusAttackspeed() + this.attackspeed);
         }
 
         @SubscribeEvent
         public void skillTimer(TickEvent.ServerTickEvent event) throws Throwable {
             if(skillTimer > cooldown) {
                 data.setCool(this.id, 0);
-                this.data.setAttackSpeed(this.data.getAttackSpeed() - this.attackspeed);
+                this.data.setPlusAttackspeed(this.data.getPlusAttackspeed() - this.attackspeed);
                 MinecraftForge.EVENT_BUS.unregister(this);
                 handler = null;
                 return;
@@ -130,7 +181,7 @@ public class flurry implements Skill {
                 int lv = data.getLevel();
                 data.setCurrentMana(data.getCurrentMana() + skilldamage2[lv-1]);
                 if(attack <= 0) {
-                    this.data.setAttackSpeed(this.data.getAttackSpeed() - (float)this.attackspeed);
+                    this.data.setPlusAttackspeed(this.data.getPlusAttackspeed() - (float)this.attackspeed);
                     data.setCool(this.id, 0);
                     handler = null;
                     MinecraftForge.EVENT_BUS.unregister(this);

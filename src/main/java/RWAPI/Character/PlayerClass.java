@@ -96,7 +96,7 @@ public class PlayerClass implements Cloneable {
 		data.setCurrentHealth(data.getMaxHealth());
 		data.setCurrentMana(data.getMaxMana());
 		data.setMove((float) (data.getMove() - matrix.move[lv-1] + matrix.move[lv]));
-		data.setAttackSpeed((float) (data.getAttackSpeed() - matrix.attackspeed[lv-1] + matrix.attackspeed[lv]));
+		data.setBaseAttackspeed(matrix.attackspeed[lv]);
 	}
 	
 	
@@ -129,6 +129,18 @@ public class PlayerClass implements Cloneable {
 	}
 
 	public void classInformation(PlayerData data){
+
+	}
+
+	public void clickEvent(PlayerData data){
+
+	}
+
+	public void initSkill(PlayerData data){
+
+	}
+
+	public void preinitSkill(PlayerData data){
 
 	}
 }

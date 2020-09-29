@@ -24,7 +24,7 @@ public class Doransring extends ItemBase {
 	protected void initstat() {
 		this.stat[0] = 0;
 		this.stat[1] = 15;
-		this.stat[2] = 120;
+		this.stat[2] = 170;
 		this.stat[3] = 0;
 		this.stat[4] = 0;
 		this.stat[5] = 0;

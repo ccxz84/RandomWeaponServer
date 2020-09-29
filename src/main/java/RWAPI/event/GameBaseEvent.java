@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.UUID;
 
 import RWAPI.Character.ClientData;
+import RWAPI.Character.shop.entity.EntityMerchant;
 import RWAPI.items.weapon.WeaponBase;
 import RWAPI.main;
 import RWAPI.Character.PlayerData;
@@ -39,8 +40,12 @@ public class GameBaseEvent{
 	@SubscribeEvent
 	public void attackEvent(LivingAttackEvent event)
 	{
+		if(event.getEntityLiving() instanceof EntityMerchant){
+			if(event.isCancelable())
+				event.setCanceled(true);
+			return;
+		}
 		if(event.getEntity() instanceof EntityPlayer && event.getSource().getTrueSource() instanceof EntityPlayer && !(event.getSource() instanceof EntityDamageSourceIndirect)) {
-
 			PlayerData target = main.game.getPlayerData(event.getEntityLiving().getUniqueID());
 			PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
 			if(attacker.nonWorking == false){

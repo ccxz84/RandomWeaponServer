@@ -23,20 +23,107 @@ public class wujustyle extends MasterYiS {
     }
 
     protected final double[] skilldamage={
-            18,20,22,24,26,30,32,34,36,38,41,45
+            18,
+            20,
+            22,
+            24,
+            26,
+            30,
+            33,
+            36,
+            40,
+            43,
+            46,
+            49,
+            53,
+            57,
+            61,
+            65,
+            69,
+            73
     };
     protected final double[] skillAdcoe={
-            0.3,0.3,0.3,0.3,0.3,0.4,0.4,0.4,0.4,0.4,0.4,0.6
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4
+
     };
     protected final double[] skillApcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
     protected final double[] skillcost={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
 
     protected final double[] cooldown = {
-            18,17.5,17,16.5,16,15,14.5,14,13.5,13,12,11
+            18,
+            18,
+            18,
+            18,
+            18,
+            15,
+            15,
+            15,
+            12,
+            12,
+            12,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9
+
     };
 
     @Override
@@ -52,6 +139,7 @@ public class wujustyle extends MasterYiS {
             data.nonWorking = true;
             cool = new cool(cooldown[lv-1],3, (EntityPlayerMP) player);
             buft = new bufftimer(5, (EntityPlayerMP) player,skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd());
+            data.addBuff(buft);
             data.nonWorking = false;
         }
     }
@@ -99,6 +187,8 @@ public class wujustyle extends MasterYiS {
         @Override
         public void resetEffect() {
             // TODO Auto-generated method stub
+            PlayerData pdata = main.game.getPlayerData(player.getUniqueID());
+            pdata.removeBuff(buft);
             Skillset(player);
         }
 

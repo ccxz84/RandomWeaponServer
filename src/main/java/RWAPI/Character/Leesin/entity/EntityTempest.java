@@ -23,7 +23,7 @@ public class EntityTempest extends SkillEntity{
 		// TODO Auto-generated constructor stub
 	}
 	
-	public EntityTempest(World worldIn, EntityLivingBase playerin, float skilldamage) {
+	public EntityTempest(World worldIn, EntityLivingBase playerin, double skilldamage) {
 		super(worldIn,playerin, skilldamage);
 		this.posX = playerin.posX;
 		this.posY = playerin.posY;

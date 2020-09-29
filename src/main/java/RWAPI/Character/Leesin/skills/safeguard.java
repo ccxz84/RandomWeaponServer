@@ -17,20 +17,108 @@ public class safeguard implements Skill {
     private cool handler;
 
     protected final double[] skilldamage={
-            0,0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+
     };
     protected final double[] skillAdcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
     protected final double[] skillApcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
     protected final double[] skillcost={
-            50,50,55,55,55,70,70,70,75,75,75,90
+            50,
+            50,
+            50,
+            50,
+            50,
+            60,
+            60,
+            60,
+            70,
+            70,
+            70,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80
+
     };
 
     protected final double[] cooldown = {
-            12, 11.7, 11.5, 11.2, 11, 10, 10.9, 10.8, 10.5, 10.2, 10, 10
+            13,
+            13,
+            13,
+            13,
+            13,
+            11,
+            11,
+            11,
+            9,
+            9,
+            9,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+
     };
 
     public safeguard(PlayerClass _class){
@@ -73,11 +161,11 @@ public class safeguard implements Skill {
 
         @Override
         public void skillTimer(TickEvent.ServerTickEvent event) throws Throwable {
-            if((this.skillTimer < 20)) {
+            if((this.skillTimer < 15)) {
                 float x = (float) player.getLookVec().x;
                 float y = (float) player.getLookVec().y;
                 float z = (float) player.getLookVec().z;
-                BlockPos pos = new BlockPos(player.posX + x * 0.5,player.posY + y * 0.5,player.posZ + z * 0.5);
+                BlockPos pos = new BlockPos(player.posX + x * 0.7,player.posY + y * 0.7,player.posZ + z * 0.7);
                 if(player.onGround && y < 0) {
                     y=0;
                 }
@@ -87,7 +175,7 @@ public class safeguard implements Skill {
                     z=0;
                 }
                 //player.move(MoverType.SELF, x * 0.5, y * 0.5, z * 0.5);
-                player.connection.setPlayerLocation(player.posX + x * 0.5, player.posY + y * 0.5, player.posZ + z * 0.5, player.rotationYaw, player.rotationPitch);
+                player.connection.setPlayerLocation(player.posX + x * 0.7, player.posY + y * 0.7, player.posZ + z * 0.7, player.rotationYaw, player.rotationPitch);
             }
             super.skillTimer(event);
         }

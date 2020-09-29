@@ -16,6 +16,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class Youmuusghostblade extends ItemBase {
 
+	private final int duration = 10;
+	private final double plusMove = 25;
+	private final int cooltime = 20;
+
 	public Youmuusghostblade (String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
@@ -35,7 +39,7 @@ public class Youmuusghostblade extends ItemBase {
 	protected void initstat() {
 		this.stat[0] = 60;
 		this.stat[1] = 0;
-		this.stat[2] = 200;
+		this.stat[2] = 300;
 		this.stat[3] = 100;
 		this.stat[4] = 0;
 		this.stat[5] = 0;
@@ -49,7 +53,7 @@ public class Youmuusghostblade extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("usage","사용 시, 5초동안 이동속도가 20 증가합니다. (쿨타임 30초)");
+		nbt.setString("usage","사용 시, "+duration+"초동안 이동속도가 "+String.format("%.0f",plusMove)+" 증가합니다. (쿨타임 "+cooltime+"초)");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -71,7 +75,7 @@ public class Youmuusghostblade extends ItemBase {
 			this.stack = stack;
 			boolean flag = NetworkUtil.getStackData(stack,"buff") != null ? (boolean)NetworkUtil.getStackData(stack,"buff"):false;
 			if(flag){
-				cool = new cool(30,stack);
+				cool = new cool(cooltime,stack);
 				NetworkUtil.setStackData(stack,false,"buff");
 			}
 			else if(NetworkUtil.getCool(stack) != 0){
@@ -95,7 +99,7 @@ public class Youmuusghostblade extends ItemBase {
 		private void bufreset(){
 			buff = null;
 			NetworkUtil.setStackData(stack,false,"buff");
-			cool = new cool(30,stack);
+			cool = new cool(cooltime,stack);
 		}
 
 		private void coolreset(){
@@ -107,7 +111,7 @@ public class Youmuusghostblade extends ItemBase {
 				return;
 			}
 
-			buff = new buff(5,data.getPlayer());
+			buff = new buff(duration,data.getPlayer());
 		}
 
 		private class buff extends Buff {
@@ -128,12 +132,12 @@ public class Youmuusghostblade extends ItemBase {
 			@Override
 			public void setEffect(){
 				this.pdata = main.game.getPlayerData(player.getUniqueID());
-				this.pdata.setMove(this.pdata.getMove() + 20);
+				this.pdata.setMove(this.pdata.getMove() + plusMove);
 			}
 
 			@Override
 			public void resetEffect() {
-				this.pdata.setMove(this.pdata.getMove() - 20);
+				this.pdata.setMove(this.pdata.getMove() - plusMove);
 				NetworkUtil.setCool(stack,0);
 				bufreset();
 			}

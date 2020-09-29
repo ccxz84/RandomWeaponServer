@@ -15,6 +15,8 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class Deathfiregrasp extends ItemBase {
 
+	private final double reducePercent = 10;
+
 	public Deathfiregrasp(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
@@ -49,7 +51,7 @@ public class Deathfiregrasp extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","스킬 공격 시, 대상의 최대 체력의 8%에 해당하는 추가 피해를 입힙니다.");
+		nbt.setString("basic","스킬 공격 시, 대상의 현재 체력의 "+String.format("%.0f",this.reducePercent)+"%에 해당하는 추가 피해를 입힙니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -95,8 +97,8 @@ public class Deathfiregrasp extends ItemBase {
 				EntityData data = source.getAttacker();
 
 				if(data.equals(this.data) && source instanceof SkillDamageSource){
-					double aDamage = source.getTarget().getCurrentHealth() - (source.getTarget().getMaxHealth()/100)*8 > 0 ?
-							(source.getTarget().getMaxHealth()/100)*8 : source.getTarget().getCurrentHealth();
+					double aDamage = source.getTarget().getCurrentHealth() - (source.getTarget().getCurrentHealth()/100)*reducePercent > 0 ?
+							(source.getTarget().getCurrentHealth()/100)*reducePercent : source.getTarget().getCurrentHealth();
 					source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() - aDamage);
 					//System.out.println("추가 데미지 : " + aDamage);
 

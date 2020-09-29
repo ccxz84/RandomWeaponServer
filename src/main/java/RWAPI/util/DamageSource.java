@@ -11,6 +11,7 @@ import RWAPI.main;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
@@ -46,6 +47,10 @@ public class DamageSource {
 			return;
 		}
 
+		if(target.getgodmod()){
+			return;
+		}
+
 		double hp = target.getCurrentHealth();
 		if(hp <= 0)
 			return;
@@ -61,17 +66,31 @@ public class DamageSource {
 			if(attacker instanceof PlayerData) {
 				((PlayerData) attacker).setGold((int) target.getDeattGold() + ((PlayerData) attacker).getGold());
 				((PlayerData) attacker).setExp(target.getDeathExp() + ((PlayerData) attacker).getExp());
+
 				if(target instanceof PlayerData){
 					((PlayerData)attacker).setKill(((PlayerData)attacker).getKill()+1);
 					((PlayerData)target).setDeath(((PlayerData)target).getDeath()+1);
+					main.game.server.getPlayerList().sendMessage(new TextComponentString(attacker.getName() + "이(가) " + target.getName() +"을(를) 처치하였습니다."));
 				}
 				else{
 					((PlayerData)attacker).setCs((int) (((PlayerData)attacker).getCs()+1),target.getKill_cs()) ;
+					if(main.game.gettimer() > 600){
+						((PlayerData)attacker).setCs((int) (((PlayerData)attacker).getCs()+1),target.getKill_cs()*1) ;
+						((PlayerData)attacker).setGold(((PlayerData)attacker).getGold()+15) ;
+					}
+					else if(main.game.gettimer() > 300){
+						((PlayerData)attacker).setCs((int) (((PlayerData)attacker).getCs()+1),target.getKill_cs()*0.6) ;
+						((PlayerData)attacker).setGold(((PlayerData)attacker).getGold()+5) ;
+					}
+				}
+				if(((PlayerData) attacker).getKill() >= 15){
+					main.game.endgame();
 				}
 			}
 			if(target instanceof PlayerData) {
 				Playerdeath(((PlayerData) target));
 				((PlayerData) target).setRespawn();
+
 			}
 		}
 	}
@@ -102,6 +121,11 @@ public class DamageSource {
 	}
 
 	private static void Playerdeath(PlayerData target) {
+
+		/*if(target.getfirstDeath() == false){
+			target.setFirstDeath(true);
+			return;
+		}
 		EntityPlayerMP player = target.getPlayer();
 
 		for(int i = 1; i<9;i++) {
@@ -114,7 +138,7 @@ public class DamageSource {
 			ItemStack stack = player.inventory.getStackInSlot(i);
 			player.dropItem(stack, true, false);
 			player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
-		}
+		}*/
 
 	}
 

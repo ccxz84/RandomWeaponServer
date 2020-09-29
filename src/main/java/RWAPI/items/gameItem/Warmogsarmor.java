@@ -16,6 +16,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class Warmogsarmor extends ItemBase {
 
+	private final int passivTime = 3;
+	private final double plusHregen = 25;
+
 	public Warmogsarmor(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
@@ -36,7 +39,7 @@ public class Warmogsarmor extends ItemBase {
 	protected void initstat() {
 		this.stat[0] = 0;
 		this.stat[1] = 0;
-		this.stat[2] = 1200;
+		this.stat[2] = 1500;
 		this.stat[3] = 0;
 		this.stat[4] = 0;
 		this.stat[5] = 0;
@@ -50,7 +53,7 @@ public class Warmogsarmor extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","3초간 피격되지 않은 경우, 체력 재생이 15 증가합니다.");
+		nbt.setString("basic",passivTime+"초간 피격되지 않은 경우, 체력 재생이 "+String.format("%.1f",plusHregen)+" 증가합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -106,7 +109,7 @@ public class Warmogsarmor extends ItemBase {
 
 				if(target.equals(this.data)){
 					if(timer == null){
-						timer = new Timer(data, 3,this);
+						timer = new Timer(data, passivTime,this);
 						resetregen();
 					}
 					else{
@@ -116,13 +119,11 @@ public class Warmogsarmor extends ItemBase {
 			}
 
 			public void setregen(){
-				System.out.println("워모그 체력 증가");
-				data.setRegenHealth(data.getRegenHealth() + 15);
+				data.setRegenHealth(data.getRegenHealth() + plusHregen);
 			}
 
 			public void resetregen(){
-				System.out.println("워모그 체력 감소");
-				data.setRegenHealth(data.getRegenHealth() - 15);
+				data.setRegenHealth(data.getRegenHealth() - plusHregen);
 			}
 
 			@Override

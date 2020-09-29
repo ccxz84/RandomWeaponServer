@@ -31,17 +31,17 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 public class MasterYi extends PlayerClass {
 	
 	public MasterYi(){
-		default_health = 780;
+		default_health = 800;
 		default_mana = 200;
 		
-		default_ad = 78;
+		default_ad = 76;
 		default_ap = 0;
-		default_move = 110;
+		default_move = 120;
 		
-		default_regenHealth = 1.2f;
-		default_regenMana = 2.3f;
+		default_regenHealth = 0.6f;
+		default_regenMana = 0.4f;
 		
-		attackSpeed = 0.38f;
+		attackSpeed = 0.35f;
 		
 		class_code = ClassList.MasterYi;
 		
@@ -61,6 +61,13 @@ public class MasterYi extends PlayerClass {
 		skills[4] = new highlander(this);
 
 		matrix = new MasterYimatrix();
+	}
+
+	@Override
+	public void initSkill(PlayerData data) {
+		for(int i = 0 ; i<skills.length; i++){
+			skills[i].Skillset(data.getPlayer());
+		}
 	}
 
 	@Override
@@ -115,100 +122,171 @@ public class MasterYi extends PlayerClass {
 		}
 		
 		final double[] hp = {
-				780,
-				820,
-				840,
-				860,
+				800,
 				880,
-				990,
-				1030,
-				1080,
-				1130,
-				1190,
-				1250,
-				1400
+				960,
+				1040,
+				1100,
+				1200,
+				1300,
+				1400,
+				1520,
+				1640,
+				1780,
+				1920,
+				2080,
+				2240,
+				2400,
+				2560,
+				2720,
+				2880
 		};
 		
 		final double[] mana = {
 				200,
-				250,
+				210,
+				220,
+				230,
+				240,
+				260,
+				280,
 				300,
-				350,
-				400,
-				500,
+				330,
+				360,
+				390,
+				420,
+				470,
+				520,
 				570,
-				640,
-				710,
-				780,
-				850,
-				1000
+				620,
+				670,
+				720
 		};
 		
 		final double[] hregen = {
-				1.2,
-				1.3,
+				0.6,
+				0.7,
+				0.8,
+				0.9,
+				1,
+				1.1,
+				1.25,
 				1.4,
-				1.5,
 				1.6,
-				3,
-				3.2,
-				3.4,
-				3.6,
-				3.8,
-				4,
-				4.2
+				1.8,
+				2,
+				2.25,
+				2.55,
+				2.85,
+				3.15,
+				3.45,
+				3.75,
+				4.05
 		};
 		
 		final double[] mregen = {
-			2.3,
-			2.5,
-			2.9,
-			3.3,
-			3.7,
-			5,
-			5.2,
-			5.6,
-			6,
-			6.4,
-			6.9,
-			9
+				0.4,
+				0.5,
+				0.6,
+				0.7,
+				0.8,
+				1,
+				1.2,
+				1.4,
+				1.7,
+				2,
+				2.3,
+				2.7,
+				3.2,
+				3.7,
+				4.2,
+				4.7,
+				5.2,
+				5.7
 		};
 		
 		final double[] ad = {
+				76,
 				78,
 				80,
 				82,
 				84,
-				86,
-				95,
-				99,
-				103,
-				107,
-				110,
-				114,
-				120
+				87,
+				90,
+				93,
+				97,
+				101,
+				105,
+				109,
+				113,
+				117,
+				121,
+				125,
+				129,
+				133
+
 		};
 		
 		final double[] ap = {
-			0,0,0,0,0,0,0,0,0,0,0,0	
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0
 		};
 		
 		final double[] move = {
-				110,110,110,110,110,110,110,110,110,110,110,110
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110,
+				110
 		};
 		final double[] attackspeed = {
-			0.38,
-			0.41,
-			0.45,
-			0.49,
-			0.51,
-			0.66,
-			0.7,
-			0.75,
-			0.8,
-			0.85,
-			0.9,
-			1.03
+				0.35,
+				0.36365,
+				0.3773,
+				0.39095,
+				0.4046,
+				0.41825,
+				0.4319,
+				0.44555,
+				0.4592,
+				0.47285,
+				0.4865,
+				0.5005,
+				0.5145,
+				0.5285,
+				0.5425,
+				0.5565,
+				0.5705,
+				0.5845
 		};
 	}
 
@@ -219,8 +297,8 @@ public class MasterYi extends PlayerClass {
 		data.getPlayer().sendMessage(new TextComponentString("마스터 이 : "));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"2연속 공격"+
 				TextFormatting.RESET +" : 매 4회 공격마다 "+
-				TextFormatting.RED+ String.format("%.1f",(0.5 * data.getAd()))+
-				TextFormatting.RESET + "(공격력의 50%) 의 추가 데미지를 입힙니다. 적을 처치 시, 모든 스킬의 쿨타임이 70% 감소합니다."));
+				TextFormatting.RED+ String.format("%.1f",(skills[0].getskillAdcoe()[lv-1] * data.getAd()))+
+				TextFormatting.RESET + "(공격력의 "+skills[0].getskillAdcoe()[lv-1]*100+"%) 의 추가 데미지를 입힙니다. 적을 처치 시, 모든 스킬의 쿨타임이 70% 감소합니다."));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"일격 필살"+
 				TextFormatting.RESET +" : 마스터 이가 주변에 있는 4명의 적에게 " +
 				skills[1].getskilldamage()[lv-1] +"(+"+TextFormatting.RED +String.format("%.1f",(skills[1].getskillAdcoe()[lv-1]*data.getAd())) +
@@ -230,7 +308,7 @@ public class MasterYi extends PlayerClass {
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"명상"+
 				TextFormatting.RESET +" : 마스터 이가 정신을 집중해 4초동안 "+ String.format("%.1f",(skills[2].getskilldamage()[lv-1]*160))+ "(+"+
 				TextFormatting.BLUE +String.format("%.1f",(skills[2].getskillApcoe()[lv-1] * data.getAp()*160))
-				+TextFormatting.RESET+") 체력을 회복합니다. 쿨타임 : " +
+				+TextFormatting.RESET+") 체력을 회복합니다. 추가적으로 초당 잃은 체력의 12%가 회복됩니다. 쿨타임 : " +
 				TextFormatting.GOLD +skills[2].getcooldown()[lv-1]+
 				TextFormatting.RESET+"초"));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"우주류 검술" +

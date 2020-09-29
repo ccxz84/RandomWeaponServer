@@ -25,9 +25,9 @@ public class Ninjatabi extends ItemBase implements ItemBase.shoes {
 	protected void initstat() {
 		this.stat[0] = 0;
 		this.stat[1] = 0;
-		this.stat[2] = 300;
+		this.stat[2] = 450;
 		this.stat[3] = 0;
-		this.stat[4] = 35;
+		this.stat[4] = 20;
 		this.stat[5] = 0;
 		this.stat[6] = 0;
 		this.stat[7] = 0;

@@ -14,6 +14,8 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class VampiricScepter extends ItemBase {
 
+	private final double vamPercent = 10;
+
 	public VampiricScepter(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
@@ -46,7 +48,7 @@ public class VampiricScepter extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","기본 공격 시, 데미지의 10%를 회복합니다.");
+		nbt.setString("basic","기본 공격 시, 데미지의 "+String.format("%.0f",vamPercent)+"%를 회복합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -94,8 +96,8 @@ public class VampiricScepter extends ItemBase {
 
 				if(data.equals(this.data) && source instanceof AttackDamageSource){
 					if(source.getAttacker().getCurrentHealth() < source.getAttacker().getMaxHealth()){
-						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * 10 > source.getAttacker().getMaxHealth() ?
-								source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * 10;
+						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent > source.getAttacker().getMaxHealth() ?
+								source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent;
 						source.getAttacker().setCurrentHealth(heal);
 					}
 				}

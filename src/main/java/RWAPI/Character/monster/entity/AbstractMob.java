@@ -16,6 +16,7 @@ public class AbstractMob extends EntityMob{
 	public AbstractMob(World world, EntityData data) {
 		this(world);
 		this.data = data;
+		this.maxHurtResistantTime = 0;
 	}
 
 	public EntityData getData() {

@@ -22,7 +22,7 @@ public class Bootsofspeed extends ItemBase implements ItemBase.shoes {
 
 	@Override
 	protected void initstat() {
-		this.stat[4] = 15;
+		this.stat[4] = 5;
 	}
 
 

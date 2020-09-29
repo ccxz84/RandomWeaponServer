@@ -91,7 +91,7 @@ public class ClientData extends NetworkUtil.Abstractmessage {
 		this.timer = timer;
 		//this.cool = data.cool;
 		this.exp = data.getExp();
-		this.attackSpeed = data.getAttackSpeed();
+		this.attackSpeed = data.gettotalAttackSpeed();
 		this.total_score = data.getTotal_score();
 		this.kill = data.getKill();
 		this.death = data.getDeath();

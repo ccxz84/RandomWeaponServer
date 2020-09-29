@@ -75,15 +75,15 @@ public class Leesin extends PlayerClass{
 	//private float[] cool = new float[14];
 
 	public Leesin(){
-		default_health = 800;
+		default_health = 750;
 		default_mana = 200;
 		
 		default_ad = 80;
 		default_ap = 0;
-		default_move = 107;
+		default_move = 104;
 		
-		default_regenHealth = 1.1f;
-		default_regenMana = 5f;
+		default_regenHealth = 0.7f;
+		default_regenMana = 10f;
 		
 		attackSpeed = 0.4f;
 		
@@ -111,6 +111,13 @@ public class Leesin extends PlayerClass{
 	@Override
 	public PlayerClass copyClass(){
 		return new Leesin();
+	}
+
+	@Override
+	public void initSkill(PlayerData data) {
+		for(int i = 0 ; i<skills.length; i++){
+			skills[i].Skillset(data.getPlayer());
+		}
 	}
 	
 	public void skill0(EntityPlayer player) {
@@ -162,19 +169,29 @@ public class Leesin extends PlayerClass{
 			super.mregen = this.mregen;
 			super.attackspeed = this.attackspeed;
 		}
-		final double[] hp = {800,
+		final double[] hp = {
+				750,
+				800,
 				850,
-				885,
-				910,
-				940,
-				1090,
-				1140,
-				1200,
-				1310,
-				1390,
-				1440,
-				1600};
-		final double[] mana = {200,
+				900,
+				950,
+				1010,
+				1070,
+				1130,
+				1210,
+				1290,
+				1370,
+				1450,
+				1530,
+				1610,
+				1690,
+				1770,
+				1850,
+				1930
+		};
+
+		final double[] mana = {
+				200,
 				200,
 				200,
 				200,
@@ -185,46 +202,75 @@ public class Leesin extends PlayerClass{
 				350,
 				350,
 				350,
-				500};
-		final double[] hregen = {1.1,
-				1.2,
+				400,
+				400,
+				400,
+				400,
+				400,
+				400,
+				400
+		};
+		final double[] hregen = {
+				0.7,
+				0.8,
+				0.9,
+				1,
+				1.1,
+				1.3,
 				1.5,
 				1.7,
 				2,
-				4,
-				4.2,
-				4.6,
-				5,
-				5.1,
-				5.4,
-				6.5};
-		final double[] mregen = {5,
-				5,
-				5,
-				5,
-				5,
-				6,
-				6,
-				6,
-				6,
-				6,
-				6,
-				8};
+				2.3,
+				2.6,
+				3,
+				3.4,
+				3.7,
+				4.1,
+				4.5,
+				4.9,
+				5.4
+		};
+		final double[] mregen = {
+				10,
+				10,
+				10,
+				10,
+				10,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15
+		};
 		final double[] ad = {
 				80,
 				83,
-				87,
-				90,
-				93,
-				110,
+				86,
+				89,
+				92,
+				96,
+				100,
+				104,
+				109,
 				113,
 				117,
-				120,
-				123,
-				127,
-				140
+				121,
+				126,
+				131,
+				136,
+				141,
+				146,
+				151
 		};
-		final double[] ap = {0,
+		final double[] ap = {
 				0,
 				0,
 				0,
@@ -236,34 +282,54 @@ public class Leesin extends PlayerClass{
 				0,
 				0,
 				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0
 		};
 		final double[] move = {
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104
 		};
 		final double[] attackspeed = {
 				0.4,
-				0.43,
-				0.49,
-				0.53,
-				0.56,
-				0.65,
-				0.69,
-				0.72,
-				0.76,
-				0.79,
-				0.82,
-				0.9
+				0.4216,
+				0.4432,
+				0.4648,
+				0.4864,
+				0.508,
+				0.5296,
+				0.5512,
+				0.5728,
+				0.5944,
+				0.616,
+				0.6388,
+				0.6616,
+				0.6844,
+				0.7072,
+				0.73,
+				0.7528,
+				0.7756,
+
 		};
 	}
 
@@ -295,7 +361,7 @@ public class Leesin extends PlayerClass{
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"공명의 일격"+
 				TextFormatting.RESET +" : 리 신이 음파를 맞은 적에게 돌진하여 " + String.format("%.1f",wave.getskilldamage2()[lv-1]) + "(+"
 				+TextFormatting.RED +String.format("%.1f",(wave.getskill1coe()[0][lv-1] * data.getAd()))+
-				TextFormatting.RESET +")의 데미지를 입히고, 추가로 적 최대체력의 " +
+				TextFormatting.RESET +")의 데미지를 입히고, 추가로 적 잃은 체력의 " +
 				TextFormatting.DARK_RED + String.format("%.1f",(wave.getskill1coe()[1][lv-1] *100))+"%"+
 				TextFormatting.RESET + "의 데미지를 입힙니다."));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"방호"+

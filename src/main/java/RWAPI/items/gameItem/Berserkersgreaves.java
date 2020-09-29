@@ -23,7 +23,7 @@ public class Berserkersgreaves extends ItemBase implements ItemBase.shoes {
 	}
 	@Override
 	protected void initstat() {
-		this.stat[4] = 30;
+		this.stat[4] = 15;
 		this.stat[5] = 0.5;
 	}
 }

@@ -119,6 +119,14 @@ public class Shopui extends Container implements IContainerListener {
 
 		if(slotId == 30 || slotId == 57)
 			return ItemStack.EMPTY;
+		if(slotId > 30 && slotId < 39){
+			PlayerData data = main.game.getPlayerData(player.getUniqueID());
+			ItemBase item = (ItemBase) this.inventoryItemStacks.get(slotId).getItem();
+			double[] stat = item.getstat();
+			if(data.getCurrentHealth() - stat[2] <= 0 || data.getCurrentMana() - stat[3] <= 0){
+				return ItemStack.EMPTY;
+			}
+		}
 		if(slotId > 30 && slotId < 57){
 			if(dragType==1) {//right click
 				if(this.inventorySlots.get(slotId).getStack().getItem() instanceof ItemBase){
@@ -158,7 +166,8 @@ public class Shopui extends Container implements IContainerListener {
 		currentstack = stack;
 		DrawButton(stack,ModItems.ITEMS.get(ModItems.ITEMS.indexOf(stack.getItem())).down_item,187,18,ModItems.ITEMS.get(ModItems.ITEMS.indexOf(stack.getItem())).phase);
 
-		addSlotToContainer(new Slot(new ItemButton(stack),0,145,97));
+		addSlotToContainer(new Slot(new ItemButton(stack),0,137,97));
+		sync();
 	}
 	
 	private void DrawButton(ItemStack stack, ItemBase[] down_item, int x, int y,int phase){

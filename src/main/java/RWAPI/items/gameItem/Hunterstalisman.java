@@ -13,6 +13,8 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class Hunterstalisman extends ItemBase {
 
+	private final int plusGold = 5;
+
 	public Hunterstalisman(String name) {
 		super(name);
 		setCreativeTab(CreativeTabs.MATERIALS);
@@ -31,7 +33,7 @@ public class Hunterstalisman extends ItemBase {
 	protected void initstat() {
 		this.stat[0] = 0;
 		this.stat[1] = 0;
-		this.stat[2] = 30;
+		this.stat[2] = 50;
 		this.stat[3] = 20;
 		this.stat[4] = 0;
 		this.stat[5] = 0;
@@ -45,7 +47,7 @@ public class Hunterstalisman extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","미니언 처치 시, 50%의 골드를 추가로 지급합니다.");
+		nbt.setString("basic","미니언 처치 시, "+plusGold+"의 골드를 추가로 지급합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -91,7 +93,7 @@ public class Hunterstalisman extends ItemBase {
 				EntityData data = source.getAttacker();
 
 				if(data.equals(this.data)){
-					((PlayerData)data).setGold((int)source.getTarget().getDeattGold()/2 + ((PlayerData)data).getGold());
+					((PlayerData)data).setGold(plusGold + ((PlayerData)data).getGold());
 				}
 			}
 

@@ -12,4 +12,5 @@ public static final List<Item> weapon = new ArrayList<Item>();
 	
 	public static final WeaponBase leesin = new RWAPI.items.weapon.leesin("leesin");
 	public static final WeaponBase masteryi = new RWAPI.items.weapon.masteryi("masteryi");
+	public static final WeaponBase formaster = new RWAPI.items.weapon.formaster("formaster");
 }

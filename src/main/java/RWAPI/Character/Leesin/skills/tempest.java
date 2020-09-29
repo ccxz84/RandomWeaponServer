@@ -23,20 +23,108 @@ public class tempest implements Skill {
     }
 
     protected final double[] skilldamage={
-            80, 87, 91, 94, 98, 108, 115, 122, 129, 126, 133, 145
+            90,
+            94,
+            98,
+            102,
+            106,
+            115,
+            120,
+            125,
+            131,
+            137,
+            143,
+            149,
+            155,
+            161,
+            167,
+            173,
+            179,
+            185
     };
     protected final double[] skillAdcoe={
-            0.3, 0.3, 0.3, 0.3, 0.3, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.6
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.35,
+            0.35,
+            0.35,
+            0.35,
+            0.35,
+            0.35,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4
     };
     protected final double[] skillApcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+
     };
     protected final double[] skillcost={
-            60,60,60,60,60,70,70,70,70,70,70,80
+            70,
+            70,
+            70,
+            70,
+            70,
+            75,
+            75,
+            75,
+            75,
+            75,
+            75,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80
+
     };
 
     protected final double[] cooldown = {
-            10, 10, 10, 10, 10, 9, 9, 9, 9, 9, 9, 8
+            12,
+            12,
+            12,
+            12,
+            12,
+            11,
+            11,
+            11,
+            10,
+            10,
+            10,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9
+
     };
 
     @Override
@@ -50,9 +138,8 @@ public class tempest implements Skill {
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(3) <= 0 && data.getCurrentMana() > skillcost[lv-1]) {
             data.nonWorking = true;
-
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
-            EntityTempest tempest = new EntityTempest(player.world, player, (float) (skilldamage[lv-1]+ skillAdcoe[lv-1] * data.getAd()));
+            EntityTempest tempest = new EntityTempest(player.world, player, (skilldamage[lv-1]+ skillAdcoe[lv-1] * data.getAd()));
             tempest.setNoGravity(true);
             tempest.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.0f, 0);
             player.world.spawnEntity(tempest);
@@ -69,10 +156,12 @@ public class tempest implements Skill {
                 public void resetEffect() {
                     PlayerData data = main.game.getPlayerData(player.getUniqueID());
                     data.setMove(data.getMove() + minus);
+                    data.removeBuff(this);
                     buff = null;
                     data.nonWorking = false;
                 }
             };
+            data.addBuff(buff);
             this.handler = new cool(cooldown[lv-1], 3, (EntityPlayerMP) player);
             _class.skill0(player);
 

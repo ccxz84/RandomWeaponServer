@@ -23,7 +23,7 @@ public class Doransblade extends ItemBase {
 	protected void initstat() {
 		this.stat[0] = 8;
 		this.stat[1] = 0;
-		this.stat[2] = 150;
+		this.stat[2] = 200;
 		this.stat[3] = 0;
 		this.stat[4] = 0;
 		this.stat[5] = 0;
