@@ -122,7 +122,7 @@ public class Game {
 			player.getData().setTimerFlag("게임 시간");
 			player.get_class().initSkill(player);
 			player.setKeyinputListener();
-
+			player.getPlayer().getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1d);
 		}
 		
 		this.initTimer("게임 시간", Reference.GAMEITME);
@@ -152,6 +152,7 @@ public class Game {
 					player.getPlayer().getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.1f * (player.getMove()/100)); //이속
 					player.getPlayer().setHealth(1024f);
 					player.getPlayer().getFoodStats().setFoodLevel(20);
+					player.getPlayer().hurtResistantTime = 0;
 					if(timer % 60 == 0) {
 						player.setGold(player.getGold() + 1);
 					}
@@ -189,8 +190,8 @@ public class Game {
 					});
 					server.getPlayerList().sendMessage(new TextComponentString("현재 킬 순위 : "));
 					int i = 1;
-					for(PlayerData player : totlalist){
-						server.getPlayerList().sendMessage(new TextComponentString(i+"위. "+player.getPlayer().getName()));
+					for(PlayerData player : killlist){
+						server.getPlayerList().sendMessage(new TextComponentString(i+"위. "+player.getPlayer().getName()+ (i == 1 ? " 킬 횟수 : " +player.getKill():"")));
 						i++;
 					}
 					server.getPlayerList().sendMessage(new TextComponentString("----------------"));
@@ -199,6 +200,18 @@ public class Game {
 					for(PlayerData player : totlalist){
 						server.getPlayerList().sendMessage(new TextComponentString(i+"위. "+player.getPlayer().getName()));
 						i++;
+					}
+
+					int per = (int)Math.ceil(((double)totlalist.size()/100)*30);
+					int j = 1;
+
+					for(int x = totlalist.size()-1;x > -1 && per > 0;--x){
+						PlayerData pdata = totlalist.get(x);
+						pdata.setGold(pdata.getGold() + 150/j);
+						pdata.getPlayer().sendMessage(new TextComponentString("하위권 보상 "+150/j+"골드를 획득하였습니다."));
+						--per;
+						++j;
+
 					}
 				}
 				timer++;
@@ -279,7 +292,6 @@ public class Game {
 				player.getPlayer().inventory.clear();
 				player.getPlayer().getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(1024);
 				player.getPlayer().getFoodStats().setFoodLevel(20);
-				player.getPlayer().maxHurtResistantTime = 0;
 				player.getPlayer().connection.setPlayerLocation(Reference.SHOPPOS[0],Reference.SHOPPOS[1],Reference.SHOPPOS[2], player.getPlayer().rotationYaw, player.getPlayer().rotationPitch);
 				player.resetInvhandler();
 
@@ -392,6 +404,7 @@ public class Game {
 			if(map != null){
 				List<BaseEvent> list = map.get(priority);
 				for(BaseEvent bevent : list){
+
 					bevent.EventListener(event);
 				}
 			}

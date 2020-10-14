@@ -7,12 +7,13 @@ import RWAPI.Character.CooldownHandler;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.Character.Skill;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.SPacketEntityVelocity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -187,18 +188,47 @@ public class dragonsrage implements Skill {
         {
             if(event.getEntityPlayer().getUniqueID().equals(player.getUniqueID())) {
                 EntityLivingBase etarget = (EntityLivingBase) event.getTarget();
-                System.out.println("test");
-                etarget.hurtResistantTime = 0;
-                etarget.knockBack(event.getEntityLiving(), 2, -event.getEntityPlayer().getLookVec().x, -event.getEntityPlayer().getLookVec().z);
+                knockBack(etarget,event.getEntityLiving(), 2, -event.getEntityPlayer().getLookVec().x, -event.getEntityPlayer().getLookVec().z);
                 PlayerData attacker = main.game.getPlayerData(event.getEntityPlayer().getUniqueID());
                 EntityData target = (etarget instanceof EntityPlayer) ? main.game.getPlayerData(etarget.getUniqueID()) : ((AbstractMob)etarget).getData();
-                RWAPI.util.DamageSource sourcee = RWAPI.util.DamageSource.causeSkill(attacker, target, skilldamage1);
-                RWAPI.util.DamageSource.attackDamage(sourcee,true);
+                DamageSource sourcee = DamageSource.causeSkillPhysics(attacker, target, skilldamage1);
+                DamageSource.attackDamage(sourcee,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);
                 new CooldownHandler(cool, 4, (EntityPlayerMP) player);
                 MinecraftForge.EVENT_BUS.unregister(this);
 
             }
+        }
+
+        public void knockBack(EntityLivingBase target, Entity entityIn, float strength, double xRatio, double zRatio){
+
+            target.maxHurtResistantTime = 0;
+            target.hurtResistantTime = 0;
+            net.minecraftforge.event.entity.living.LivingKnockBackEvent event = net.minecraftforge.common.ForgeHooks.onLivingKnockBack(target, entityIn, strength, xRatio, zRatio);
+            if(event.isCanceled()) return;
+            strength = event.getStrength(); xRatio = event.getRatioX(); zRatio = event.getRatioZ();
+            target.isAirBorne = true;
+            target.velocityChanged = true;
+            float f = MathHelper.sqrt(xRatio * xRatio + zRatio * zRatio);
+            target.motionX /= 2.0D;
+            target.motionZ /= 2.0D;
+            target.motionX -= xRatio / (double)f * (double)strength;
+            target.motionZ -= zRatio / (double)f * (double)strength;
+            if (target.onGround)
+            {
+                target.motionY /= 2.0D;
+                target.motionY += (double)strength;
+
+                if (target.motionY > 0.4000000059604645D)
+                {
+                    target.motionY = 0.4000000059604645D;
+                }
+            }
+            if(target instanceof EntityPlayerMP){
+                ((EntityPlayerMP)target).connection.sendPacket(new SPacketEntityVelocity(target));
+            }
+
+            target.velocityChanged = false;
         }
     }
 

@@ -1,8 +1,10 @@
 package RWAPI.Character;
 
+import RWAPI.Character.buff.Buff;
 import RWAPI.game.event.BaseEvent;
 import RWAPI.game.event.ItemChangeEventHandle;
 import RWAPI.init.ModItems;
+import RWAPI.items.gameItem.Hunterstalisman;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.items.skillItem.SkillBase;
 import RWAPI.items.weapon.WeaponBase;
@@ -49,12 +51,17 @@ public class PlayerData extends EntityData{
 
 	private InventoryChangeHandle invhandler;
 
-	private ItemBase.handler itemhandler[] = new ItemBase.handler[8];
+	private ItemBase.basic_handler basicitemhandler[] = new ItemBase.basic_handler[8];
+	private List<ItemBase.inherence_handler> inherenceitemhandler[] = new List[8];
+	private ItemBase.usage_handler usageitemhandler[] = new ItemBase.usage_handler[8];
 
 	private boolean firstDeath = false;
 
 	private double baseAttackspeed = 0;
 	private double plusAttackspeed = 0;
+	private int continuouskill = 0;
+
+	private dashtimer dashtimer;
 
 	public void setRespawn(){
 		setStatus(EntityStatus.RESPANW);
@@ -138,6 +145,12 @@ public class PlayerData extends EntityData{
 	public double gettotalAttackSpeed() {
 		return this.data.attackSpeed;
 	}
+
+	public int getContinuouskill(){
+		return this.continuouskill;
+	}
+
+
 	/*Getter End
 	 * 
 	 */
@@ -253,8 +266,27 @@ public class PlayerData extends EntityData{
 		this.keyinputListener = new keyinputListener(this);
 	}
 
+	public void setContinuouskill(int continuouskill){
+		this.continuouskill = continuouskill;
+	}
+
 	public void setFirstDeath(boolean death){
 		this.firstDeath = death;
+	}
+
+	public void setDashtimer(){
+		if(this.dashtimer == null){
+			this.dashtimer = new dashtimer(3, this.getPlayer());
+		}
+		else{
+			this.dashtimer.settimer();
+		}
+	}
+
+	public void resetDashtimer(){
+		if(this.dashtimer != null){
+			this.dashtimer = null;
+		}
 	}
 
 	public void inputKey(int keynum){
@@ -280,7 +312,7 @@ public class PlayerData extends EntityData{
 	 */
 	
 	public PlayerData(EntityPlayerMP player){
-		super(100,0,150,300,player.getName(),0);
+		super(100,0,0,0,150,300,player.getName(),0);
 		this.player = player;
 		this.data.level = 1;
 		this.data = new ClientData(this,false,"",0);
@@ -306,6 +338,8 @@ public class PlayerData extends EntityData{
 		this.setRegenHealth(_class.default_regenHealth);
 		this.setRegenMana(_class.default_regenMana);
 		this.setMove(_class.default_move);
+		this.setMagicresistance(_class.default_magicresistance);
+		this.setArmor(_class.default_armor);
 		this.setGold(500);
 		for(int i = 0; i< 5; i++) {
 			this.setSkill(i, (SkillBase) _class.skillSet[i]);
@@ -329,14 +363,19 @@ public class PlayerData extends EntityData{
 			}
 			if(this.getGold() >= money){
 				for(int i : list){
-					getPlayer().inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+					getPlayer().inventory.mainInventory.set(i,ItemStack.EMPTY);
 				}
 				this.setGold(this.getGold() - money);
-				getPlayer().addItemStackToInventory(stack.copy());
+				for(int i = 1; i < getPlayer().inventory.mainInventory.size();i++){
+					if(list.contains(i) || i == 9 || !getPlayer().inventory.mainInventory.get(i).equals(ItemStack.EMPTY)){
+						continue;
+					}
+					else{
+						getPlayer().inventory.mainInventory.set(i,stack.copy());
+						break;
+					}
+				}
 			}
-			else{
-			}
-
 		}
 	}
 
@@ -354,7 +393,6 @@ public class PlayerData extends EntityData{
 				idx++;
 			}
 			if(flag == false){
-				System.out.println(item);
 				recursiveCheckItem(subitem,list);
 			}
 		}
@@ -384,6 +422,10 @@ public class PlayerData extends EntityData{
 		}
 		if(this.get_class() != null){
 			this.get_class().EndGame(this.getPlayer());
+		}
+		if(this.dashtimer != null){
+			this.dashtimer.unregist();
+			this.dashtimer = null;
 		}
 	}
 
@@ -487,6 +529,9 @@ public class PlayerData extends EntityData{
 
 		@Override
 		public void skillTimer(ServerTickEvent event) throws Throwable {
+			if(data.getCurrentHealth() >= data.getMaxHealth()){
+				data.setCurrentHealth(data.getMaxHealth());
+			}
 			if(timer > time) {
 				cancel();
 				MinecraftForge.EVENT_BUS.unregister(this);
@@ -527,39 +572,75 @@ public class PlayerData extends EntityData{
 		public void InventoryHandler(TickEvent.ServerTickEvent event){
 			if(data.getPlayer().inventory.currentItem != 0){
 
-				if(data.itemhandler[data.getPlayer().inventory.currentItem-1] != null){
-					data.itemhandler[data.getPlayer().inventory.currentItem-1].ItemUse();
+				if(data.usageitemhandler[data.getPlayer().inventory.currentItem-1] != null){
+					data.usageitemhandler[data.getPlayer().inventory.currentItem-1].ItemUse();
 				}
 
 	    		data.getPlayer().inventory.currentItem = 0;
 			}
 		}
 
+		public boolean ItemOverlap(int idx){
+			for(Class item : ModItems.NO_OVERLAP_ITEMS){
+				if(data.getPlayer().inventory.getStackInSlot(idx).getItem().getClass().equals(item)){
+					for(int j = 0; j < 9 ; j ++ ){
+						if((data.getPlayer().inventory.getStackInSlot(j).getItem().getClass().equals(item))&& idx != j){
+							//System.out.println(data.getPlayer().inventory.getStackInSlot(j).getItem() + "   " + data.getPlayer().inventory.getStackInSlot(idx).getItem());
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+
+		/*public boolean ItemOverlapEvent(ItemBase item){
+			Class _class = item.get_inherence_handler();
+			if(_class == null)
+				return true;
+			for(ItemBase.inherence_handler handler : this.data.inherenceitemhandler){
+				if(handler == null)
+					continue;
+				//System.out.println("대상 : " + handler.getClass());
+				if(_class.equals(handler.getClass())){
+					return true;
+				}
+			}
+			return false;
+		}*/
+
+		public boolean ItemOverlapEvent(ItemBase item, Class<? extends ItemBase.inherence_handler> _class){
+			for(List<ItemBase.inherence_handler> handlers : this.data.inherenceitemhandler){
+				if(handlers == null)
+					continue;
+				for(ItemBase.inherence_handler handler : handlers){
+					if(_class.equals(handler.getClass())){
+						return true;
+					}
+				}
+				//System.out.println("대상 : " + handler.getClass());
+
+			}
+			return false;
+		}
+
 		@SubscribeEvent
 		public void itemHandler(TickEvent.ServerTickEvent event){
 			for(int i = 1; i < 9; i++){
 				if(!data.getPlayer().inventory.getStackInSlot(i).getItem().equals(inven.getStackInSlot(i).getItem())){
-					if(data.getPlayer().inventory.getStackInSlot(i).getItem() instanceof ItemBase.shoes){
-						boolean flag = false;
-						for(int j = 0; j < 9 ; j ++ ){
-							if(data.getPlayer().inventory.getStackInSlot(j).getItem() instanceof  ItemBase.shoes && i != j){
-								flag = true;
-								break;
-							}
-						}
-						if(flag == true){
-							for(int j = 9 ; j < 36;j++){
-								if(data.getPlayer().inventory.getStackInSlot(j).equals(ItemStack.EMPTY)){
-									data.getPlayer().inventory.setInventorySlotContents(j,data.getPlayer().inventory.getStackInSlot(i));
-									data.getPlayer().inventory.setInventorySlotContents(i,ItemStack.EMPTY);
-								}
-							}
-							if(!data.getPlayer().inventory.getStackInSlot(i).equals(ItemStack.EMPTY)){
-								data.getPlayer().dropItem(data.getPlayer().inventory.getStackInSlot(i),true);
+
+					if(ItemOverlap(i) == true){
+						for(int j = 9 ; j < 36;j++){
+							if(data.getPlayer().inventory.getStackInSlot(j).equals(ItemStack.EMPTY)){
+								data.getPlayer().inventory.setInventorySlotContents(j,data.getPlayer().inventory.getStackInSlot(i));
 								data.getPlayer().inventory.setInventorySlotContents(i,ItemStack.EMPTY);
 							}
-							continue;
 						}
+						if(!data.getPlayer().inventory.getStackInSlot(i).equals(ItemStack.EMPTY)){
+							data.getPlayer().dropItem(data.getPlayer().inventory.getStackInSlot(i),true);
+							data.getPlayer().inventory.setInventorySlotContents(i,ItemStack.EMPTY);
+						}
+						continue;
 					}
 
 					if(inven.getStackInSlot(i).equals(ItemStack.EMPTY)){
@@ -570,6 +651,7 @@ public class PlayerData extends EntityData{
 						if(!(data.getPlayer().inventory.mainInventory.get(i).getItem() instanceof ItemBase))
 							data.getPlayer().inventory.mainInventory.set(i,ItemStack.EMPTY);
 						else{
+
 							ItemBase item = (ItemBase) data.getPlayer().inventory.mainInventory.get(i).getItem();
 							double[] stat = item.getstat();
 							data.setAd(data.getAd() + stat[0]);
@@ -581,14 +663,33 @@ public class PlayerData extends EntityData{
 							data.setMaxMana(data.getMaxMana()+ stat[3]);
 							data.setCurrentMana(data.getCurrentMana() + stat[3]);
 
-							data.setMove(data.getMove() + stat[4]);
-							data.setPlusAttackspeed(data.getPlusAttackspeed() + stat[5]);
-							data.setRegenHealth(data.getRegenHealth() + stat[6]);
-							data.setRegenMana(data.getRegenMana() + stat[7]);
+							data.setArmor(data.getArmor() + stat[4]);
+							data.setMagicresistance(data.getMagicresistance() + stat[5]);
+
+							data.setMove(data.getMove() + stat[6]);
+							data.setPlusAttackspeed(data.getPlusAttackspeed() + stat[7]);
+							data.setRegenHealth(data.getRegenHealth() + stat[8]);
+							data.setRegenMana(data.getRegenMana() + stat[9]);
+							data.setArmorpenetration(data.getArmorpenetration() + stat[10]);
+							data.setMagicpenetration(data.getMagicpenetration() + stat[11]);
 
 							ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.NORMAL);
 							ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.LOW);
-							setItemhandler(i-1, item.create_handler(data,data.getPlayer().inventory.mainInventory.get(i)));
+
+							setItemhandler(i-1, data.basicitemhandler, item.create_basic_handler(data,data.getPlayer().inventory.mainInventory.get(i)));
+							setItemhandler(i-1, data.usageitemhandler, item.create_usage_handler(data,data.getPlayer().inventory.mainInventory.get(i)));
+
+							List<ItemBase.inherence_handler> list = new ArrayList<>();
+							if(item.get_inherence_handler() != null){
+								for(Class<? extends ItemBase.inherence_handler> _class : item.get_inherence_handler()){
+									if(ItemOverlapEvent(item,_class) == false){
+										list.add(item.create_inherence_handler(data,data.getPlayer().inventory.mainInventory.get(i),_class));
+									}
+								}
+							}
+
+							setInherenceitemhandler(i-1, data.inherenceitemhandler, list);
+
 							ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.LOWEST);
 						}
 					}
@@ -600,7 +701,6 @@ public class PlayerData extends EntityData{
 						ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.HIGH);
 						ItemBase item = (ItemBase) inven.mainInventory.get(i).getItem();
 						double[] stat = item.getstat();
-
 						data.setAd(data.getAd() - stat[0]);
 						data.setAp(data.getAp() - stat[1]);
 
@@ -610,15 +710,31 @@ public class PlayerData extends EntityData{
 						data.setMaxMana(data.getMaxMana() - stat[3]);
 						data.setCurrentMana(data.getCurrentMana() - stat[3]);
 
-						data.setMove(data.getMove() - stat[4]);
-						data.setPlusAttackspeed(data.getPlusAttackspeed() - stat[5]);
-						data.setRegenHealth(data.getRegenHealth() - stat[6]);
-						data.setRegenMana(data.getRegenMana() - stat[7]);
+						data.setArmor(data.getArmor() - stat[4]);
+						data.setMagicresistance(data.getMagicresistance() - stat[5]);
+
+						data.setMove(data.getMove() - stat[6]);
+						data.setPlusAttackspeed(data.getPlusAttackspeed() - stat[7]);
+						data.setRegenHealth(data.getRegenHealth() - stat[8]);
+						data.setRegenMana(data.getRegenMana() - stat[9]);
+						data.setArmorpenetration(data.getArmorpenetration() - stat[10]);
+						data.setMagicpenetration(data.getMagicpenetration() - stat[11]);
+
 						ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.NORMAL);
 						ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.LOW);
-						if(data.itemhandler[i-1] != null)
-							data.itemhandler[i-1].removeHandler();
-						setItemhandler(i-1,null);
+
+						if(data.basicitemhandler[i-1] != null)
+							data.basicitemhandler[i-1].removeHandler();
+						if(data.inherenceitemhandler[i-1] != null){
+							for(ItemBase.inherence_handler handler : data.inherenceitemhandler[i-1]){
+								handler.removeHandler();
+							}
+						}
+						if(data.usageitemhandler[i-1] != null)
+							data.usageitemhandler[i-1].removeHandler();
+						setItemhandler(i-1,data.basicitemhandler,null);
+						setInherenceitemhandler(i-1,data.inherenceitemhandler,null);
+						setItemhandler(i-1,data.usageitemhandler,null);
 						ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.LOWEST);
 					}
 				}
@@ -646,8 +762,12 @@ public class PlayerData extends EntityData{
 		}
 	}
 
-	public void setItemhandler(int index, ItemBase.handler handler){
-		this.itemhandler[index] = handler;
+	public void setItemhandler(int index,ItemBase.handler[] handlers ,ItemBase.handler handler){
+		handlers[index] = handler;
+	}
+
+	public void setInherenceitemhandler(int index,List<ItemBase.inherence_handler>[] handlers ,List<ItemBase.inherence_handler> handler){
+		handlers[index] = handler;
 	}
 
 	private class keyinputListener{
@@ -691,6 +811,38 @@ public class PlayerData extends EntityData{
 
 		public void reset(){
 			MinecraftForge.EVENT_BUS.unregister(this);
+		}
+	}
+
+	private class dashtimer extends Buff {
+
+		public dashtimer(double duration, EntityPlayerMP player, double... data) {
+			super(duration, player, data);
+		}
+
+		@Override
+		public void BuffTimer(ServerTickEvent event) throws Throwable {
+			super.BuffTimer(event);
+			player.setSprinting(false);
+		}
+
+		@Override
+		public void setEffect() {
+			player.setSprinting(false);
+		}
+
+		@Override
+		public void resetEffect() {
+			player.setSprinting(true);
+			resetDashtimer();
+		}
+
+		public void unregist(){
+			MinecraftForge.EVENT_BUS.unregister(this);
+		}
+
+		public void settimer(){
+			this.timer = 0;
 		}
 	}
 }

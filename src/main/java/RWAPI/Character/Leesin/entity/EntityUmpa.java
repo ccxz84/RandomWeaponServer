@@ -3,32 +3,20 @@ package RWAPI.Character.Leesin.entity;
 import RWAPI.Character.Leesin.skills.sonicwave;
 import RWAPI.main;
 import RWAPI.Character.EntityData;
-import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.Leesin.Leesin;
 import RWAPI.Character.monster.entity.AbstractMob;
-import RWAPI.Character.monster.entity.EntityMinion;
-import RWAPI.util.DamageSource.EnemyStatHandler;
-import net.minecraft.client.Minecraft;
+import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 public class EntityUmpa extends SkillEntity {
 	
@@ -38,7 +26,7 @@ public class EntityUmpa extends SkillEntity {
 
 	public EntityUmpa(World worldIn, EntityPlayer playerin, float skilldamage) {
 		super(worldIn,playerin, skilldamage);
-		this.d1 = 0.75d;
+		this.judg = 0.75d;
 	}
 
 	@Override
@@ -97,14 +85,14 @@ public class EntityUmpa extends SkillEntity {
 				if(result.entityHit instanceof AbstractMob) {
 					AbstractMob mob = (AbstractMob) result.entityHit;
 					target = mob.getData();
-					RWAPI.util.DamageSource source =RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-					RWAPI.util.DamageSource.attackDamage(source,true);
+					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
+					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 				}
 				else if(result.entityHit instanceof EntityPlayer){
 					target = main.game.getPlayerData(result.entityHit.getUniqueID());
-					RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-					RWAPI.util.DamageSource.attackDamage(source,true);
+					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
+					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 				}
 				makeEffect((EntityLivingBase) result.entityHit, attacker.getPlayer());

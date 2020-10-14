@@ -5,7 +5,7 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.RayTraceResult;
@@ -19,7 +19,7 @@ public class EntityFrostpalm extends SkillEntity {
 
     public EntityFrostpalm(World worldIn, EntityLivingBase playerin, double skilldamage) {
         super(worldIn, playerin, skilldamage);
-        d1 = 0.4d;
+        this.judg = 0.7d;
     }
 
     @Override
@@ -31,8 +31,10 @@ public class EntityFrostpalm extends SkillEntity {
     }
 
     protected void SkillImpact(RayTraceResult result){
-        if (main.game == null)
+        if (main.game == null) {
             setDead();
+            return;
+        }
         if(!(result.entityHit != null && result.entityHit instanceof EntityLivingBase)){
             setDead();
         }
@@ -42,15 +44,13 @@ public class EntityFrostpalm extends SkillEntity {
             if (result.entityHit instanceof AbstractMob) {
                 AbstractMob mob = (AbstractMob) result.entityHit;
                 target = mob.getData();
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeAttack(attacker, target);
-                source.setDamage(this.skilldamage);
-                RWAPI.util.DamageSource.attackDamage(source, true);
+                DamageSource source = DamageSource.causeAttackPhysics(attacker, target,this.skilldamage);
+                DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             } else if (result.entityHit instanceof EntityPlayer) {
                 target = main.game.getPlayerData(result.entityHit.getUniqueID());
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeAttack(attacker, target);
-                source.setDamage(this.skilldamage);
-                RWAPI.util.DamageSource.attackDamage(source, true);
+                DamageSource source = DamageSource.causeAttackPhysics(attacker, target,this.skilldamage);
+                DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }
             result.entityHit.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);

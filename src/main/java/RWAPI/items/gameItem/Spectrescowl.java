@@ -5,8 +5,7 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.AttackDamageSource;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,7 +25,7 @@ public class Spectrescowl extends ItemBase {
 		ModItems.ITEMS.add(this);
 		down_item = new ItemBase[2];
 		down_item[0] =ModItems.Rubycrystal;
-		down_item[1] =ModItems.Rejuvenationbead;
+		down_item[1] =ModItems.Nullmagicmantle;
 		
 		phase = 2;
 		this.name = "망령의 두건";
@@ -37,14 +36,10 @@ public class Spectrescowl extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 0;
-		this.stat[1] = 0;
-		this.stat[2] = 400;
-		this.stat[3] = 0;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 1;
-		this.stat[7] = 0;
+		double[] stat = {
+				0,	0,	250,	0,	0,	30,	0,	0,	3,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
@@ -58,11 +53,11 @@ public class Spectrescowl extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
+	public ItemBase.basic_handler create_basic_handler(PlayerData data, ItemStack stack) {
 		return new handler(data,stack);
 	}
 
-	protected class handler extends ItemBase.handler{
+	protected class handler extends ItemBase.basic_handler{
 
 		EventClass eventClass;
 		PlayerData data;

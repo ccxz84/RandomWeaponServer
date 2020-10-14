@@ -5,7 +5,7 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.RayTraceResult;
@@ -19,6 +19,7 @@ public class EntityInferno extends SkillEntity {
 
     public EntityInferno(World worldIn, EntityLivingBase playerin, double skilldamage) {
         super(worldIn, playerin, skilldamage);
+        this.judg = 1.3d;
     }
 
     @Override
@@ -40,12 +41,12 @@ public class EntityInferno extends SkillEntity {
             if (result.entityHit instanceof AbstractMob) {
                 AbstractMob mob = (AbstractMob) result.entityHit;
                 target = mob.getData();
-                DamageSource source = DamageSource.causeSkill(attacker, target, this.skilldamage);
+                DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             } else if (result.entityHit instanceof EntityPlayer) {
                 target = main.game.getPlayerData(result.entityHit.getUniqueID());
-                DamageSource source = DamageSource.causeSkill(attacker, target, this.skilldamage);
+                DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }

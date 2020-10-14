@@ -1,74 +1,17 @@
 package RWAPI.Character.Leesin;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import RWAPI.Character.Leesin.skills.*;
 import RWAPI.Character.Skill;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 
-import RWAPI.main;
-import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
-import RWAPI.Character.Leesin.entity.EntityTempest;
-import RWAPI.Character.Leesin.entity.EntityResonating;
-import RWAPI.Character.Leesin.entity.EntityStrike;
-import RWAPI.Character.Leesin.entity.EntityUmpa;
-import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.init.ModSkills;
 import RWAPI.init.ModWeapons;
-import RWAPI.items.skillItem.SkillBase;
-import RWAPI.items.weapon.WeaponBase;
-import RWAPI.items.weapon.leesin;
 import RWAPI.util.ClassList;
-import RWAPI.util.DamageSource.EnemyStatHandler;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAreaEffectCloud;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.MobEffects;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.EnumConnectionState;
-import net.minecraft.network.EnumPacketDirection;
-import net.minecraft.network.Packet;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SPacketCustomPayload;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionType;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class Leesin extends PlayerClass{
 
@@ -86,6 +29,9 @@ public class Leesin extends PlayerClass{
 		default_regenMana = 10f;
 		
 		attackSpeed = 0.4f;
+
+		default_armor = 33;
+		default_magicresistance = 32.1;
 		
 		class_code = ClassList.Leesin;
 		
@@ -165,6 +111,8 @@ public class Leesin extends PlayerClass{
 			super.hp = this.hp;
 			super.hregen = this.hregen;
 			super.mana = this.mana;
+			super.armor = this.armor;
+			super.magicresistance = this.magicresistance;
 			super.move = this.move;
 			super.mregen = this.mregen;
 			super.attackspeed = this.attackspeed;
@@ -250,6 +198,51 @@ public class Leesin extends PlayerClass{
 				15,
 				15
 		};
+
+		final double[] armor = {
+				33,
+				36.5,
+				40,
+				43.5,
+				47,
+				50.5,
+				54,
+				57.5,
+				61,
+				64.5,
+				68,
+				71.5,
+				75,
+				78.5,
+				82,
+				85.5,
+				89,
+				92.5
+
+		};
+
+		final double[] magicresistance = {
+				32.1,
+				33.35,
+				34.6,
+				35.85,
+				37.1,
+				38.35,
+				39.6,
+				40.85,
+				42.1,
+				43.35,
+				44.6,
+				45.85,
+				47.1,
+				48.35,
+				49.6,
+				50.85,
+				52.1,
+				53.35
+
+		};
+
 		final double[] ad = {
 				80,
 				83,

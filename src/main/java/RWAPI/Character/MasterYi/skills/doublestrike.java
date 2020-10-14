@@ -7,7 +7,7 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.Skill;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import RWAPI.util.EntityStatus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -30,19 +30,19 @@ public class doublestrike implements Skill {
             0.3,
             0.3,
             0.3,
-            0.35,
-            0.35,
-            0.35,
-            0.35,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
             0.4,
             0.4,
-            0.45,
-            0.45,
-            0.45,
-            0.45,
-            0.45,
-            0.45,
-            0.45
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4
     };
 
     public doublestrike(MasterYi _class){
@@ -110,8 +110,7 @@ public class doublestrike implements Skill {
                         PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
                         int lv = attacker.getLevel();
                         if((attack == 3 && target.getCurrentHealth() > 0 && target.getStatus() == EntityStatus.ALIVE)){
-                            DamageSource source = DamageSource.causeAttack(attacker,target);
-                            source.setDamage(attacker.getAd() * skillAdcoe[lv-1]);
+                            DamageSource source = DamageSource.causeAttackPhysics(attacker,target,attacker.getAd() * skillAdcoe[lv-1]);
                             attack = (attack+1) % 4;
 
                             DamageSource.attackDamage(source,true);

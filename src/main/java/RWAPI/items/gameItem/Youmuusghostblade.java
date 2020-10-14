@@ -37,14 +37,10 @@ public class Youmuusghostblade extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 60;
-		this.stat[1] = 0;
-		this.stat[2] = 300;
-		this.stat[3] = 100;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 0;
-		this.stat[7] = 0;
+		double[] stat = {
+				60,	0,	100,	100,	0,	0,	0,	0,	0,	0,	15,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
@@ -58,11 +54,11 @@ public class Youmuusghostblade extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
+	public ItemBase.usage_handler create_usage_handler(PlayerData data, ItemStack stack) {
 		return new handler(data,stack);
 	}
 
-	protected class handler extends ItemBase.handler{
+	protected class handler extends ItemBase.usage_handler{
 
 		PlayerData data;
 		ItemStack stack;

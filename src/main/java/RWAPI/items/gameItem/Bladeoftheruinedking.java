@@ -4,22 +4,25 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
+import RWAPI.items.gameItem.inherence.Bladeoftheruinedking_passive;
+import RWAPI.items.gameItem.inherence.Lifeline_passive;
+import RWAPI.items.gameItem.inherence.Thorn_passive;
 import RWAPI.main;
-import RWAPI.util.AttackDamageSource;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.AttackMagicDamageSource;
+import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Bladeoftheruinedking extends ItemBase {
 
 	private final double vamPercent = 15;
-	private final double reducePercent = 6;
+	private final double reducePercent = 8;
 
 	public Bladeoftheruinedking(String name) {
 		super(name);
@@ -43,27 +46,47 @@ public class Bladeoftheruinedking extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","기본 공격 시, 데미지의 "+String.format("%.0f",vamPercent)+"% 회복합니다.\n대상의 현재 체력의 "+String.format("%.0f",reducePercent)+"%에 해당하는 추가 피해를 입힙니다.");
+		nbt.setString("basic","기본 공격 시, 데미지의 "+String.format("%.0f",vamPercent)+"% 회복합니다.");
+		nbt.setString("inherence","대상의 현재 체력의 "+String.format("%.0f",reducePercent)+"%에 해당하는 추가 피해를 입힙니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 30;
-		this.stat[5] = 0.4;
+		double[] stat = {
+				30,	0,	0,	0,	0,	0,	0,	0.25,	0,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
-		return new handler(data,stack);
+	public List<Class<? extends inherence_handler>> get_inherence_handler() {
+		List<Class<? extends inherence_handler>> list = new ArrayList<>();
+		list.add(Bladeoftheruinedking_passive.class);
+		return list;
 	}
 
-	protected class handler extends ItemBase.handler{
+	@Override
+	public ItemBase.basic_handler create_basic_handler(PlayerData data, ItemStack stack) {
+		return new basic_handler(data,stack);
+	}
+
+	@Override
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+		if(_class.equals(Bladeoftheruinedking_passive.class)){
+			return new Bladeoftheruinedking_passive(data,stack,reducePercent);
+		}
+
+		return null;
+
+	}
+
+	protected class basic_handler extends ItemBase.basic_handler{
 
 		EventClass eventClass;
 		PlayerData data;
 
-		private handler(PlayerData data, ItemStack stack){
+		private basic_handler(PlayerData data, ItemStack stack){
 			super(data,stack);
 			this.data = data;
 			registerAttackEvent();
@@ -94,15 +117,13 @@ public class Bladeoftheruinedking extends ItemBase {
 
 				EntityData data = source.getAttacker();
 
-				if(data.equals(this.data) && source instanceof AttackDamageSource){
+				if(data.equals(this.data) && source instanceof AttackPhysicsDamageSource){
 					if(source.getAttacker().getCurrentHealth() < source.getAttacker().getMaxHealth()){
 						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent > source.getAttacker().getMaxHealth() ?
 								source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent;
 						source.getAttacker().setCurrentHealth(heal);
 					}
-					double aDamage = source.getTarget().getCurrentHealth() - (source.getTarget().getCurrentHealth()/100)*reducePercent > 0 ?
-							(source.getTarget().getCurrentHealth()/100)*reducePercent : source.getTarget().getCurrentHealth();
-					source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() - aDamage);
+					//source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() - aDamage);
 					//System.out.println("추가 데미지 : " + aDamage);
 
 				}

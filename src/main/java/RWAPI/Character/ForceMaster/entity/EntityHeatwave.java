@@ -4,7 +4,7 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,7 +22,7 @@ public class EntityHeatwave extends SkillEntity {
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
-        d1 = 0d;
+        this.judg = 0d;
     }
 
     @Override
@@ -56,8 +56,8 @@ public class EntityHeatwave extends SkillEntity {
                     target = ((AbstractMob) mi).getData();
                 }
                 if(target != null && attacker != null) {
-                    RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-                    RWAPI.util.DamageSource.attackDamage(source,true);
+                    DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                    DamageSource.attackDamage(source,true);
                     DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     mi.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
                 }

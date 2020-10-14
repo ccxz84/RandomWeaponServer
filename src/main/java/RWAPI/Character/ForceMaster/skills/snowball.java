@@ -78,24 +78,24 @@ public class snowball extends formaster{
             0.35
     };
     protected final double[] skillApcoe={
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
             0.5,
             0.5,
             0.5,
             0.5,
             0.5,
             0.5,
-            0.5
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.6,
+            0.6,
+            0.6,
+            0.6,
+            0.6,
+            0.6,
+            0.6
     };
     protected final double[] skillcost={
             1,
@@ -119,24 +119,24 @@ public class snowball extends formaster{
     };
 
     protected final double[] cooldown = {
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5
     };
 
     public snowball(ForceMaster forceMaster, Item skill){

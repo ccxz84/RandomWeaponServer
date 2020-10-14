@@ -1,7 +1,6 @@
 package RWAPI.game.event;
 
 import RWAPI.Character.PlayerData;
-import RWAPI.util.DamageSource;
 import net.minecraft.item.ItemStack;
 
 public abstract class ItemChangeEventHandle  extends BaseEvent{

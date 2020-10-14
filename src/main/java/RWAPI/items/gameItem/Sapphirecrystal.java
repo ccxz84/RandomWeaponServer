@@ -22,13 +22,9 @@ public class Sapphirecrystal extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 0;
-		this.stat[1] = 0;
-		this.stat[2] = 0;
-		this.stat[3] = 200;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 0;
-		this.stat[7] = 0;
+		double[] stat = {
+				0,	0,	0,	200,	0,	0,	0,	0,	0,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 }

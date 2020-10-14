@@ -2,14 +2,11 @@ package RWAPI.Character.MasterYi.skills;
 
 import RWAPI.Character.*;
 import RWAPI.game.event.PlayerAttackEventHandle;
-import RWAPI.items.gameItem.Recurvebow;
 import RWAPI.main;
 import RWAPI.Character.buff.Buff;
-import RWAPI.util.AttackDamageSource;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.stats.StatBase;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -202,8 +199,6 @@ public class meditation extends MasterYiS {
             y = (int) player.posY;
             z = (int) player.posZ;
             pdata = main.game.getPlayerData(player.getUniqueID());
-            pdata.getPlayer().maxHurtResistantTime = 10;
-            pdata.getPlayer().hurtResistantTime = 10;
         }
 
         @Override
@@ -222,7 +217,6 @@ public class meditation extends MasterYiS {
                 MinecraftForge.EVENT_BUS.unregister(this);
             }
             super.BuffTimer(event);
-            pdata.getPlayer().hurtResistantTime = 10;
             double dehealth = pdata.getMaxHealth() - pdata.getCurrentHealth();
             pdata.setCurrentHealth((pdata.getCurrentHealth() + data[0] + dehealth * 0.003) > pdata.getMaxHealth() ? pdata.getMaxHealth() : pdata.getCurrentHealth() + data[0] + dehealth * 0.003);
         }
@@ -243,10 +237,12 @@ public class meditation extends MasterYiS {
                 EntityData target = source.getTarget();
 
                 if(data.equals(target)){
-                    double health = source.getTarget().getCurrentHealth() + (((PlayerAttackEvent) event).getSource().getDamage() * 0.2) > 0 ?
-                            (((PlayerAttackEvent) event).getSource().getDamage() * 0.2) : source.getTarget().getMaxHealth();
-                    source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() + health);
-                    //System.out.println("추가 데미지 : " + aDamage);
+                    if(!(data.getCurrentHealth() <= 0)){
+
+                        double health = source.getTarget().getCurrentHealth() + (((PlayerAttackEvent) event).getSource().getDamage() * 0.2) > 0 ?
+                                (((PlayerAttackEvent) event).getSource().getDamage() * 0.2) : source.getTarget().getMaxHealth();
+                        source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() + health);
+                    }
 
                 }
             }

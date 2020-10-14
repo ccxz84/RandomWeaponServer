@@ -41,9 +41,12 @@ public class ForceMaster extends PlayerClass {
 
         attackSpeed = 0.37f;
 
-        class_code = ClassList.Leesin; //미완성
+        class_code = ClassList.ForceMaster; //미완성
 
         ClassName = "기공사";
+
+        default_armor = 31;
+        default_magicresistance = 30;
 
         super.weapon = ModWeapons.formaster;
 
@@ -134,7 +137,6 @@ public class ForceMaster extends PlayerClass {
 
     @Override
     public void preinitSkill(PlayerData data){
-        System.out.println("asdfasdf");
         this.eventhandler = new EventClass(data, BaseEvent.EventPriority.LOWEST);
         main.game.getEventHandler().register(this.eventhandler);
     }
@@ -162,6 +164,8 @@ public class ForceMaster extends PlayerClass {
             super.hp = this.hp;
             super.hregen = this.hregen;
             super.mana = this.mana;
+            super.armor = this.armor;
+            super.magicresistance = this.magicresistance;
             super.move = this.move;
             super.mregen = this.mregen;
             super.attackspeed = this.attackspeed;
@@ -249,6 +253,51 @@ public class ForceMaster extends PlayerClass {
                 0.5
 
         };
+
+        final double[] armor = {
+                31,
+                33.7,
+                36.4,
+                39.1,
+                41.8,
+                44.5,
+                47.2,
+                49.9,
+                52.6,
+                55.3,
+                58,
+                60.7,
+                63.4,
+                66.1,
+                68.8,
+                71.5,
+                74.2,
+                76.9
+
+        };
+
+        final double[] magicresistance = {
+                30,
+                30.5,
+                31,
+                31.5,
+                32,
+                32.5,
+                33,
+                33.5,
+                34,
+                34.5,
+                35,
+                35.5,
+                36,
+                36.5,
+                37,
+                37.5,
+                38,
+                38.5
+
+        };
+
         final double[] ad = {
                 64,
                 65.5,
@@ -335,7 +384,9 @@ public class ForceMaster extends PlayerClass {
     @Override
     public void EndGame(EntityPlayerMP player){
         for(Skill skill : skills){
-            skill.skillEnd(player);
+            if(skill != null){
+                skill.skillEnd(player);
+            }
         }
         if(eventhandler != null){
             main.game.getEventHandler().unregister(this.eventhandler);
@@ -453,31 +504,33 @@ public class ForceMaster extends PlayerClass {
         public void EventListener(BaseEvent.AbstractBaseEvent event) {
             PlayerData data = ((ItemChangeEvent)event).getData();
 
-            if(data.equals(data)){
+            if(this.data.equals(data)){
                 ItemStack stack = ((ItemChangeEvent)event).getStack();
                 ItemBase item = (ItemBase) stack.getItem();
                 if(((ItemChangeEvent) event).isRemove()){
+                    System.out.println("remove run");
                     if(item.getstat()[3] > 0){
                         double mana = item.getstat()[3];
                         data.setMaxMana(data.getMaxMana() + mana);
                         data.setCurrentMana(data.getCurrentMana() + mana);
                         data.setAp(data.getAp() - mana/10);
                     }
-                    if(item.getstat()[7] > 0){
-                        double manaregen = item.getstat()[7];
+                    if(item.getstat()[9] > 0){
+                        double manaregen = item.getstat()[9];
                         data.setRegenMana(data.getRegenMana() + manaregen);
                         data.setAp(data.getAp() - manaregen/1.0d);
                     }
                 }
                 else{
+                    System.out.println("run");
                     if(item.getstat()[3] > 0){
                         double mana = item.getstat()[3];
                         data.setMaxMana(data.getMaxMana() - mana);
                         data.setCurrentMana(data.getCurrentMana() - mana);
                         data.setAp(data.getAp() + mana/10);
                     }
-                    if(item.getstat()[7] > 0){
-                        double manaregen = item.getstat()[7];
+                    if(item.getstat()[9] > 0){
+                        double manaregen = item.getstat()[9];
                         data.setRegenMana(data.getRegenMana() - manaregen);
                         data.setAp(data.getAp() + manaregen/1.0d);
                     }

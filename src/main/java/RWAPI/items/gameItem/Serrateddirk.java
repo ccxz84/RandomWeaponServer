@@ -25,19 +25,9 @@ public class Serrateddirk extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 25;
-		this.stat[1] = 0;
-		this.stat[2] = 150;
-		this.stat[3] = 0;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 0;
-		this.stat[7] = 0;
-	}
-
-	protected class handler extends ItemBase.handler{
-		public handler(PlayerData data, ItemStack stack) {
-			super(data,stack);
-		}
+		double[] stat = {
+				25,	0,	150,	0,	0,	0,	0,	0,	0,	0,	15,	0
+		};
+		this.stat = stat;
 	}
 }

@@ -4,13 +4,12 @@ import RWAPI.Character.*;
 import RWAPI.Character.buff.Buff;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class wujustyle extends MasterYiS {
 
@@ -24,44 +23,43 @@ public class wujustyle extends MasterYiS {
 
     protected final double[] skilldamage={
             18,
+            18.5,
+            19,
+            19.5,
             20,
-            22,
-            24,
-            26,
-            30,
-            33,
-            36,
-            40,
-            43,
-            46,
-            49,
-            53,
-            57,
-            61,
-            65,
-            69,
-            73
+            20.5,
+            21,
+            21.5,
+            23.5,
+            25.5,
+            27.5,
+            29.5,
+            31.5,
+            33.5,
+            35.5,
+            37.5,
+            39.5,
+            41.5
     };
     protected final double[] skillAdcoe={
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4,
-            0.4
-
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3
     };
     protected final double[] skillApcoe={
             0,
@@ -205,9 +203,8 @@ public class wujustyle extends MasterYiS {
                     }
                     if(target != null) {
                         PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
-                        DamageSource source = DamageSource.causeAttack(attacker,target);
-                        source.setDamage(data[0]);
-                        DamageSource.attackDamage(source,true);
+                        DamageSource source = DamageSource.causeAttackFixed(attacker,target,data[0]);
+                        DamageSource.attackDamage(source,false);
                         DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     }
                 }

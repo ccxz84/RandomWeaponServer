@@ -21,15 +21,18 @@ public class PlayerClass implements Cloneable {
 	
 	public String ClassName;
 	
-	public float default_health;
-	public float default_mana;
+	public double default_health;
+	public double default_mana;
 	
-	public float default_ad;
-	public float default_ap;
-	public float default_move;
+	public double default_ad;
+	public double default_ap;
+	public double default_move;
 	
-	public float default_regenHealth;
-	public float default_regenMana;
+	public double default_regenHealth;
+	public double default_regenMana;
+
+	public double default_armor;
+	public double default_magicresistance;
 	
 	public float attackSpeed;
 	
@@ -96,6 +99,8 @@ public class PlayerClass implements Cloneable {
 		data.setCurrentHealth(data.getMaxHealth());
 		data.setCurrentMana(data.getMaxMana());
 		data.setMove((float) (data.getMove() - matrix.move[lv-1] + matrix.move[lv]));
+		data.setArmor((float) (data.getArmor() - matrix.armor[lv-1] + matrix.armor[lv]));
+		data.setMagicresistance((float) (data.getMagicresistance() - matrix.magicresistance[lv-1] + matrix.magicresistance[lv]));
 		data.setBaseAttackspeed(matrix.attackspeed[lv]);
 	}
 	
@@ -116,6 +121,8 @@ public class PlayerClass implements Cloneable {
 		public double[] ap;
 		public double[] move;
 		public double[] attackspeed;
+		public double[] armor;
+		public double[] magicresistance;
 	}
 
 	public Skill getSkill(int idx) {

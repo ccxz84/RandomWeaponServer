@@ -2,16 +2,10 @@ package RWAPI.Character.MasterYi.skills;
 
 import RWAPI.Character.*;
 import RWAPI.Character.buff.Buff;
-import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.game.event.EntityDeathEventHandle;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.world.NoteBlockEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class highlander extends MasterYiS {
 
@@ -53,16 +47,16 @@ public class highlander extends MasterYiS {
                     0.25,
                     0.25,
                     0.25,
+                    0.25,
+                    0.25,
+                    0.25,
                     0.3,
                     0.3,
                     0.3,
-                    0.35,
-                    0.35,
-                    0.35,
-                    0.4,
-                    0.4,
-                    0.4,
-                    0.4
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3
             }
     };
     protected final double[] skillAdcoe={

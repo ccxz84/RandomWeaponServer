@@ -5,8 +5,8 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.AttackDamageSource;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,14 +32,10 @@ public class VampiricScepter extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 15;
-		this.stat[1] = 0;
-		this.stat[2] = 0;
-		this.stat[3] = 0;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 0;
-		this.stat[7] = 0;
+		double[] stat = {
+				15,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
@@ -53,11 +49,11 @@ public class VampiricScepter extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
+	public ItemBase.basic_handler create_basic_handler(PlayerData data, ItemStack stack) {
 		return new handler(data,stack);
 	}
 
-	protected class handler extends ItemBase.handler{
+	protected class handler extends ItemBase.basic_handler{
 
 		EventClass eventClass;
 		PlayerData data;
@@ -94,7 +90,7 @@ public class VampiricScepter extends ItemBase {
 
 				EntityData data = source.getAttacker();
 
-				if(data.equals(this.data) && source instanceof AttackDamageSource){
+				if(data.equals(this.data) && source instanceof AttackPhysicsDamageSource){
 					if(source.getAttacker().getCurrentHealth() < source.getAttacker().getMaxHealth()){
 						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent > source.getAttacker().getMaxHealth() ?
 								source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent;

@@ -6,7 +6,7 @@ import RWAPI.main;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.monster.entity.AbstractMob;
-import RWAPI.util.DamageSource.EnemyStatHandler;
+import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -88,8 +88,8 @@ public class EntityTempest extends SkillEntity{
 					target = ((AbstractMob) mi).getData();
 				}
 				if(target != null && attacker != null) {
-					RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-					RWAPI.util.DamageSource.attackDamage(source,true);
+					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 					mi.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
 				}

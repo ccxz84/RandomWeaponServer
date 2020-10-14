@@ -27,7 +27,6 @@ public class ShopPurchasePacket implements IMessage{
 
         @Override
         public IMessage onMessage(ShopPurchasePacket message, MessageContext ctx) {
-            System.out.println("test");
             if(ctx.getServerHandler().player.openContainer instanceof Shopui &&((main.game.start == GameStatus.START)|| (main.game.start == GameStatus.PRESTART))){
                 PlayerData data = main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID());
                 data.purchaseItem(((Shopui) ctx.getServerHandler().player.openContainer).currentstack);

@@ -31,7 +31,6 @@ public class ShopScrollPacket implements IMessage{
             if(ctx.getServerHandler().player.openContainer.windowId == message.windowid && ctx.getServerHandler().player.openContainer instanceof Shopui){
                 ((Shopui) ctx.getServerHandler().player.openContainer).scrollTo(message.num);
                 ((Shopui) ctx.getServerHandler().player.openContainer).sync();
-                System.out.println("test");
             }
 
             return null;

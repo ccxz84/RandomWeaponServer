@@ -61,24 +61,24 @@ public class frostpalm extends formaster {
             0.8
     };
     protected final double[] skillApcoe={
-            0.3,
-            0.3,
-            0.3,
-            0.3,
-            0.3,
-            0.3,
-            0.3,
-            0.3,
-            0.3,
-            0.3,
-            0.3,
             0.4,
             0.4,
             0.4,
             0.4,
             0.4,
             0.4,
-            0.4
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
     };
     protected final double[] skillcost={
             1,

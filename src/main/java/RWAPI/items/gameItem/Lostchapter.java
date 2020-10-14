@@ -24,13 +24,9 @@ public class Lostchapter extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 0;
-		this.stat[1] = 30;
-		this.stat[2] = 0;
-		this.stat[3] = 300;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 0;
-		this.stat[7] = 2;
+		double[] stat = {
+				0,	35,	0,	300,	0,	0,	0,	0,	0,	2,	0,	0
+		};
+		this.stat = stat;
 	}
 }

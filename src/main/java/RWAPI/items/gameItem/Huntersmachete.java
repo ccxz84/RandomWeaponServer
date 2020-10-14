@@ -6,8 +6,7 @@ import RWAPI.game.event.EntityDeathEventHandle;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.AttackDamageSource;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,6 +15,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 public class Huntersmachete extends ItemBase {
 
 	private final double expPer = 50;
+	private final double vamPercent = 10;
 
 	public Huntersmachete(String name) {
 		super(name);
@@ -33,14 +33,10 @@ public class Huntersmachete extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 0;
-		this.stat[1] = 0;
-		this.stat[2] = 100;
-		this.stat[3] = 0;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 0.1;
-		this.stat[7] = 0;
+		double[] stat = {
+				0,	0,	100,	0,	0,	0,	0,	0,	0.3,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
@@ -49,16 +45,16 @@ public class Huntersmachete extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","미니언 처치 시, "+String.format("%.0f",expPer)+"%의 경험치를 추가로 제공합니다.");
+		nbt.setString("basic","미니언 처치 시, "+String.format("%.0f",expPer)+"%의 경험치를 추가로 제공합니다. 미니언에게 기본 공격 시, 데미지의 "+String.format("%.0f",vamPercent)+"%를 회복합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
+	public ItemBase.basic_handler create_basic_handler(PlayerData data, ItemStack stack) {
 		return new handler(data,stack);
 	}
 
-	protected class handler extends ItemBase.handler{
+	protected class handler extends ItemBase.basic_handler{
 
 		EventClass eventClass;
 		PlayerData data;

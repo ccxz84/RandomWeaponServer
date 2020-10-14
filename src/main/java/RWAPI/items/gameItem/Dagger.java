@@ -22,6 +22,9 @@ public class Dagger extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[5] = 0.15;
+		double[] stat = {
+				0,	0,	0,	0,	0,	0,	0,	0.1,	0,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 }

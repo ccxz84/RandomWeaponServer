@@ -5,7 +5,7 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.RayTraceResult;
@@ -19,7 +19,7 @@ public class EntityBlazingbeam extends SkillEntity {
 
     public EntityBlazingbeam(World worldIn, EntityLivingBase playerin, double skilldamage) {
         super(worldIn, playerin, skilldamage);
-        d1 = 0.3;
+        this.judg = 0.8d;
     }
 
     @Override
@@ -44,13 +44,13 @@ public class EntityBlazingbeam extends SkillEntity {
             if (result.entityHit instanceof AbstractMob) {
                 AbstractMob mob = (AbstractMob) result.entityHit;
                 target = mob.getData();
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-                RWAPI.util.DamageSource.attackDamage(source, true);
+                DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             } else if (result.entityHit instanceof EntityPlayer) {
                 target = main.game.getPlayerData(result.entityHit.getUniqueID());
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-                RWAPI.util.DamageSource.attackDamage(source, true);
+                DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }
             result.entityHit.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);

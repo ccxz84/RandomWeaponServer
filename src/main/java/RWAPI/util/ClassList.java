@@ -24,6 +24,6 @@ public enum ClassList {
 	
 	public static PlayerClass getRandomClass() throws CloneNotSupportedException {
         return (PlayerClass) values()[random.nextInt(values().length)].getPlayerClass().copyClass();
-		//return ForceMaster.getPlayerClass().copyClass();
+		//return Leesin.getPlayerClass().copyClass();
     }
 }

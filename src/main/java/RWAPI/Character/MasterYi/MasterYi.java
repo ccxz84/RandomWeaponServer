@@ -1,32 +1,16 @@
 package RWAPI.Character.MasterYi;
 
-import RWAPI.Character.Leesin.Leesin;
-import RWAPI.Character.Leesin.skills.sonicwave;
 import RWAPI.Character.MasterYi.skills.*;
 import RWAPI.Character.Skill;
-import RWAPI.main;
-import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
-import RWAPI.Character.Leesin.entity.EntityUmpa;
-import RWAPI.Character.buff.Buff;
-import RWAPI.Character.monster.entity.AbstractMob;
-import RWAPI.Character.PlayerClass.StatMatrix;
 import RWAPI.init.ModSkills;
 import RWAPI.init.ModWeapons;
 import RWAPI.util.ClassList;
-import RWAPI.util.DamageSource;
-import RWAPI.util.DamageSource.EnemyStatHandler;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public class MasterYi extends PlayerClass {
 	
@@ -36,12 +20,15 @@ public class MasterYi extends PlayerClass {
 		
 		default_ad = 76;
 		default_ap = 0;
-		default_move = 120;
+		default_move = 110;
 		
 		default_regenHealth = 0.6f;
 		default_regenMana = 0.4f;
 		
 		attackSpeed = 0.35f;
+
+		default_armor = 33;
+		default_magicresistance = 32.1;
 		
 		class_code = ClassList.MasterYi;
 		
@@ -116,6 +103,8 @@ public class MasterYi extends PlayerClass {
 			super.hp = this.hp;
 			super.hregen = this.hregen;
 			super.mana = this.mana;
+			super.armor = this.armor;
+			super.magicresistance = this.magicresistance;
 			super.move = this.move;
 			super.mregen = this.mregen;
 			super.attackspeed = this.attackspeed;
@@ -123,23 +112,23 @@ public class MasterYi extends PlayerClass {
 		
 		final double[] hp = {
 				800,
-				880,
-				960,
+				860,
+				920,
+				980,
 				1040,
-				1100,
+				1120,
 				1200,
-				1300,
-				1400,
-				1520,
-				1640,
-				1780,
-				1920,
-				2080,
+				1280,
+				1380,
+				1480,
+				1580,
+				1690,
+				1800,
+				1910,
+				2020,
+				2130,
 				2240,
-				2400,
-				2560,
-				2720,
-				2880
+				2350
 		};
 		
 		final double[] mana = {
@@ -203,6 +192,48 @@ public class MasterYi extends PlayerClass {
 				4.7,
 				5.2,
 				5.7
+		};
+
+		final double[] armor = {
+				0.4,
+				0.5,
+				0.6,
+				0.7,
+				0.8,
+				1,
+				1.2,
+				1.4,
+				1.7,
+				2,
+				2.3,
+				2.7,
+				3.2,
+				3.7,
+				4.2,
+				4.7,
+				5.2,
+				5.7
+		};
+
+		final double[] magicresistance = {
+				33,
+				36,
+				39,
+				42,
+				45,
+				48,
+				51,
+				54,
+				57,
+				60,
+				63,
+				66,
+				69,
+				72,
+				75,
+				78,
+				81,
+				84
 		};
 		
 		final double[] ad = {

@@ -5,13 +5,12 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.AttackDamageSource;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class Bilgewatercutlass extends ItemBase {
 
@@ -45,15 +44,18 @@ public class Bilgewatercutlass extends ItemBase {
 
 	@Override
 	protected void initstat(){
-		this.stat[0] = 25;
+		double[] stat = {
+				25,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
-		return new handler(data,stack);
+	public basic_handler create_basic_handler(PlayerData data, ItemStack stack) {
+		return new handler(data, stack);
 	}
 
-	protected class handler extends ItemBase.handler{
+	protected class handler extends ItemBase.basic_handler{
 
 		EventClass eventClass;
 		PlayerData data;
@@ -90,7 +92,7 @@ public class Bilgewatercutlass extends ItemBase {
 
 				EntityData data = source.getAttacker();
 
-				if(data.equals(this.data) && source instanceof AttackDamageSource){
+				if(data.equals(this.data) && source instanceof AttackPhysicsDamageSource){
 					if(source.getAttacker().getCurrentHealth() < source.getAttacker().getMaxHealth()){
 						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent > source.getAttacker().getMaxHealth() ?
 							source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent;

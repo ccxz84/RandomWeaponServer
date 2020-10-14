@@ -56,6 +56,10 @@ public class ItemBase extends Item{
 		return refund_gold;
 	}
 
+	public List<Class<? extends inherence_handler>> get_inherence_handler(){
+		return null;
+	}
+
 	@Override
 	public ICapabilityProvider initCapabilities(ItemStack stack, NBTTagCompound nbt) {
 		if (nbt == null) {
@@ -80,13 +84,47 @@ public class ItemBase extends Item{
 		return super.initCapabilities(stack, nbt);
 	}
 
-	public handler create_handler(PlayerData data, ItemStack stack){
+	public basic_handler create_basic_handler(PlayerData data, ItemStack stack){
+		return null;
+	};
+
+	public inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class){
+		return null;
+	};
+
+	public usage_handler create_usage_handler(PlayerData data, ItemStack stack){
 		return null;
 	};
 
 	public static abstract class handler{
 
-		public handler(PlayerData data, ItemStack stack){
+	}
+
+	public static abstract class basic_handler extends handler{
+
+		public basic_handler(PlayerData data, ItemStack stack){
+
+		}
+
+		public void removeHandler(){
+
+		}
+	}
+
+	public static abstract class inherence_handler extends handler{
+
+		public inherence_handler(PlayerData data, ItemStack stack){
+
+		}
+
+		public void removeHandler(){
+
+		}
+	}
+
+	public static abstract class usage_handler extends handler{
+
+		public usage_handler(PlayerData data, ItemStack stack){
 
 		}
 
@@ -100,8 +138,8 @@ public class ItemBase extends Item{
 	}
 
 	public static abstract class coolHandler{
-		private int MaxTime;
-		private int currentTime = 0;
+		protected int MaxTime;
+		protected int currentTime = 0;
 		private ItemStack stack;
 
 		public coolHandler(double timer, ItemStack stack){

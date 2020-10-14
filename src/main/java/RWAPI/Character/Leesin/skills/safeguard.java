@@ -100,25 +100,24 @@ public class safeguard implements Skill {
     };
 
     protected final double[] cooldown = {
+            18,
+            18,
+            18,
+            18,
+            18,
+            16,
+            16,
+            16,
+            14,
+            14,
+            14,
             13,
             13,
             13,
             13,
             13,
-            11,
-            11,
-            11,
-            9,
-            9,
-            9,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8
-
+            13,
+            13
     };
 
     public safeguard(PlayerClass _class){

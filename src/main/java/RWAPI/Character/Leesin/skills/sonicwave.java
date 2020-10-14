@@ -11,8 +11,8 @@ import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.init.ModSkills;
 import RWAPI.items.skillItem.SkillBase;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
-import net.minecraft.entity.EntityLivingBase;
+import RWAPI.util.DamageSource.DamageSource;
+import RWAPI.util.EntityStatus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.MinecraftForge;
@@ -218,7 +218,7 @@ public class sonicwave implements Skill {
             System.out.println(player.getName());
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[0][lv-1]));
             EntityUmpa ls = new EntityUmpa(player.world,player,(float) (skilldamage[0][lv-1]+ skillAdcoe[lv-1] * data.getAd()));
-            ls.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.9f, 0);
+            ls.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.95f, 0);
             //ls.posY -= 1;
             ls.setNoGravity(true);
             player.world.spawnEntity(ls);
@@ -229,25 +229,32 @@ public class sonicwave implements Skill {
         else if(data.getSkill(1).equals(ModSkills.skill.get(ModSkills.resonatingstrike.SkillNumber)) && data.getCurrentMana() > skillcost[1][lv-1]){
             data.nonWorking = true;
             data.nonWorking = false;
-            data.setCurrentMana((float) (data.getCurrentMana() - skillcost[1][lv-1]));
+
+
             if(timer.resonating.getThrower() instanceof EntityPlayer) {
                 PlayerData target = main.game.getPlayerData(timer.resonating.getThrower().getUniqueID());
+                if(target.getStatus() != EntityStatus.ALIVE){
+                    return;
+                }
                 ((EntityPlayerMP) player).connection.setPlayerLocation(target.getPlayer().posX, target.getPlayer().posY, target.getPlayer().posZ, player.rotationYaw, player.rotationPitch);
                 timer.resonating.getThrower().attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(player, timer.resonating), (float)1);
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
+                DamageSource source = DamageSource.causeSkillPhysics(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
-                RWAPI.util.DamageSource.attackDamage(source,true);
+                DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }else if(timer.resonating.getThrower() instanceof AbstractMob){
                 AbstractMob mob = (AbstractMob) timer.resonating.getThrower();
                 EntityData target = mob.getData();
+                if(target.getStatus() != EntityStatus.ALIVE){
+                    return;
+                }
                 ((EntityPlayerMP) player).connection.setPlayerLocation(mob.posX - player.getLookVec().x *1.1, mob.posY, mob.posZ - player.getLookVec().z *1.1, player.rotationYaw, player.rotationPitch);
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[0][lv-1] * data.getAd()
+                DamageSource source = DamageSource.causeSkillPhysics(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[0][lv-1] * data.getAd()
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
-                RWAPI.util.DamageSource.attackDamage(source,true);
+                DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }
-
+            data.setCurrentMana((float) (data.getCurrentMana() - skillcost[1][lv-1]));
             timer.resonating.getThrower().attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(player, timer.resonating), (float)1);
             timer.resonating.setDead();
             timer.stop();

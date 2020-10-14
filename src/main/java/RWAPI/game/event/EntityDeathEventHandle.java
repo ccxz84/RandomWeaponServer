@@ -1,6 +1,6 @@
 package RWAPI.game.event;
 
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 
 public abstract class EntityDeathEventHandle  extends BaseEvent{
 

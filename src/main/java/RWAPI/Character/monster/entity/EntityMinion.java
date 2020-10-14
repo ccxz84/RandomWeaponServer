@@ -1,49 +1,19 @@
 package RWAPI.Character.monster.entity;
 
-import java.util.UUID;
-
 import RWAPI.main;
-import RWAPI.Character.ClientData;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.ai.PlayerAIHurtByTarget;
 import RWAPI.Character.ai.PlayerAIZombieAttack;
-import RWAPI.packet.EnemyStatPacket;
-import RWAPI.packet.PlayerStatMessage;
-import RWAPI.util.DamageSource.EnemyStatHandler;
+import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAvoidEntity;
-import net.minecraft.entity.ai.EntityAIFleeSun;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIRestrictSun;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.ai.EntityAIZombieAttack;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
-import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
 public class EntityMinion extends AbstractMob{
@@ -52,7 +22,7 @@ public class EntityMinion extends AbstractMob{
 	private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.<Boolean>createKey(EntityMinion.class, DataSerializers.BOOLEAN);
 
 	public EntityMinion(World worldIn) {
-		super(worldIn,new EntityData(900f,110f,50,30,"미니언",0.03));
+		super(worldIn,new EntityData(900f,10f,10f,110f,50,70,"미니언",0.03));
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -168,8 +138,8 @@ public class EntityMinion extends AbstractMob{
 			if(source.getTrueSource() instanceof EntityPlayer) {
 
 				PlayerData attacker = main.game.getPlayerData(source.getTrueSource().getUniqueID());
-				RWAPI.util.DamageSource sourcee = RWAPI.util.DamageSource.causeAttack(attacker, data);
-				RWAPI.util.DamageSource.attackDamage(sourcee,true);
+				RWAPI.util.DamageSource.DamageSource sourcee = RWAPI.util.DamageSource.DamageSource.causeAttackPhysics(attacker, data,attacker.getAd());
+				RWAPI.util.DamageSource.DamageSource.attackDamage(sourcee,true);
 				EnemyStatHandler.EnemyStatSetter(sourcee);
 			}
 		}
@@ -182,8 +152,8 @@ public class EntityMinion extends AbstractMob{
 		// TODO Auto-generated method stub
 		if(entityIn instanceof EntityPlayer) {
 			PlayerData target = main.game.getPlayerData(entityIn.getUniqueID());
-			RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeAttack(data, target);
-			RWAPI.util.DamageSource.attackDamage(source,true);
+			RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeAttackPhysics(data, target,data.getAd());
+			RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 			EnemyStatHandler.EnemyStatSetter(source);
 		}
 		

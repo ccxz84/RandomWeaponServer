@@ -44,6 +44,8 @@ public class Shopui extends Container implements IContainerListener {
 					return 1;
 			}
 		});
+
+
 		inven = new Inventory(list);
 		// Player Inventory, Slot 9-35, Slot IDs 9-35
 
@@ -120,11 +122,14 @@ public class Shopui extends Container implements IContainerListener {
 		if(slotId == 30 || slotId == 57)
 			return ItemStack.EMPTY;
 		if(slotId > 30 && slotId < 39){
+
 			PlayerData data = main.game.getPlayerData(player.getUniqueID());
-			ItemBase item = (ItemBase) this.inventoryItemStacks.get(slotId).getItem();
-			double[] stat = item.getstat();
-			if(data.getCurrentHealth() - stat[2] <= 0 || data.getCurrentMana() - stat[3] <= 0){
-				return ItemStack.EMPTY;
+			if(this.inventoryItemStacks.get(slotId).getItem() instanceof ItemBase){
+				ItemBase item = (ItemBase) this.inventoryItemStacks.get(slotId).getItem();
+				double[] stat = item.getstat();
+				if(data.getCurrentHealth() - stat[2] <= 0 || data.getCurrentMana() - stat[3] <= 0){
+					return ItemStack.EMPTY;
+				}
 			}
 		}
 		if(slotId > 30 && slotId < 57){

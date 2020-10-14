@@ -63,25 +63,24 @@ public class blazingpalm extends formaster {
 
     };
     protected final double[] skillApcoe={
-            0.2,
-            0.2,
-            0.2,
-            0.2,
-            0.2,
-            0.2,
-            0.2,
-            0.2,
-            0.2,
-            0.2,
-            0.2,
             0.3,
             0.3,
             0.3,
             0.3,
             0.3,
             0.3,
-            0.3
-
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4
     };
     protected final double[] skillcost={
             0,

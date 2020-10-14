@@ -6,8 +6,7 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
-import RWAPI.packet.AlphastrikePacket;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import RWAPI.util.NetworkUtil;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -89,8 +88,8 @@ public class EntityAlpha extends SkillEntity {
             }
             if(target != null && attacker != null && target.getCurrentHealth() > 0) {
                 this.targetData.setData(idx++,mini.get(count));
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-                RWAPI.util.DamageSource.attackDamage(source,true);
+                DamageSource source = DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
+                DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                 mini.get(count).attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
             }

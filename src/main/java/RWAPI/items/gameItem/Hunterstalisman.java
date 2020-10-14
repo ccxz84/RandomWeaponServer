@@ -4,16 +4,20 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.game.event.EntityDeathEventHandle;
 import RWAPI.init.ModItems;
+import RWAPI.items.gameItem.inherence.*;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Hunterstalisman extends ItemBase {
 
-	private final int plusGold = 5;
+	private final int plusGold = 20;
 
 	public Hunterstalisman(String name) {
 		super(name);
@@ -31,14 +35,10 @@ public class Hunterstalisman extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 0;
-		this.stat[1] = 0;
-		this.stat[2] = 50;
-		this.stat[3] = 20;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 0.05;
-		this.stat[7] = 0.05;
+		double[] stat = {
+				0,	0,	50,	20,	0,	0,	0,	0,	0.1,	0.05,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
@@ -47,16 +47,28 @@ public class Hunterstalisman extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","미니언 처치 시, "+plusGold+"의 골드를 추가로 지급합니다.");
+		nbt.setString("inherence","미니언 처치 시, "+plusGold+"의 골드를 추가로 지급합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
-		return new handler(data,stack);
+	public List<Class<? extends inherence_handler>> get_inherence_handler() {
+		List<Class<? extends inherence_handler>> list = new ArrayList<>();
+		list.add(Hunterstalisman_passive.class);
+		return list;
 	}
 
-	protected class handler extends ItemBase.handler{
+	@Override
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+		if(_class.equals(Hunterstalisman_passive.class)){
+			return new Hunterstalisman_passive(data,stack,plusGold);
+		}
+
+		return null;
+
+	}
+
+	protected class handler extends ItemBase.inherence_handler{
 
 		EventClass eventClass;
 		PlayerData data;

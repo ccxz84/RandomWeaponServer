@@ -1,7 +1,7 @@
 package RWAPI.Character;
 
 import RWAPI.Character.buff.Buff;
-import RWAPI.util.DamageSource.EnemyStatHandler;
+import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import RWAPI.util.EntityStatus;
 
 import java.io.Serializable;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class EntityData implements Serializable {
 
-	private double deathgold = 0;
+	private int deathgold = 0;
 
 	private String name = "";
 
@@ -26,8 +26,10 @@ public class EntityData implements Serializable {
 
 	protected boolean godmode = false;
 
-	public EntityData(double MaxHealth, double ad,double deathexp,double deathgold, String name,double kill_cs) {
+	public EntityData(double MaxHealth,double armor, double magicresistance, double ad,double deathexp,int deathgold, String name,double kill_cs) {
 		this.data.MaxHealth = MaxHealth;
+		this.data.armor = armor;
+		this.data.magicresistance = magicresistance;
 		this.data.CurrentHealth = this.data.MaxHealth;
 		this.data.ad = ad;
 		this.data.Enemy = name;
@@ -83,7 +85,7 @@ public class EntityData implements Serializable {
 		return this.deathexp;
 	}
 
-	public double getDeattGold() {
+	public int getDeattGold() {
 		return this.deathgold;
 	}
 
@@ -101,6 +103,30 @@ public class EntityData implements Serializable {
 
 	public boolean getgodmod(){
 		return this.godmode;
+	}
+
+	public double getArmor(){
+		return this.data.armor;
+	}
+
+	public double getMagicresistance(){
+		return this.data.magicresistance;
+	}
+
+	public double getArmorpenetration(){
+		return this.data.armorpenetration;
+	}
+
+	public double getMagicpenetration(){
+		return this.data.magicpenetration;
+	}
+
+	public double getArmorpenetrationper(){
+		return this.data.armorpenetrationper;
+	}
+
+	public double getMagicpenetrationper(){
+		return this.data.magicpenetrationper;
 	}
 
 
@@ -134,6 +160,30 @@ public class EntityData implements Serializable {
 		this.data.CurrentMana = CurrentMana;
 	}
 
+	public void setArmor(double armor) {
+		this.data.armor = armor;
+	}
+
+	public void setMagicresistance(double magicresistance) {
+		this.data.magicresistance = magicresistance;
+	}
+
+	public void setArmorpenetration(double armorpenetration) {
+		this.data.armorpenetration = armorpenetration;
+	}
+
+	public void setMagicpenetration(double magicpenetration) {
+		this.data.magicpenetration = magicpenetration;
+	}
+
+	public void setArmorpenetrationper(double armorpenetrationper) {
+		this.data.armorpenetrationper = armorpenetrationper;
+	}
+
+	public void setMagicpenetrationper(double magicpenetrationper) {
+		this.data.magicpenetrationper = magicpenetrationper;
+	}
+
 	public void setAd(double ad) {
 		this.data.ad = ad;
 	}
@@ -158,7 +208,7 @@ public class EntityData implements Serializable {
 		this.deathexp = deathexp;
 	}
 
-	public void setDeathGold(double deathgold) {
+	public void setDeathGold(int deathgold) {
 		this.deathgold = deathgold;
 	}
 

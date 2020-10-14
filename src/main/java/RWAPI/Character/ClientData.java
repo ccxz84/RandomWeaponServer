@@ -29,6 +29,15 @@ public class ClientData extends NetworkUtil.Abstractmessage {
 	
 	protected double regenHealth = 0;
 	protected double regenMana = 0;
+
+	protected double armor;
+	protected double magicresistance;
+
+	protected double armorpenetration;
+	protected double magicpenetration;
+
+	protected double armorpenetrationper = 0;
+	protected double magicpenetrationper = 0;
 	
 	protected double attackSpeed;
 	

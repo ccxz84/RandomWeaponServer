@@ -1,15 +1,13 @@
 package RWAPI.Character.ForceMaster.entity;
 
 import RWAPI.Character.EntityData;
-import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -71,6 +69,8 @@ public class EntityIcerain extends SkillEntity {
         super.setDead();
         if(main.game == null)
             return;
+        if(baselist == null)
+            return;
         if(!baselist.isEmpty()){
             for(EntityLivingBase entity : baselist){
                 if(!entity.equals(this.player))
@@ -109,8 +109,8 @@ public class EntityIcerain extends SkillEntity {
                     target = ((AbstractMob) mi).getData();
                 }
                 if(target != null && attacker != null&& !(mi.equals(this.player))) {
-                    RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage/5);
-                    RWAPI.util.DamageSource.attackDamage(source,true);
+                    DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage/5);
+                    DamageSource.attackDamage(source,true);
                     DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     if(this.ticksExisted % 10 == 0){
                         mi.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);

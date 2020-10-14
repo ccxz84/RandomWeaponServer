@@ -44,12 +44,14 @@ public class InventoryUI extends Container {
 		if(slotId == 0 || slotId == 27)
 			return ItemStack.EMPTY;
 
-		if((slotId > 0 && slotId < 9)&& (main.game.start == GameStatus.PRESTART || main.game.start == GameStatus.START)){
+		if((slotId > 27 && slotId < 36)&& (main.game.start == GameStatus.PRESTART || main.game.start == GameStatus.START)){
 			PlayerData data = main.game.getPlayerData(player.getUniqueID());
-			ItemBase item = (ItemBase) this.inventoryItemStacks.get(slotId).getItem();
-			double[] stat = item.getstat();
-			if(data.getCurrentHealth() - stat[2] <= 0 || data.getCurrentMana() - stat[3] <= 0){
-				return ItemStack.EMPTY;
+			if(this.inventoryItemStacks.get(slotId).getItem() instanceof ItemBase){
+				ItemBase item = (ItemBase) this.inventoryItemStacks.get(slotId).getItem();
+				double[] stat = item.getstat();
+				if(data.getCurrentHealth() - stat[2] <= 0 || data.getCurrentMana() - stat[3] <= 0){
+					return ItemStack.EMPTY;
+				}
 			}
 		}
 		return super.slotClick(slotId, dragType, clickTypeIn, player);

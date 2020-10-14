@@ -79,27 +79,6 @@ public class blazingbeam extends formaster {
             1.4
     };
     protected final double[] skillcost={
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3,
-            3
-    };
-
-    protected final double[] cooldown = {
             2,
             2,
             2,
@@ -118,6 +97,27 @@ public class blazingbeam extends formaster {
             2,
             2,
             2
+    };
+
+    protected final double[] cooldown = {
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
     };
 
     public blazingbeam(ForceMaster forceMaster, Item skill) {

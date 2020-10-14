@@ -4,18 +4,26 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
+import RWAPI.items.gameItem.inherence.Bladeoftheruinedking_passive;
+import RWAPI.items.gameItem.inherence.Deathfiregrasp_passive;
+import RWAPI.items.gameItem.inherence.Lifeline_passive;
+import RWAPI.items.gameItem.inherence.Thorn_passive;
 import RWAPI.main;
-import RWAPI.util.AttackDamageSource;
-import RWAPI.util.DamageSource;
-import RWAPI.util.SkillDamageSource;
+import RWAPI.util.DamageSource.DamageSource;
+import RWAPI.util.DamageSource.SkillFixedDamageSource;
+import RWAPI.util.DamageSource.SkillMagicDamageSource;
+import RWAPI.util.DamageSource.SkillPhysicsDamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Deathfiregrasp extends ItemBase {
 
-	private final double reducePercent = 10;
+	private final double reducePercent = 12;
 
 	public Deathfiregrasp(String name) {
 		super(name);
@@ -35,14 +43,10 @@ public class Deathfiregrasp extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 0;
-		this.stat[1] = 120;
-		this.stat[2] = 0;
-		this.stat[3] = 300;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 0;
-		this.stat[7] = 3;
+		double[] stat = {
+				0,	120,	0,	300,	0,	0,	0,	0,	0,	3,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
@@ -51,64 +55,25 @@ public class Deathfiregrasp extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","스킬 공격 시, 대상의 현재 체력의 "+String.format("%.0f",this.reducePercent)+"%에 해당하는 추가 피해를 입힙니다.");
+		nbt.setString("inherence","스킬 공격 시, 대상의 현재 체력의 "+String.format("%.0f",this.reducePercent)+"%에 해당하는 추가 피해를 입힙니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
-		return new handler(data,stack);
+	public inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+		if(_class.equals(Deathfiregrasp_passive.class)){
+			return new Deathfiregrasp_passive(data,stack, reducePercent);
+		}
+
+		return null;
+
 	}
 
-	protected class handler extends ItemBase.handler{
-
-		EventClass eventClass;
-		PlayerData data;
-
-		private handler(PlayerData data, ItemStack stack){
-			super(data,stack);
-			this.data = data;
-			registerAttackEvent();
-		}
-
-		private void registerAttackEvent() {
-			this.eventClass = new EventClass(data);
-			main.game.getEventHandler().register(this.eventClass);
-		}
-
-		@Override
-		public void removeHandler() {
-			main.game.getEventHandler().unregister(this.eventClass);
-		}
-
-		private class EventClass extends PlayerAttackEventHandle {
-			PlayerData data;
-
-			public EventClass(PlayerData data) {
-				super();
-				this.data = data;
-			}
-
-			@Override
-			public void EventListener(AbstractBaseEvent event) {
-				DamageSource source = ((PlayerAttackEvent)event).getSource();
-				double damage = source.getDamage();
-
-				EntityData data = source.getAttacker();
-
-				if(data.equals(this.data) && source instanceof SkillDamageSource){
-					double aDamage = source.getTarget().getCurrentHealth() - (source.getTarget().getCurrentHealth()/100)*reducePercent > 0 ?
-							(source.getTarget().getCurrentHealth()/100)*reducePercent : source.getTarget().getCurrentHealth();
-					source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() - aDamage);
-					//System.out.println("추가 데미지 : " + aDamage);
-
-				}
-			}
-
-			@Override
-			public EventPriority getPriority() {
-				return EventPriority.NORMAL;
-			}
-		}
+	@Override
+	public List<Class<? extends inherence_handler>> get_inherence_handler() {
+		List<Class<? extends inherence_handler>> list = new ArrayList<>();
+		list.add(Deathfiregrasp_passive.class);
+		return list;
 	}
+
 }

@@ -240,7 +240,6 @@ public class frostarmor extends formaster {
                 Endbuf();
             }
             timer++;
-            pdata.getPlayer().hurtResistantTime = 10;
             pdata.getPlayer().connection.setPlayerLocation(posX,posY,posZ,pdata.getPlayer().rotationYaw,pdata.getPlayer().rotationPitch);
             pdata.setCool(4, ((float)(duration-timer)/40));
             if(timer % 20 == 0){
@@ -252,15 +251,12 @@ public class frostarmor extends formaster {
         @Override
         public void setEffect() {
             pdata = main.game.getPlayerData(player.getUniqueID());
-            pdata.getPlayer().maxHurtResistantTime = 10;
-            pdata.getPlayer().hurtResistantTime = 10;
         }
 
         @Override
         public void resetEffect() {
             pdata.nonWorking = false;
             pdata.getPlayer().hurtResistantTime=0;
-            pdata.getPlayer().maxHurtResistantTime = 0;
             pdata.setSkill(4, (SkillBase) ModSkills.skill.get(ModSkills.frostarmor.SkillNumber));
         }
 

@@ -5,7 +5,7 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,14 +36,10 @@ public class Spiritvisage extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 0;
-		this.stat[1] = 0;
-		this.stat[2] = 1000;
-		this.stat[3] = 0;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 2;
-		this.stat[7] = 0;
+		double[] stat = {
+				0,	0,	450,	0,	0,	40,	0,	0,	5,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
@@ -57,11 +53,11 @@ public class Spiritvisage extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
+	public ItemBase.basic_handler create_basic_handler(PlayerData data, ItemStack stack) {
 		return new handler(data,stack);
 	}
 
-	protected class handler extends ItemBase.handler{
+	protected class handler extends ItemBase.basic_handler{
 
 		EventClass eventClass;
 		PlayerData data;

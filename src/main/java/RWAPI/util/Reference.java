@@ -1,5 +1,7 @@
 package RWAPI.util;
 
+import RWAPI.items.gameItem.ItemBase;
+
 import java.util.ArrayList;
 
 public class Reference {
@@ -10,7 +12,7 @@ public class Reference {
 	public static final String CLIENT_PROXY_CLASS = "RWAPI.proxy.ClientProxy";
 	public static final String COMMON_PROXY_CLASS = "RWAPI.proxy.CommonProxy";
 
-	public static final int GAMEWAITTIME = 60;
+	public static final int GAMEWAITTIME = 1;
 
 	public static final double[] SHOPPOS = { -56,53,107};
 	public static final double[] _1stPOS = {-72,67,146};
@@ -43,4 +45,5 @@ public class Reference {
 
 	public static final int SHOPUSAGE_TIME = 30;
 	public static final int RESPAWNFUND_TIME = 15;
+
 }

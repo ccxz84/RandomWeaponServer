@@ -32,7 +32,7 @@ public class KeyInputPacket implements IMessage {
 		@Override
 		public IMessage onMessage(KeyInputPacket message, MessageContext ctx) {
 			// TODO Auto-generated method stub
-			if(message.keynum == Keyboard.KEY_Z || message.keynum == Keyboard.KEY_X || message.keynum == Keyboard.KEY_C|| message.keynum == Keyboard.KEY_V  || message.keynum == -1) {
+			if(message.keynum == Keyboard.KEY_Z || message.keynum == Keyboard.KEY_X || message.keynum == Keyboard.KEY_C|| message.keynum == Keyboard.KEY_V || message.keynum == Keyboard.KEY_B || message.keynum == -1) {
 				if(main.game.start == GameStatus.START) {
 					PlayerData data = main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID());
 					data.inputKey(message.keynum);

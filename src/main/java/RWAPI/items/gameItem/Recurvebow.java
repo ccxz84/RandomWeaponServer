@@ -5,9 +5,8 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.AttackDamageSource;
-import RWAPI.util.DamageSource;
-import RWAPI.util.SkillDamageSource;
+import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,14 +33,10 @@ public class Recurvebow extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 0;
-		this.stat[1] = 0;
-		this.stat[2] = 0;
-		this.stat[3] = 0;
-		this.stat[4] = 0;
-		this.stat[5] = 0.25;
-		this.stat[6] = 0;
-		this.stat[7] = 0;
+		double[] stat = {
+				0,	0,	0,	0,	0,	0,	0,	0.2,	0,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
@@ -55,11 +50,11 @@ public class Recurvebow extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
+	public ItemBase.basic_handler create_basic_handler(PlayerData data, ItemStack stack) {
 		return new handler(data,stack);
 	}
 
-	protected class handler extends ItemBase.handler{
+	protected class handler extends ItemBase.basic_handler{
 
 		EventClass eventClass;
 		PlayerData data;
@@ -95,10 +90,12 @@ public class Recurvebow extends ItemBase {
 
 				EntityData data = source.getAttacker();
 
-				if(data.equals(this.data) && source instanceof AttackDamageSource){
+				if(data.equals(this.data) && source instanceof DamageSource.AttackDamage){
 					double aDamage = source.getTarget().getCurrentHealth() - plusdmg > 0 ?
 							plusdmg : source.getTarget().getCurrentHealth();
-					source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() - aDamage);
+					DamageSource sourcee = DamageSource.causeUnknownPhysics(source.getAttacker(),source.getTarget(),aDamage);
+					DamageSource.attackDamage(sourcee,false);
+					//source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() - aDamage);
 					//System.out.println("추가 데미지 : " + aDamage);
 
 				}

@@ -5,7 +5,7 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 public class Warmogsarmor extends ItemBase {
 
 	private final int passivTime = 3;
-	private final double plusHregen = 25;
+	private final double plusHregen = 20;
 
 	public Warmogsarmor(String name) {
 		super(name);
@@ -37,14 +37,10 @@ public class Warmogsarmor extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 0;
-		this.stat[1] = 0;
-		this.stat[2] = 1500;
-		this.stat[3] = 0;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 4;
-		this.stat[7] = 0;
+		double[] stat = {
+				0,	0,	800,	0,	0,	0,	0,	0,	10,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 
 	@Override
@@ -58,11 +54,11 @@ public class Warmogsarmor extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.handler create_handler(PlayerData data, ItemStack stack) {
+	public ItemBase.basic_handler create_basic_handler(PlayerData data, ItemStack stack) {
 		return new handler(data,stack);
 	}
 
-	protected class handler extends ItemBase.handler{
+	protected class handler extends ItemBase.basic_handler{
 
 		EventClass eventClass;
 		PlayerData data;
@@ -107,7 +103,7 @@ public class Warmogsarmor extends ItemBase {
 				EntityData attacker = source.getAttacker();
 				EntityData target = source.getTarget();
 
-				if(target.equals(this.data)){
+				if(target.equals(this.data) || attacker instanceof PlayerData){
 					if(timer == null){
 						timer = new Timer(data, passivTime,this);
 						resetregen();

@@ -1,11 +1,7 @@
 package RWAPI.Character;
 
-import RWAPI.Character.monster.entity.AbstractMob;
-import RWAPI.main;
-import RWAPI.util.DamageSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -18,7 +14,7 @@ import java.util.List;
 public class SkillEntity extends EntityThrowable {
 	
 	protected double skilldamage;
-	protected double d1 = 0.3d;
+	protected double judg = 0.3d;
 	
 	public SkillEntity(World world) {
 		super(world);
@@ -83,7 +79,7 @@ public class SkillEntity extends EntityThrowable {
 				else
 				{
 					flag = false;
-					AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(0.3d);
+					AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(judg);
 					RayTraceResult raytraceresult1 = axisalignedbb.calculateIntercept(vec3d, vec3d1);
 
 					if (raytraceresult1 != null)

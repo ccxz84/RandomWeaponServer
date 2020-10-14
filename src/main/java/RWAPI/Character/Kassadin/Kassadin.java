@@ -28,7 +28,7 @@ public class Kassadin extends PlayerClass {
 
         attackSpeed = 0.4f;
 
-        class_code = ClassList.Leesin;
+        //class_code = ClassList.Leesin;
 
         ClassName = "리 신";
 

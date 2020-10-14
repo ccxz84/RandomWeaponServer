@@ -28,12 +28,9 @@ public class Amplifyingtome extends ItemBase {
 
 	@Override
 	protected void initstat() {
-		this.stat[1] = 25;
-	}
-
-	@Override
-	public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-
-		super.onCreated(stack, worldIn, playerIn);
+		double[] stat = {
+				0,	25,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+		};
+		this.stat = stat;
 	}
 }

@@ -4,7 +4,7 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.monster.entity.AbstractMob;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -60,8 +60,8 @@ public class EntityIcecoil extends SkillEntity {
                     target = ((AbstractMob) mi).getData();
                 }
                 if(target != null && attacker != null&& !(mi.equals(this.player))) {
-                    RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-                    RWAPI.util.DamageSource.attackDamage(source,true);
+                    DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                    DamageSource.attackDamage(source,true);
                     DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     mi.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
 
