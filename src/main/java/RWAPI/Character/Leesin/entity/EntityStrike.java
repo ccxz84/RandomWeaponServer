@@ -4,7 +4,7 @@ import RWAPI.main;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,8 +49,8 @@ public class EntityStrike extends SkillEntity{
 			if(!(result.entityHit.getUniqueID().equals(this.thrower.getUniqueID()))) {
 				PlayerData attacker = main.game.getPlayerData(this.thrower.getUniqueID());
 				EntityData target;
-				if(result.entityHit instanceof AbstractMob) {
-					AbstractMob mob = (AbstractMob) result.entityHit;
+				if(result.entityHit instanceof IMob) {
+					IMob mob = (IMob) result.entityHit;
 					target = mob.getData();
 					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
 					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);

@@ -4,10 +4,11 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.MasterYi.skills.alphastrike;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
 import RWAPI.util.NetworkUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -20,7 +21,7 @@ import java.util.List;
 public class EntityAlpha extends SkillEntity {
 
     targetData targetData = null;
-    List<EntityLivingBase> mini;
+    List<Entity> mini;
     EntityPlayerMP player;
     int count = 0, idx = 1;
 
@@ -41,7 +42,7 @@ public class EntityAlpha extends SkillEntity {
     }
 
     private void growHitbox() {
-        mini =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(2.5,0.75,2.5));
+        mini =  this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().grow(2.5,0.75,2.5));
         mini.remove(this.thrower);
     }
 
@@ -75,13 +76,13 @@ public class EntityAlpha extends SkillEntity {
     private void hit_target() {
         EntityData target = null;
         EntityData attacker = null;
-        if(this.thrower instanceof EntityPlayer) {
+        if(this.thrower instanceof EntityPlayer && mini != null) {
             attacker = main.game.getPlayerData(this.thrower.getUniqueID());
             if(mini.size() == 0)
                 return;
 
-            if(mini.get(count) instanceof AbstractMob) {
-                target = ((AbstractMob) mini.get(count)).getData();
+            if(mini.get(count) instanceof IMob) {
+                target = ((IMob) mini.get(count)).getData();
             }
             else if(mini.get(count) instanceof EntityPlayer){
                 target = main.game.getPlayerData(mini.get(count).getUniqueID());
@@ -117,11 +118,11 @@ public class EntityAlpha extends SkillEntity {
     }
 
     class targetData{
-        EntityLivingBase[] Entitys = new EntityLivingBase[alphastrike.target_num+1];
+        Entity[] Entitys = new Entity[alphastrike.target_num+1];
         message data = new message();
         //List<Double[]> data = new ArrayList<>();
 
-        public void setData(int idx, EntityLivingBase data){
+        public void setData(int idx, Entity data){
             this.Entitys[idx] = data;
         }
 

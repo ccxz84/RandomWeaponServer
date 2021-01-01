@@ -38,7 +38,7 @@ public class Youmuusghostblade extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				60,	0,	100,	100,	0,	0,	0,	0,	0,	0,	15,	0
+				60,	0,	60,	100,	0,	0,	0,	0,	0,	0,	15,	0
 		};
 		this.stat = stat;
 	}

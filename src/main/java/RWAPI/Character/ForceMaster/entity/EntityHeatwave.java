@@ -2,9 +2,10 @@ package RWAPI.Character.ForceMaster.entity;
 
 import RWAPI.Character.EntityData;
 import RWAPI.Character.SkillEntity;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -43,17 +44,17 @@ public class EntityHeatwave extends SkillEntity {
             super.setDead();
             return;
         }
-        List<EntityLivingBase> mini =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(2,0.7,2));
+        List<Entity> mini =  this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().grow(2,0.7,2));
         EntityData target = null;
         EntityData attacker = null;
         if(this.thrower instanceof EntityPlayer) {
             attacker = main.game.getPlayerData(this.thrower.getUniqueID());
-            for(EntityLivingBase mi : mini) {
+            for(Entity mi : mini) {
                 if(mi instanceof EntityPlayerMP && !(mi.equals(this.thrower))) {
                     target = main.game.getPlayerData(((EntityPlayer) mi).getUniqueID());
                 }
-                else if(mi instanceof AbstractMob) {
-                    target = ((AbstractMob) mi).getData();
+                else if(mi instanceof IMob) {
+                    target = ((IMob) mi).getData();
                 }
                 if(target != null && attacker != null) {
                     DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);

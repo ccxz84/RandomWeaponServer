@@ -6,7 +6,7 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.Leesin.Leesin;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -76,14 +76,14 @@ public class EntityUmpa extends SkillEntity {
 	}
 
 	protected void SkillImpact(RayTraceResult result){
-		if(result.entityHit != null && result.entityHit instanceof EntityLivingBase) {
+		if(result.entityHit != null && result.entityHit instanceof Entity) {
 			if(main.game == null )
 				setDead();
 			if(!(result.entityHit.getUniqueID().equals(this.thrower.getUniqueID()))) {
 				PlayerData attacker = main.game.getPlayerData(this.thrower.getUniqueID());
 				EntityData target;
-				if(result.entityHit instanceof AbstractMob) {
-					AbstractMob mob = (AbstractMob) result.entityHit;
+				if(result.entityHit instanceof IMob) {
+					IMob mob = (IMob) result.entityHit;
 					target = mob.getData();
 					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
 					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);

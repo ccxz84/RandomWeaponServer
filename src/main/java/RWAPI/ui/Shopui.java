@@ -12,6 +12,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketSetSlot;
 import net.minecraft.util.NonNullList;
 
@@ -170,6 +171,27 @@ public class Shopui extends Container implements IContainerListener {
 		}
 		currentstack = stack;
 		DrawButton(stack,ModItems.ITEMS.get(ModItems.ITEMS.indexOf(stack.getItem())).down_item,187,18,ModItems.ITEMS.get(ModItems.ITEMS.indexOf(stack.getItem())).phase);
+		PlayerData data = main.game.getPlayerData(this.player.getUniqueID());
+		List<Integer> list = new ArrayList<Integer>();
+		Item item = stack.getItem();
+		int money = 0;
+		if(item instanceof ItemBase) {
+			money = ((ItemBase) item).getGold();
+			data.recursiveCheckItem((ItemBase) item, list);
+			for (int i : list) {
+				if (data.getPlayer().inventory.mainInventory.get(i).getItem() instanceof ItemBase) {
+					ItemBase invitem = (ItemBase) data.getPlayer().inventory.mainInventory.get(i).getItem();
+					money -= invitem.getGold();
+				}
+			}
+		}
+		NBTTagCompound nbt = stack.getTagCompound();
+		if(nbt == null){
+			nbt = new NBTTagCompound();
+		}
+		System.out.println("remaingold : " + money);
+		nbt.setInteger("remaingold",money);
+		stack.setTagCompound(nbt);
 
 		addSlotToContainer(new Slot(new ItemButton(stack),0,137,97));
 		sync();

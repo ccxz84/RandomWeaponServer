@@ -4,7 +4,6 @@ import RWAPI.Character.monster.entity.EntityMinion;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
-import net.minecraft.entity.monster.EntityZombie;
 
 public class PlayerAIZombieAttack extends EntityAIAttackMelee{
 	

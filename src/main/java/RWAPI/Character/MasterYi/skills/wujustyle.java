@@ -2,7 +2,7 @@ package RWAPI.Character.MasterYi.skills;
 
 import RWAPI.Character.*;
 import RWAPI.Character.buff.Buff;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
@@ -193,10 +193,10 @@ public class wujustyle extends MasterYiS {
         @SubscribeEvent(priority = EventPriority.NORMAL)
         public void attack(LivingAttackEvent event) {
             if(event.getSource().getTrueSource() != null) {
-                if(event.getSource().getTrueSource().equals(player) && (event.getEntityLiving() instanceof AbstractMob || event.getEntityLiving() instanceof EntityPlayer)) {
+                if(event.getSource().getTrueSource().equals(player) && (event.getEntityLiving() instanceof IMob || event.getEntityLiving() instanceof EntityPlayer)) {
                     EntityData target = null;
-                    if(event.getEntityLiving() instanceof AbstractMob) {
-                        target = ((AbstractMob)event.getEntityLiving()).getData();
+                    if(event.getEntityLiving() instanceof IMob) {
+                        target = ((IMob)event.getEntityLiving()).getData();
                     }
                     if(event.getEntityLiving() instanceof EntityPlayer){
                         target = main.game.getPlayerData(event.getEntityLiving().getUniqueID());

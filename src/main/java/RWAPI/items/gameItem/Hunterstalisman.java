@@ -36,7 +36,7 @@ public class Hunterstalisman extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	50,	20,	0,	0,	0,	0,	0.1,	0.05,	0,	0
+				0,	0,	0,	0,	0,	0,	0,	0,	0,	0.1,	0,	0
 		};
 		this.stat = stat;
 	}

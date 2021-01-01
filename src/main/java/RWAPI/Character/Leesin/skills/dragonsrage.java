@@ -4,7 +4,7 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.CooldownHandler;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.Character.Skill;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
@@ -190,7 +190,7 @@ public class dragonsrage implements Skill {
                 EntityLivingBase etarget = (EntityLivingBase) event.getTarget();
                 knockBack(etarget,event.getEntityLiving(), 2, -event.getEntityPlayer().getLookVec().x, -event.getEntityPlayer().getLookVec().z);
                 PlayerData attacker = main.game.getPlayerData(event.getEntityPlayer().getUniqueID());
-                EntityData target = (etarget instanceof EntityPlayer) ? main.game.getPlayerData(etarget.getUniqueID()) : ((AbstractMob)etarget).getData();
+                EntityData target = (etarget instanceof EntityPlayer) ? main.game.getPlayerData(etarget.getUniqueID()) : ((IMob)etarget).getData();
                 DamageSource sourcee = DamageSource.causeSkillPhysics(attacker, target, skilldamage1);
                 DamageSource.attackDamage(sourcee,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);

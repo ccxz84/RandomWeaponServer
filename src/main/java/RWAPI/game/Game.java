@@ -1,21 +1,27 @@
 package RWAPI.game;
 
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import RWAPI.Character.Skill;
+import RWAPI.Character.monster.entity.*;
 import RWAPI.game.event.*;
 import RWAPI.main;
 import RWAPI.Character.PlayerData;
 import RWAPI.util.*;
+import com.google.common.base.Predicate;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import scala.Int;
+import scala.tools.nsc.transform.SpecializeTypes;
 import scala.xml.dtd.impl.Base;
 
 import java.beans.PropertyChangeSupport;
@@ -32,6 +38,9 @@ public class Game {
 	
 	private String timerFlag = "";
 	private int timer;
+	int objecttimer = 0;
+	boolean object = false;
+	AbstractObject objectmob = null;
 
 	private EventHandler event;
 	
@@ -101,6 +110,11 @@ public class Game {
 		return timer;
 	}
 
+	public void resetObjectTimer(){
+		this.objecttimer = 0;
+		this.object = false;
+	}
+
 	public EventHandler getEventHandler(){
 		return this.event;
 	}
@@ -115,6 +129,8 @@ public class Game {
 	public void startGame() {
 		// TODO Auto-generated method stub
 		main.game.start = GameStatus.START;
+
+
 		for(PlayerData player : main.game.player().values()) {
 			
 			double[] point = spawnpoint.getRandomSpawnPoint();
@@ -124,10 +140,25 @@ public class Game {
 			player.setKeyinputListener();
 			player.getPlayer().getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1d);
 		}
+
+		List<AbstractObject> list = server.getWorld(0).getEntities(AbstractObject.class, input -> {
+			if(input instanceof AbstractObject) {
+				System.out.println(input);
+				return true;
+			}
+			return false;
+		});
+
+		for(AbstractObject entity : list){
+			entity.setDead();
+		}
 		
 		this.initTimer("게임 시간", Reference.GAMEITME);
 		this.GameTimer = (new Timer(main.game, Reference.GAMEITME) {
 			int timer = 0;
+			//Class<? extends AbstractObject>[] objectlist = new Class[]{EntityDragon.class, EntityWitch.class,EntityGolem.class};
+			Class<? extends AbstractObject>[] objectlist = new Class[]{EntityWitch.class, EntityWitch.class,EntityWitch.class};
+
 
 			@Override
 			public void gameTimer(ServerTickEvent event) {
@@ -157,6 +188,26 @@ public class Game {
 						player.setGold(player.getGold() + 1);
 					}
 
+				}
+
+				if((currentTime % 12000) == 0){
+					List<AbstractMob> list = server.getWorld(0).getEntities(EntityMinion.class, input -> {
+						if(input instanceof AbstractMob && !(input instanceof AbstractObject)) {
+							return true;
+						}
+						return false;
+					});
+
+					for(AbstractMob entity : list){
+						double[] stat = entity.getStat();
+						entity.getData().setMaxHealth(entity.getData().getMaxHealth()+(stat[0] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setCurrentHealth(entity.getData().getCurrentHealth()+(stat[0] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setAd(entity.getData().getAd() +(stat[1] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setArmor(entity.getData().getArmor() +(stat[2] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setMagicresistance(entity.getData().getMagicresistance() +(stat[3] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setDeathExp(entity.getData().getDeathExp() +(stat[4] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setDeathGold(entity.getData().getDeattGold() +((int)stat[5] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+					}
 				}
 
 				if((currentTime % 2400) == 0){
@@ -214,6 +265,33 @@ public class Game {
 
 					}
 				}
+				if(object == true && timer % 2400 == 0 && objectmob != null){
+					double[] stat = objectmob.getStat();
+					int time = objectmob.getGametime();
+					objectmob.getData().setMaxHealth(objectmob.getData().getMaxHealth()+(stat[0] * time));
+					objectmob.getData().setCurrentHealth(objectmob.getData().getCurrentHealth()+(stat[0] * time));
+					objectmob.getData().setAd(objectmob.getData().getAd() +(stat[1] * time));
+					objectmob.getData().setArmor(objectmob.getData().getArmor() +(stat[2] * time));
+					objectmob.getData().setMagicresistance(objectmob.getData().getMagicresistance() +(stat[3] * time));
+				}
+				//object timer
+				if(objecttimer >= 40 * Reference.OBJECTTIME && object == false){
+					Random rand = new Random(System.currentTimeMillis());
+					int num = rand.nextInt(objectlist.length-1)+1;
+					try {
+						objectmob = objectlist[num].getConstructor(World.class).newInstance(server.getWorld(0));
+						server.getPlayerList().sendMessage(new TextComponentString(objectmob.getData().getName()+"(이)가 소환되었습니다."));
+						objectmob.setLocationAndAngles(-183,64,-93,objectmob.rotationYaw,objectmob.rotationPitch);
+						server.getWorld(0).spawnEntity(objectmob);
+					}
+					catch (Exception e){
+						e.printStackTrace();
+					}
+					object = true;
+				}
+				else{
+					++objecttimer;
+				}
 				timer++;
 			}
 
@@ -268,6 +346,8 @@ public class Game {
 				for(PlayerData player : main.game.player().values()) {
 					player.resetgame();
 				}
+
+
 			}
 			
 		});
@@ -377,6 +457,13 @@ public class Game {
 			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
 			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
 			eventcodeList.put(3,map);
+			map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
+			eventcodeList.put(4,map);
 		}
 
 		public void register(BaseEvent eventObject){

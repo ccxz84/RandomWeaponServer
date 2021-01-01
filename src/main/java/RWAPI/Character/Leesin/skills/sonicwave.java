@@ -7,12 +7,13 @@ import RWAPI.Character.Leesin.entity.EntityUmpa;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.CooldownHandler;
 import RWAPI.Character.Skill;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.init.ModSkills;
 import RWAPI.items.skillItem.SkillBase;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
 import RWAPI.util.EntityStatus;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.MinecraftForge;
@@ -242,9 +243,9 @@ public class sonicwave implements Skill {
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
                 DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
-            }else if(timer.resonating.getThrower() instanceof AbstractMob){
-                AbstractMob mob = (AbstractMob) timer.resonating.getThrower();
-                EntityData target = mob.getData();
+            }else if(timer.resonating.getThrower() instanceof IMob){
+                Entity mob = (Entity) timer.resonating.getThrower();
+                EntityData target = ((IMob)mob).getData();
                 if(target.getStatus() != EntityStatus.ALIVE){
                     return;
                 }
@@ -374,6 +375,10 @@ public class sonicwave implements Skill {
     @Override
     public double[] getskillcost() {
         return this.skillcost[0];
+    }
+
+    public double[] getskillcost2() {
+        return this.skillcost[1];
     }
 
     @Override

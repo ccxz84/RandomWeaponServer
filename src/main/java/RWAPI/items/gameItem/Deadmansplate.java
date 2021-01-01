@@ -37,7 +37,7 @@ public class Deadmansplate extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("inherence","이동 시 중첩이 쌓이며, 중첩 1회당 이동속도가 " + String.format("%d",(int)plusmove)+" 증가합니다.");
+		nbt.setString("inherence","이동 시 중첩이 쌓이며, 중첩 1회당 이동속도가 " + String.format("%d",(int)plusmove)+" 증가합니다. 중첩은 최대 10까지 쌓입니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 

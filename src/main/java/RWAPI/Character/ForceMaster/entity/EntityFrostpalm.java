@@ -3,9 +3,10 @@ package RWAPI.Character.ForceMaster.entity;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.RayTraceResult;
@@ -35,14 +36,14 @@ public class EntityFrostpalm extends SkillEntity {
             setDead();
             return;
         }
-        if(!(result.entityHit != null && result.entityHit instanceof EntityLivingBase)){
+        if(!(result.entityHit != null && result.entityHit instanceof Entity)){
             setDead();
         }
         else if(!(result.entityHit.getUniqueID().equals(this.thrower.getUniqueID()))) {
             PlayerData attacker = main.game.getPlayerData(this.thrower.getUniqueID());
             EntityData target;
-            if (result.entityHit instanceof AbstractMob) {
-                AbstractMob mob = (AbstractMob) result.entityHit;
+            if (result.entityHit instanceof IMob) {
+                IMob mob = (IMob) result.entityHit;
                 target = mob.getData();
                 DamageSource source = DamageSource.causeAttackPhysics(attacker, target,this.skilldamage);
                 DamageSource.attackDamage(source, true);

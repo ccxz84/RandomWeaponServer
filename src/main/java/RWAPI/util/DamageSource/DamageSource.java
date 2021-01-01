@@ -2,6 +2,8 @@ package RWAPI.util.DamageSource;
 
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
+import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.AbstractObject;
 import RWAPI.game.event.BaseEvent;
 import RWAPI.game.event.EntityDeathEventHandle;
 import RWAPI.game.event.PlayerAttackEventHandle;
@@ -9,6 +11,7 @@ import RWAPI.main;
 import RWAPI.util.EntityStatus;
 import RWAPI.util.GameStatus;
 import RWAPI.util.NetworkUtil;
+import RWAPI.util.Reference;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -75,15 +78,24 @@ public class DamageSource {
 		double hp = target.getCurrentHealth();
 		if(hp <= 0)
 			return;
+
+		for(EntityData.shield shield : target.getShieldList()){
+			if(damage <= 0)
+				break;
+			if(shield.getShield() > 0){
+				double amount = shield.getShield();
+				double sub = amount - damage > 0 ? amount - damage : 0;
+				damage = damage - amount > 0 ? damage - amount : 0;
+				amount = sub > 0 ? sub : 0;
+				target.setShield(shield,amount);
+			}
+		}
+
 		hp -= damage;
 		target.setCurrentHealth(hp);
 
 		if(attackeventFlag == true)
 			AttackEvent(source);
-
-		if(!(source instanceof DamageSource.UnknownDamage) && target instanceof PlayerData && attacker instanceof PlayerData){
-			source.knockBack(((PlayerData) target).getPlayer(),((PlayerData) attacker).getPlayer(),0.2f, -((PlayerData) attacker).getPlayer().getLookVec().x, -((PlayerData) attacker).getPlayer().getLookVec().z);
-		}
 		
 		if(target.getCurrentHealth() <= 0) {
 			target.setStatus(EntityStatus.DEATH);
@@ -92,11 +104,7 @@ public class DamageSource {
 			if(attacker instanceof PlayerData) {
 				((PlayerData) attacker).setGold((int) target.getDeattGold() + ((PlayerData) attacker).getGold());
 				((PlayerData) attacker).setExp(target.getDeathExp() + ((PlayerData) attacker).getExp());
-				System.out.println("source : " + source);
 				if(target instanceof PlayerData){
-
-
-
 					((PlayerData)attacker).setKill(((PlayerData)attacker).getKill()+1);
 					((PlayerData)target).setDeath(((PlayerData)target).getDeath()+1);
 					((PlayerData) attacker).setContinuouskill(((PlayerData) attacker).getContinuouskill() + 1);
@@ -111,12 +119,17 @@ public class DamageSource {
 					((PlayerData) attacker).setGold(((PlayerData) attacker).getGold() + ((PlayerData) target).getContinuouskill() * 50);
 					((PlayerData) attacker).setExp(((PlayerData) attacker).getExp() + ((PlayerData) target).getContinuouskill() * 50);
 					((PlayerData) target).setContinuouskill(0);
-
+				}
+				else if(target.getEntity() instanceof AbstractObject){
+					main.game.server.getPlayerList().sendMessage(new TextComponentString((((PlayerData) attacker).getContinuouskill() > 1 ? ((PlayerData) attacker).getContinuouskill() +"연속 킬 !!! ": "")
+							+attacker.getName() + "이(가) " + target.getName() +"을(를) 처치하였습니다."));
+					//버프설정
+					((AbstractObject) target.getEntity()).setBuff((PlayerData) attacker);
+					target.getEntity().setDead();
+					main.game.resetObjectTimer();
 				}
 				else{
-					//System.out.println("미니언 처치 골드 : "+ (15 * (main.game.gettimer()/2400)));
-					((PlayerData)attacker).setGold(((PlayerData)attacker).getGold()+(15 * (main.game.gettimer()/1200))) ;
-					((PlayerData)attacker).setCs(((PlayerData)attacker).getCs() + 1, 0.03) ;
+					((PlayerData)attacker).setCs(((PlayerData)attacker).getCs() + 1, target.getKill_cs()) ;
 				}
 				if(((PlayerData) attacker).getKill() >= 15){
 					main.game.endgame();
@@ -130,7 +143,7 @@ public class DamageSource {
 		}
 	}
 
-	public void knockBack(EntityLivingBase target, Entity entityIn, float strength, double xRatio, double zRatio){
+	/*public void knockBack(EntityLivingBase target, Entity entityIn, float strength, double xRatio, double zRatio){
 
 		target.maxHurtResistantTime = 0;
 		target.hurtResistantTime = 0;
@@ -159,7 +172,7 @@ public class DamageSource {
 			((EntityPlayerMP)target).connection.sendPacket(new SPacketEntityVelocity(target));
 		}
 		target.velocityChanged = false;
-	}
+	}*/
 
 	public double getDamage(){
 		return this.damage;

@@ -36,7 +36,6 @@ public class joinEvent {
 			network.registerMessage(ShopScrollPacket.ShopScrollHandler.class, ShopScrollPacket.class, channel++, Side.SERVER);
 			network.registerMessage(ShopPurchasePacket.ShopPurchaseHandler.class, ShopPurchasePacket.class, channel++, Side.SERVER);
 			event.player.setGameType(GameType.ADVENTURE);
-
 		}
 		catch (Exception e){
 			System.out.println("already regist channel");

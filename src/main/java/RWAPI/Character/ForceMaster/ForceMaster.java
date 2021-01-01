@@ -26,7 +26,7 @@ public class ForceMaster extends PlayerClass {
 
     private formaster[] allskills = new formaster[10];
     private Item[] allskillset = new Item[10];
-    private EventClass eventhandler;
+    private EventClass Higheventhandler, Loweventhandler;
 
     public ForceMaster(){
         default_health = 680;
@@ -39,7 +39,7 @@ public class ForceMaster extends PlayerClass {
         default_regenHealth = 0.4f;
         default_regenMana = 0.5f;
 
-        attackSpeed = 0.37f;
+        attackSpeed = 0.2775f;
 
         class_code = ClassList.ForceMaster; //미완성
 
@@ -137,8 +137,10 @@ public class ForceMaster extends PlayerClass {
 
     @Override
     public void preinitSkill(PlayerData data){
-        this.eventhandler = new EventClass(data, BaseEvent.EventPriority.LOWEST);
-        main.game.getEventHandler().register(this.eventhandler);
+        this.Higheventhandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST);
+        this.Loweventhandler = new EventClass(data, BaseEvent.EventPriority.LOWEST);
+        main.game.getEventHandler().register(this.Loweventhandler);
+        main.game.getEventHandler().register(this.Higheventhandler);
     }
 
     public void skillSwitching(PlayerData data,int idx){
@@ -388,8 +390,11 @@ public class ForceMaster extends PlayerClass {
                 skill.skillEnd(player);
             }
         }
-        if(eventhandler != null){
-            main.game.getEventHandler().unregister(this.eventhandler);
+        if(Higheventhandler != null){
+            main.game.getEventHandler().unregister(this.Higheventhandler);
+        }
+        if(Loweventhandler != null){
+            main.game.getEventHandler().unregister(this.Loweventhandler);
         }
     }
 
@@ -407,7 +412,7 @@ public class ForceMaster extends PlayerClass {
                 TextFormatting.RESET +" : 사용 시, 화기 스킬을 사용가능한 상태로 변경되며, "
                 + String.format("%.1f",allskills[0].getskilldamage()[lv-1]) +"(+"+TextFormatting.RED +String.format("%.1f",(allskills[0].getskillAdcoe()[lv-1]*data.getAd()))+TextFormatting.RESET + ") (+"+
         TextFormatting.BLUE +String.format("%.1f",(allskills[0].getskillApcoe()[lv-1] * data.getAp()))+
-                TextFormatting.RESET +" 의 데미지를 입힙니다. 쿨타임은 공격속도에 비례합니다. 1의 내력을 회복합니다."));
+                TextFormatting.RESET +") 의 데미지를 입힙니다. 쿨타임은 공격속도에 비례합니다. 1의 내력을 회복합니다."));
 
         data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"화염폭발"+
                 TextFormatting.RESET +" : 기공사가 화염을 폭발시켜 주변의 적에게 " +
@@ -415,7 +420,7 @@ public class ForceMaster extends PlayerClass {
                 TextFormatting.BLUE +String.format("%.1f",(allskills[1].getskillApcoe()[lv-1] * data.getAp()))+
                 TextFormatting.RESET + ")의 데미지를 입힙니다. 쿨타임 " +
                 TextFormatting.GOLD +allskills[1].getcooldown()[lv-1]+
-                TextFormatting.RESET+"초" ));
+                TextFormatting.RESET+"초  소모값 : " + allskills[1].getskillcost()[lv-1] ));
 
         data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"폭열염포"+
                 TextFormatting.RESET +" : 기공사가 화염으로 된 에너지를 전방으로 발사하여 " +
@@ -423,19 +428,19 @@ public class ForceMaster extends PlayerClass {
                 TextFormatting.BLUE +String.format("%.1f",(allskills[2].getskillApcoe()[lv-1] * data.getAp()))+
                 TextFormatting.RESET +")의 데미지를 입힙니다. 쿨타임 " +
                 TextFormatting.GOLD +allskills[2].getcooldown()[lv-1]+
-                TextFormatting.RESET+"초" ));
+                TextFormatting.RESET+"초  소모값 : " + allskills[2].getskillcost()[lv-1] ));
 
         data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"폭염"+
                 TextFormatting.RESET +" : 기공사가 현재의 위치에 폭염을 설치합니다. 또한 2초동안 " + TextFormatting.DARK_PURPLE + heat.getskilldamage()[lv-1] +
                 TextFormatting.RESET +"%의 이동속도가 증가합니다."+" 쿨타임 : " +
                 TextFormatting.GOLD +heat.getcooldown()[lv-1]+
-                TextFormatting.RESET+"초"));
+                TextFormatting.RESET+"초 1의 내력을 회복합니다."));
 
         data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"폭염 발산"+
                 TextFormatting.RESET +" : 기공사가 설치한 폭염을 폭발시켜 폭염에 있는 적에게"+
                 String.format("%.1f",heat.getskilldamage1()[lv-1]) +"(+"+TextFormatting.RED +String.format("%.1f",(heat.getskillAdcoe()[lv-1]*data.getAd()))+TextFormatting.RESET + ") (+"+
                 TextFormatting.BLUE +String.format("%.1f",(heat.getskillApcoe()[lv-1] * data.getAp()))+
-                TextFormatting.RESET +")의 데미지를 입힙니다."));
+                TextFormatting.RESET +")의 데미지를 입힙니다.  소모값 : " + heat.getskillcost1()[lv-1]));
 
         data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"화련장"+
                 TextFormatting.RESET +" : 기공사가 화기를 집중하여 에너지를 전방으로 발사하고 " +
@@ -443,7 +448,7 @@ public class ForceMaster extends PlayerClass {
                 TextFormatting.BLUE +String.format("%.1f",(allskills[4].getskillApcoe()[lv-1] * data.getAp()))+
                 TextFormatting.RESET +")의 데미지를 입힙니다. 쿨타임 " +
                 TextFormatting.GOLD +allskills[4].getcooldown()[lv-1]+
-                TextFormatting.RESET+"초" ));
+                TextFormatting.RESET+"초  소모값 : " + allskills[4].getskillcost()[lv-1]));
 
         data.getPlayer().sendMessage(new TextComponentString("냉기 : "));
         data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"한빙장"+
@@ -467,7 +472,7 @@ public class ForceMaster extends PlayerClass {
                 TextFormatting.RESET +")의 데미지를 입힙니다. 2초 동안 적의 이동속도를 "+ TextFormatting.DARK_PURPLE + ball.getskilldamage()[lv-1] +
                 TextFormatting.RESET + "% 감소시킵니다. 쿨타임 " +
                 TextFormatting.GOLD +ball.getcooldown()[lv-1]+
-                TextFormatting.RESET+"초" ));
+                TextFormatting.RESET+"초  소모값 : " + allskills[7].getskillcost()[lv-1] ));
 
         data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"빙백한포"+
                 TextFormatting.RESET +" : 기공사가 바라 보고 있는 곳에 얼음이 쏟아져 내리고, 주변의 적에게 초당 " +
@@ -476,7 +481,7 @@ public class ForceMaster extends PlayerClass {
                 TextFormatting.RESET + ")의 데미지를 입힙니다. 또한 범위 안에 있는 적의 이동속도를 "+ TextFormatting.DARK_PURPLE + rain.getskilldamage1()[lv-1] +
                 TextFormatting.RESET +" 감소시킵니다. 쿨타임 " +
                 TextFormatting.GOLD +allskills[1].getcooldown()[lv-1]+
-                TextFormatting.RESET+"초" ));
+                TextFormatting.RESET+"초  소모값 : " + allskills[8].getskillcost()[lv-1] ));
 
         data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"결빙공"+
                 TextFormatting.RESET +" : 기공사가 3초 동안 얼음으로 몸을 감싸 움직일 수 없는 상태가 되어 자신을 지켜냅니다. 1초 당 " +
@@ -484,7 +489,7 @@ public class ForceMaster extends PlayerClass {
                 TextFormatting.BLUE +String.format("%.1f",(allskills[9].getskillApcoe()[lv-1] * data.getAp()))+
                 TextFormatting.RESET +")의 체력을 회복하며, 적에게 피해를 입지 않습니다. 3초 이내에 해빙공을 사용할 수 있으며 사용하지 않는 경우 자동으로 해제됩니다. 쿨타임 " +
                 TextFormatting.GOLD +allskills[2].getcooldown()[lv-1]+
-                TextFormatting.RESET+"초" ));
+                TextFormatting.RESET+"초  소모값 : " + allskills[9].getskillcost()[lv-1] ));
 
         data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"해빙공"+
                 TextFormatting.RESET +" : 기공사가 결빙공을 사용한 상태에서 3초 이내에 사용할 수 있습니다. 사용 시, 회복 효과와 무적효과는 해제됩니다. 사용하지 않을 시, 3초 후에 결빙공이 해제됩니다." ));
@@ -507,32 +512,47 @@ public class ForceMaster extends PlayerClass {
             if(this.data.equals(data)){
                 ItemStack stack = ((ItemChangeEvent)event).getStack();
                 ItemBase item = (ItemBase) stack.getItem();
-                if(((ItemChangeEvent) event).isRemove()){
-                    System.out.println("remove run");
+
+                if(((ItemChangeEvent) event).isRemove() && priority == EventPriority.HIGHTEST){
                     if(item.getstat()[3] > 0){
                         double mana = item.getstat()[3];
+                        //System.out.println("해체 high mana : " + mana);
                         data.setMaxMana(data.getMaxMana() + mana);
                         data.setCurrentMana(data.getCurrentMana() + mana);
+                    }
+                    if(item.getstat()[9] > 0){
+                        double manaregen = item.getstat()[9];
+                        //System.out.println("해체 high manaregen : " + manaregen);
+                        data.setRegenMana(data.getRegenMana() + manaregen);
+                    }
+                }
+
+                if(((ItemChangeEvent) event).isRemove() && priority == EventPriority.LOWEST){
+                    if(item.getstat()[3] > 0){
+                        int mana = (int) item.getstat()[3];
+                        //System.out.println("해체 low mana : " + mana);
                         data.setAp(data.getAp() - mana/10);
                     }
                     if(item.getstat()[9] > 0){
-                        double manaregen = item.getstat()[9];
-                        data.setRegenMana(data.getRegenMana() + manaregen);
-                        data.setAp(data.getAp() - manaregen/1.0d);
+                        int manaregen = (int) item.getstat()[9];
+                        //System.out.println("해체 low manaregen : " + manaregen);
+                        data.setAp(data.getAp() - manaregen/1);
                     }
                 }
-                else{
-                    System.out.println("run");
+                else if(priority == EventPriority.LOWEST){
+
                     if(item.getstat()[3] > 0){
                         double mana = item.getstat()[3];
+                        //System.out.println("착용 mana : " + mana);
                         data.setMaxMana(data.getMaxMana() - mana);
                         data.setCurrentMana(data.getCurrentMana() - mana);
-                        data.setAp(data.getAp() + mana/10);
+                        data.setAp(data.getAp() + (int)mana/10);
                     }
                     if(item.getstat()[9] > 0){
                         double manaregen = item.getstat()[9];
+                        //System.out.println("착용 manaregen : " + manaregen);
                         data.setRegenMana(data.getRegenMana() - manaregen);
-                        data.setAp(data.getAp() + manaregen/1.0d);
+                        data.setAp(data.getAp() + (int)manaregen/1);
                     }
                 }
             }

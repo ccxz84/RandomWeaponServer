@@ -40,6 +40,8 @@ public class ClientData extends NetworkUtil.Abstractmessage {
 	protected double magicpenetrationper = 0;
 	
 	protected double attackSpeed;
+
+	protected double totalshield = 0;
 	
 	protected int Gold = 0;
 	

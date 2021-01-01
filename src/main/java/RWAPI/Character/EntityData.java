@@ -3,6 +3,7 @@ package RWAPI.Character;
 import RWAPI.Character.buff.Buff;
 import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import RWAPI.util.EntityStatus;
+import net.minecraft.entity.Entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,9 +25,16 @@ public class EntityData implements Serializable {
 
 	private List<Buff> buffList;
 
+	private int max_shield_code = 0;
+
 	protected boolean godmode = false;
 
-	public EntityData(double MaxHealth,double armor, double magicresistance, double ad,double deathexp,int deathgold, String name,double kill_cs) {
+	private List<shield> Shieldlist;
+
+	private Entity entity;
+
+	public EntityData(Entity entity, double MaxHealth, double armor, double magicresistance, double ad, double deathexp, int deathgold, String name, double kill_cs) {
+		this.entity = entity;
 		this.data.MaxHealth = MaxHealth;
 		this.data.armor = armor;
 		this.data.magicresistance = magicresistance;
@@ -39,11 +47,16 @@ public class EntityData implements Serializable {
 		this.status = EntityStatus.ALIVE;
 		this.kill_cs = kill_cs;
 		buffList = new ArrayList<Buff>();
+		Shieldlist = new ArrayList<shield>();
 	}
 
 	/* Getter
 	 *
 	 */
+
+	public Entity getEntity(){
+		return this.entity;
+	}
 
 	public double getMaxHealth() {
 		return this.data.MaxHealth;
@@ -129,6 +142,14 @@ public class EntityData implements Serializable {
 		return this.data.magicpenetrationper;
 	}
 
+	public double getTotalShield(){
+		return this.data.totalshield;
+	}
+
+	public List<shield> getShieldList(){
+		return this.Shieldlist;
+	}
+
 
 
 
@@ -143,6 +164,10 @@ public class EntityData implements Serializable {
 	/*Setter
 	 *
 	 */
+
+	public void setEntity(Entity entity){
+		this.entity = entity;
+	}
 
 	public void setMaxHealth(double MaxHealth) {
 		this.data.MaxHealth = MaxHealth;
@@ -232,7 +257,56 @@ public class EntityData implements Serializable {
 		this.buffList.remove(buff);
 	}
 
+	public void setTotalShield(double totalshield){
+		this.data.totalshield = totalshield;
+	}
+
+	public void addShield(shield shield){
+		++max_shield_code;
+		shield.setShield_code(max_shield_code);
+		setTotalShield(getTotalShield() + shield.getShield());
+		this.Shieldlist.add(shield);
+	}
+
+	public void removeShield(shield shield){
+		setTotalShield(getTotalShield() - shield.getShield());
+		this.Shieldlist.remove(shield);
+	}
+
+	public void setShield(shield shield, double amount){
+		double sub = shield.getShield() - amount;
+		shield.setShield(amount);
+		setTotalShield(getTotalShield()-sub);
+	}
+
+
 	/*Setter End
 	 *
 	 */
+
+	public static class shield{
+		int shield_code;
+		double shield;
+
+		public shield(double shield){
+			this.shield = shield;
+		}
+
+		public double getShield() {
+			return shield;
+		}
+
+		public int getShield_code() {
+			return shield_code;
+		}
+
+		private void setShield_code(int shield_code){
+			this.shield_code = shield_code;
+		}
+
+		private void setShield(double shield){
+			this.shield = shield;
+		}
+
+	}
 }

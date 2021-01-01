@@ -12,7 +12,7 @@ public class Reference {
 	public static final String CLIENT_PROXY_CLASS = "RWAPI.proxy.ClientProxy";
 	public static final String COMMON_PROXY_CLASS = "RWAPI.proxy.CommonProxy";
 
-	public static final int GAMEWAITTIME = 1;
+	public static final int GAMEWAITTIME = 10;
 
 	public static final double[] SHOPPOS = { -56,53,107};
 	public static final double[] _1stPOS = {-72,67,146};
@@ -21,11 +21,15 @@ public class Reference {
 	public static final double[] OTHERPOS = {-72 ,53, 125};
 
 	public static final int GAMEITME = 2000;
+	public static final int OBJECTTIME = 60;
 
 
 	public static final int ENTITY_MERCHANT = 100;
 	public static final int ENTITY_MINION = 150;
 	public static final int ENTITY_DRAGON = 151;
+	public static final int ENTITY_WITCH= 152;
+	public static final int ENTITY_WITCHEFFECT = 1521;
+	public static final int ENTITY_GOLEM = 153;
 	public static final int ENTITY_SONICWAVE = 200;
 	public static final int ENTITY_RESONATING = 201;
 	public static final int ENTITY_STRIKE = 202;
@@ -45,5 +49,6 @@ public class Reference {
 
 	public static final int SHOPUSAGE_TIME = 30;
 	public static final int RESPAWNFUND_TIME = 15;
+
 
 }

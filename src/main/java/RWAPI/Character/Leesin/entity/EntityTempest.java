@@ -5,7 +5,7 @@ import java.util.List;
 import RWAPI.main;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.SkillEntity;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -75,17 +75,17 @@ public class EntityTempest extends SkillEntity{
 	public void setDead() {
 		if(main.game == null)
 			return;
-		List<EntityLivingBase> mini =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(3,0,3));
+		List<Entity> mini =  this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().grow(3,0,3));
 		EntityData target = null;
 		EntityData attacker = null;
 		if(this.thrower instanceof EntityPlayer) {
 			attacker = main.game.getPlayerData(this.thrower.getUniqueID());
-			for(EntityLivingBase mi : mini) {
+			for(Entity mi : mini) {
 				if(mi instanceof EntityPlayerMP && !(mi.equals(this.thrower))) {
 					target = main.game.getPlayerData(((EntityPlayer) mi).getUniqueID());
 				}
-				else if(mi instanceof AbstractMob) {
-					target = ((AbstractMob) mi).getData();
+				else if(mi instanceof IMob) {
+					target = ((IMob) mi).getData();
 				}
 				if(target != null && attacker != null) {
 					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillMagic(attacker, target, this.skilldamage);

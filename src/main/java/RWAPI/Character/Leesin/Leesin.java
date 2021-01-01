@@ -350,17 +350,17 @@ public class Leesin extends PlayerClass{
 				String.format("%.1f",skills[1].getskilldamage()[lv-1]) +"(+"+TextFormatting.RED +String.format("%.1f",(skills[1].getskillAdcoe()[lv-1]*data.getAd())) +
 				TextFormatting.RESET + ")의 데미지를 입힙니다. 음파가 적에게 명중하면 3초 안에 공명의 일격을 시전할 수 있습니다. 쿨타임 " +
 				TextFormatting.GOLD +skills[1].getcooldown()[lv-1]+
-				TextFormatting.RESET+"초" ));
+				TextFormatting.RESET+"초  소모값 : " + skills[1].getskillcost()[lv-1] ));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"공명의 일격"+
 				TextFormatting.RESET +" : 리 신이 음파를 맞은 적에게 돌진하여 " + String.format("%.1f",wave.getskilldamage2()[lv-1]) + "(+"
 				+TextFormatting.RED +String.format("%.1f",(wave.getskill1coe()[0][lv-1] * data.getAd()))+
 				TextFormatting.RESET +")의 데미지를 입히고, 추가로 적 잃은 체력의 " +
 				TextFormatting.DARK_RED + String.format("%.1f",(wave.getskill1coe()[1][lv-1] *100))+"%"+
-				TextFormatting.RESET + "의 데미지를 입힙니다."));
+				TextFormatting.RESET + "의 데미지를 입힙니다.  소모값 : " + wave.getskillcost2()[lv-1]));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"방호"+
 				TextFormatting.RESET +" : 리 신이 바라보고 있는 방향으로 일정거리 순간이동 합니다. 쿨타임 : " +
 				TextFormatting.GOLD +skills[2].getcooldown()[lv-1]+
-				TextFormatting.RESET+"초"));
+				TextFormatting.RESET+"초  소모값 : " + skills[2].getskillcost()[lv-1]));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"폭풍" +
 				TextFormatting.RESET +" : 리 신이 1초 동안 정신을 집중하여 바닥을 내리쳐 " + skills[3].getskilldamage()[lv-1] +"(+"+
 				TextFormatting.RED +String.format("%.1f",(skills[3].getskillAdcoe()[lv-1] * data.getAd()))+
@@ -368,12 +368,12 @@ public class Leesin extends PlayerClass{
 				TextFormatting.DARK_PURPLE + "70%"+
 				TextFormatting.RESET +"의 이동속도가 감소합니다. 쿨타임 : "+
 				TextFormatting.GOLD + skills[3].getcooldown()[lv-1]+
-				TextFormatting.RESET+"초"));
+				TextFormatting.RESET+"초  소모값 : " + skills[3].getskillcost()[lv-1]));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"용의 분노" +
 				TextFormatting.RESET +" : 리 신이 스킬 사용 후, 2초 안에 기본 공격 시 적에게 " + skills[4].getskilldamage()[lv-1] + "(+"+
 				TextFormatting.RED + String.format("%.1f",(skills[4].getskillAdcoe()[lv-1] * data.getAd()))+
 				TextFormatting.RESET +")의 데미지를 입히며 뒤로 날려보냅니다. 쿨타임 : "+
 				TextFormatting.GOLD + skills[4].getcooldown()[lv-1]+
-				TextFormatting.RESET+"초"));
+				TextFormatting.RESET+"초  소모값 : " + skills[4].getskillcost()[lv-1]));
 	}
 }

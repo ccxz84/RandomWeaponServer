@@ -3,17 +3,23 @@ package RWAPI.Character.MasterYi.skills;
 import RWAPI.Character.*;
 import RWAPI.Character.MasterYi.MasterYi;
 import RWAPI.Character.MasterYi.entity.EntityAlpha;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.main;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import java.util.List;
 
 public class alphastrike extends MasterYiS {
 
@@ -28,19 +34,20 @@ public class alphastrike extends MasterYiS {
             82,
             83,
             84,
-            86,
-            88,
+            85.5,
+            87,
+            88.5,
+            91,
+            93.5,
+            96,
             100,
-            103,
-            106,
-            109,
-            113,
-            118,
-            123,
-            128,
-            133,
-            138,
-            143
+            104,
+            108,
+            112,
+            116,
+            120,
+            124
+
     };
     protected final double[] skillAdcoe={
             0.9,
@@ -142,15 +149,43 @@ public class alphastrike extends MasterYiS {
         PlayerData data = main.game.getPlayerData(player.getUniqueID());
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(1) <= 0 && data.getCurrentMana() > skillcost[lv-1]&& data.nonWorking == false && cool == null) {
-            data.nonWorking = true;
-            data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
-            EntityAlpha entity = new EntityAlpha(player.world, player, (float) (skilldamage[lv-1]+ skillAdcoe[lv-1] * data.getAd()));
-            entity.setNoGravity(true);
-            entity.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.0f, 0);
-            player.world.spawnEntity(entity);
-            //player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 40, 255,false,false));
-            this.cool = new cool(cooldown[lv-1],1, (EntityPlayerMP) player);
-            data.nonWorking = false;
+            float x = (float) player.getLookVec().x;
+            float y = (float) player.getLookVec().y;
+            float z = (float) player.getLookVec().z;
+            double posx = 0, posy = 0,posz = 0;
+            List<Entity> entities = null;
+            boolean flag = false;
+            for(int i = 0; i < 6; i++){
+                flag = false;
+                entities = data.getPlayer().world.getEntitiesWithinAABBExcludingEntity(player,new AxisAlignedBB(Math.floor(player.posX) + x * i,(Math.floor(player.posY + player.eyeHeight) +y* i)-1,Math.floor(player.posZ)+z*i
+                        ,(Math.floor(player.posX) + x * i)+1,(Math.floor(player.posY + player.eyeHeight) +y* i)+1,(Math.floor(player.posZ)+z*i)+1));
+                //System.out.println("x : " + (Math.floor(player.posX) + x * i)+ " Y : " + (Math.floor(player.posY + player.eyeHeight) +y* i) + " z : " + (Math.floor(player.posZ)+z*i));
+                //pos = new BlockPos(Math.floor(player.posX) + x * i, Math.floor(player.posY + player.eyeHeight) +y* i ,Math.floor(player.posZ)+z*i);
+                for(Entity entity:entities){
+                    if((entity instanceof EntityPlayerMP && entity != player) || entity instanceof IMob){
+                        flag = true;
+                        break;
+                    }
+                }
+                if(flag == true) {
+                    posx = Math.floor(player.posX) + x * i;
+                    posy = Math.floor(player.posY + player.eyeHeight) +y* i;
+                    posz = Math.floor(player.posZ)+z*i;
+                    break;
+                }
+            }
+            if(flag == true) {
+                ((EntityPlayerMP)player).connection.setPlayerLocation(posx,posy,posz,player.rotationYaw,player.rotationPitch);
+                data.nonWorking = true;
+                data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv - 1]));
+                EntityAlpha entity = new EntityAlpha(player.world, player, (float) (skilldamage[lv - 1] + skillAdcoe[lv - 1] * data.getAd()));
+                entity.setNoGravity(true);
+                entity.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.0f, 0);
+                player.world.spawnEntity(entity);
+                //player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 40, 255,false,false));
+                this.cool = new cool(cooldown[lv - 1], 1, (EntityPlayerMP) player);
+                data.nonWorking = false;
+            }
         }
     }
 
@@ -170,6 +205,11 @@ public class alphastrike extends MasterYiS {
             this.cool.reduceCool();
     }
 
+    public void doublereducecool(){
+        if(cool != null)
+            this.cool.doublereducecool();
+    }
+
     class cool extends CooldownHandler {
 
         public cool(double cool, int id, EntityPlayerMP player) {
@@ -178,6 +218,10 @@ public class alphastrike extends MasterYiS {
 
         public void reduceCool(){
             this.skillTimer += cooldown * 0.7;
+        }
+
+        public void doublereducecool(){
+            skillTimer += 20;
         }
 
         @Override

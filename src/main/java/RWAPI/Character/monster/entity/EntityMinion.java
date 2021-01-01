@@ -6,8 +6,11 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.ai.PlayerAIHurtByTarget;
 import RWAPI.Character.ai.PlayerAIZombieAttack;
 import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
+import RWAPI.util.GameStatus;
+import RWAPI.util.Reference;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -22,7 +25,18 @@ public class EntityMinion extends AbstractMob{
 	private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.<Boolean>createKey(EntityMinion.class, DataSerializers.BOOLEAN);
 
 	public EntityMinion(World worldIn) {
-		super(worldIn,new EntityData(900f,10f,10f,110f,50,70,"미니언",0.03));
+		super(worldIn,new EntityData(null,800f,10f,10f,80f,50,70,"미니언",0.03),
+				new double[]{50,50,10,5,5,10,5});
+		if(main.game.start == GameStatus.START){
+			this.getData().setMaxHealth(800+(50 * ((Reference.GAMEITME - main.game.gettimer())/300)));
+			this.getData().setCurrentHealth(800+(50 * ((Reference.GAMEITME - main.game.gettimer())/300)));
+			this.getData().setAd(80f +(10 * ((Reference.GAMEITME - main.game.gettimer())/300)));
+			this.getData().setArmor(10f +(5 * ((Reference.GAMEITME - main.game.gettimer())/300)));
+			this.getData().setMagicresistance(10f +(5 * ((Reference.GAMEITME - main.game.gettimer())/300)));
+			this.getData().setDeathExp(50 +(10 * ((Reference.GAMEITME - main.game.gettimer())/300)));
+			this.getData().setDeathGold(70 +(5 * ((Reference.GAMEITME - main.game.gettimer())/300)));
+		}
+		this.getData().setEntity(this);
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -39,14 +53,13 @@ public class EntityMinion extends AbstractMob{
         this.tasks.addTask(2, new PlayerAIZombieAttack(this, 1.0D, false));
         //this.tasks.addTask(1, new EntityAISwimming(this));
         //this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
-        //this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+        this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         //this.tasks.addTask(6, new EntityAILookIdle(this));
         this.applyEntityAI();
     }
 
     protected void applyEntityAI()
     {
-    	
         this.targetTasks.addTask(2, new PlayerAIHurtByTarget(this, true));
     }
 	

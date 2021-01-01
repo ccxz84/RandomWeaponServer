@@ -26,8 +26,8 @@ public class Nashorstooth extends ItemBase {
 		setCreativeTab(CreativeTabs.MATERIALS);
 		ModItems.ITEMS.add(this);
 		down_item = new ItemBase[2];
-		down_item[0] =ModItems.Serrateddirk;
-		down_item[1] =ModItems.VampiricScepter;
+		down_item[0] =ModItems.Stinger;
+		down_item[1] =ModItems.Fiendishcodex;
 		
 		phase = 1;
 		this.name = "내셔의 이빨";

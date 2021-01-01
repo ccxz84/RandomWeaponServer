@@ -1,5 +1,6 @@
 package RWAPI.event;
 
+import RWAPI.Character.monster.entity.EntityDragon;
 import RWAPI.Character.shop.entity.EntityMerchant;
 import RWAPI.items.weapon.WeaponBase;
 import RWAPI.main;
@@ -36,6 +37,12 @@ public class GameBaseEvent{
 			return;
 		}
 		if(event.getEntityLiving() instanceof EntityMerchant){
+			if(event.isCancelable())
+				event.setCanceled(true);
+			return;
+		}
+
+		if(event.getEntityLiving() instanceof EntityDragon && (event.getSource().damageType.equals("outOfWorld")) || event.getSource().damageType.equals("fall")){
 			if(event.isCancelable())
 				event.setCanceled(true);
 			return;

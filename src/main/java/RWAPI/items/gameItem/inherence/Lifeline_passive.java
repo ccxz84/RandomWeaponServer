@@ -26,9 +26,9 @@ public class Lifeline_passive extends ItemBase.inherence_handler{
     private final int cooltime;
 
     private final int time;
-    private final double vamPer, plusad;
+    private final double vamPer, plusad, shield;
 
-    public Lifeline_passive(PlayerData data, ItemStack stack, int cooltime, int time, double vamPer, double plusad) {
+    public Lifeline_passive(PlayerData data, ItemStack stack, int cooltime, int time, double vamPer, double plusad, double shield) {
         super(data, stack);
         this.data = data;
         this.cooltime = cooltime;
@@ -45,6 +45,7 @@ public class Lifeline_passive extends ItemBase.inherence_handler{
         this.time = time;
         this.vamPer = vamPer;
         this.plusad = plusad;
+        this.shield = shield;
         registerAttackEvent();
     }
 
@@ -93,7 +94,7 @@ public class Lifeline_passive extends ItemBase.inherence_handler{
             double damage = source.getDamage();
 
             if(target.equals(this.data)){
-                if(target.getCurrentHealth() <= target.getMaxHealth() * 0.3 && cool == null){
+                if(target.getCurrentHealth() <= target.getMaxHealth() * 0.3 && buff == null){
                     if(cool != null){
                         return;
                     }
@@ -127,6 +128,7 @@ public class Lifeline_passive extends ItemBase.inherence_handler{
     private class buff extends Buff {
 
         PlayerData pdata;
+        EntityData.shield shield_instance;
 
         public buff(double duration, EntityPlayerMP player, double... data) {
             super(duration, player, data);
@@ -143,11 +145,14 @@ public class Lifeline_passive extends ItemBase.inherence_handler{
         public void setEffect() {
             this.pdata = main.game.getPlayerData(player.getUniqueID());
             this.pdata.setAd(this.pdata.getAd() + plusad);
+            shield_instance = new EntityData.shield(shield);
+            this.pdata.addShield(shield_instance);
         }
 
         @Override
         public void resetEffect() {
             this.pdata.setAd(this.pdata.getAd() - plusad);
+            this.pdata.removeShield(shield_instance);
             NetworkUtil.setCool(stack, 0);
             bufreset();
         }

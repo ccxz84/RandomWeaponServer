@@ -109,12 +109,17 @@ public class SkillEntity extends EntityThrowable {
 			}
 			else if (!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
 			{
-				this.SkillImpact(raytraceresult);
+				try{
+					this.SkillImpact(raytraceresult);
+				}
+				catch (Exception e){
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
-	protected void SkillImpact(RayTraceResult result){
+	protected void SkillImpact(RayTraceResult result) throws Exception{
 
 	}
 

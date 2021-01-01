@@ -3,6 +3,7 @@ package RWAPI.items.gameItem.inherence;
 import RWAPI.Character.PlayerData;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.main;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -38,10 +39,10 @@ public class Sanguineblade_passive extends ItemBase.inherence_handler{
         AxisAlignedBB temp = this.data.getPlayer().getEntityBoundingBox();
 
         this.setEntityBoundingBox(new AxisAlignedBB(temp.minX, temp.minY, temp.minZ, temp.maxX, temp.maxY, temp.maxZ));
-        List<EntityLivingBase> mini =  this.data.getPlayer().world.getEntitiesWithinAABB(EntityLivingBase.class, temp.grow(3,1,3));
+        List<Entity> mini =  this.data.getPlayer().world.getEntitiesWithinAABB(Entity.class, temp.grow(3,1,3));
 
         flag = false;
-        for(EntityLivingBase mi : mini){
+        for(Entity mi : mini){
             if(mi instanceof EntityPlayer){
                 if(!mi.equals(this.data.getPlayer())){
                     flag = true;

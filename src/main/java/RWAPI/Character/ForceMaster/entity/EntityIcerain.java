@@ -2,9 +2,10 @@ package RWAPI.Character.ForceMaster.entity;
 
 import RWAPI.Character.EntityData;
 import RWAPI.Character.SkillEntity;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EntityIcerain extends SkillEntity {
-    List<EntityLivingBase> baselist;
+    List<Entity> baselist;
     double effect, duration;
     EntityPlayer player;
 
@@ -24,7 +25,7 @@ public class EntityIcerain extends SkillEntity {
 
     public EntityIcerain(World worldIn, EntityLivingBase playerin, double skilldamage, double posX, double posY, double posZ, double effect, double duration) {
         super(worldIn, playerin, skilldamage);
-        baselist = new ArrayList<EntityLivingBase>();
+        baselist = new ArrayList<Entity>();
         this.effect = effect;
         this.duration = duration;
         this.posX = posX;
@@ -44,16 +45,16 @@ public class EntityIcerain extends SkillEntity {
             DamageEntity();
         }
 
-        List<EntityLivingBase> comparelist =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(3,0.75,3));
+        List<Entity> comparelist =  this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().grow(3,0.75,3));
 
         if(this.thrower instanceof EntityPlayer){
-            for(EntityLivingBase entity : comparelist){
+            for(Entity entity : comparelist){
                 if(!baselist.contains(entity)&&!entity.equals(this.player)){
                     setEffect(entity);
                 }
             }
 
-            for (EntityLivingBase entity : baselist){
+            for (Entity entity : baselist){
                 if(!comparelist.contains(entity)&&!entity.equals(this.player)){
                     removeEffect(entity);
                 }
@@ -72,14 +73,14 @@ public class EntityIcerain extends SkillEntity {
         if(baselist == null)
             return;
         if(!baselist.isEmpty()){
-            for(EntityLivingBase entity : baselist){
+            for(Entity entity : baselist){
                 if(!entity.equals(this.player))
                     removeEffect(entity);
             }
         }
     }
 
-    private void removeEffect(EntityLivingBase entity) {
+    private void removeEffect(Entity entity) {
         EntityData target = null;
         if(entity instanceof EntityPlayer){
             target = main.game.getPlayerData(entity.getUniqueID());
@@ -87,7 +88,7 @@ public class EntityIcerain extends SkillEntity {
         }
     }
 
-    private void setEffect(EntityLivingBase entity) {
+    private void setEffect(Entity entity) {
         EntityData target = null;
         if(entity instanceof EntityPlayer){
             target = main.game.getPlayerData(entity.getUniqueID());
@@ -105,8 +106,8 @@ public class EntityIcerain extends SkillEntity {
                 if(mi instanceof EntityPlayerMP && !(mi.equals(this.player))) {
                     target = main.game.getPlayerData(((EntityPlayer) mi).getUniqueID());
                 }
-                else if(mi instanceof AbstractMob) {
-                    target = ((AbstractMob) mi).getData();
+                else if(mi instanceof IMob) {
+                    target = ((IMob) mi).getData();
                 }
                 if(target != null && attacker != null&& !(mi.equals(this.player))) {
                     DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage/5);

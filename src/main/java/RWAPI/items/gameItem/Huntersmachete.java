@@ -15,7 +15,6 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 public class Huntersmachete extends ItemBase {
 
 	private final double expPer = 50;
-	private final double vamPercent = 10;
 
 	public Huntersmachete(String name) {
 		super(name);
@@ -34,7 +33,7 @@ public class Huntersmachete extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	100,	0,	0,	0,	0,	0,	0.3,	0,	0,	0
+				0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}
@@ -45,7 +44,7 @@ public class Huntersmachete extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","미니언 처치 시, "+String.format("%.0f",expPer)+"%의 경험치를 추가로 제공합니다. 미니언에게 기본 공격 시, 데미지의 "+String.format("%.0f",vamPercent)+"%를 회복합니다.");
+		nbt.setString("basic","미니언 처치 시, "+String.format("%.0f",expPer)+"%의 경험치를 추가로 제공합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 

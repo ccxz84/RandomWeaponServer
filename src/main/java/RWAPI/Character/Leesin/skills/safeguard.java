@@ -5,6 +5,7 @@ import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.Skill;
 import RWAPI.main;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -173,7 +174,7 @@ public class safeguard implements Skill {
                     y=0;
                     z=0;
                 }
-                //player.move(MoverType.SELF, x * 0.5, y * 0.5, z * 0.5);
+                //player.move(MoverType.PLAYER, x * 0.5, y * 0.5, z * 0.5);
                 player.connection.setPlayerLocation(player.posX + x * 0.7, player.posY + y * 0.7, player.posZ + z * 0.7, player.rotationYaw, player.rotationPitch);
             }
             super.skillTimer(event);

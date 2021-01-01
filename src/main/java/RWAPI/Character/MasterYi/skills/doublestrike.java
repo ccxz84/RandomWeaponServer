@@ -5,7 +5,7 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.MasterYi.MasterYi;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.Skill;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
 import RWAPI.util.EntityStatus;
@@ -97,10 +97,10 @@ public class doublestrike implements Skill {
         @SubscribeEvent(priority = EventPriority.LOWEST)
         public void attack(LivingAttackEvent event) {
             if(event.getSource().getTrueSource() != null) {
-                if(event.getSource().getTrueSource().equals(player) && (event.getEntityLiving() instanceof AbstractMob || event.getEntityLiving() instanceof EntityPlayer)) {
+                if(event.getSource().getTrueSource().equals(player) && (event.getEntityLiving() instanceof IMob || event.getEntityLiving() instanceof EntityPlayer)) {
                     EntityData target = null;
-                    if(event.getEntityLiving() instanceof AbstractMob) {
-                        target = ((AbstractMob)event.getEntityLiving()).getData();
+                    if(event.getEntityLiving() instanceof IMob) {
+                        target = ((IMob)event.getEntityLiving()).getData();
                     }
                     if(event.getEntityLiving() instanceof EntityPlayer){
                         target = main.game.getPlayerData(event.getEntityLiving().getUniqueID());
@@ -109,9 +109,11 @@ public class doublestrike implements Skill {
                         attack = (attack+1) % 4;
                         PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
                         int lv = attacker.getLevel();
+                        ((alphastrike)skills[0]).doublereducecool();
                         if((attack == 3 && target.getCurrentHealth() > 0 && target.getStatus() == EntityStatus.ALIVE)){
                             DamageSource source = DamageSource.causeAttackPhysics(attacker,target,attacker.getAd() * skillAdcoe[lv-1]);
                             attack = (attack+1) % 4;
+                            ((alphastrike)skills[0]).doublereducecool();
 
                             DamageSource.attackDamage(source,true);
                             DamageSource.EnemyStatHandler.EnemyStatSetter(source);

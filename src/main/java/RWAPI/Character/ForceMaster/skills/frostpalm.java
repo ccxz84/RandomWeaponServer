@@ -220,7 +220,7 @@ public class frostpalm extends formaster {
         }
 
         public float getcool() {
-            double f1 = 1.2f * this.data.gettotalAttackSpeed();
+            double f1 = 1.2f * this.data.gettotalAttackSpeed() +0.1;
             return (float)(1.0D / f1 * 20.0D);
         }
 

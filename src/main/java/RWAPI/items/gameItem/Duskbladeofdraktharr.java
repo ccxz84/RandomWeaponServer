@@ -4,7 +4,7 @@ import RWAPI.Character.CooldownHandler;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.buff.Buff;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.init.ModItems;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
@@ -186,7 +186,7 @@ public class Duskbladeofdraktharr extends ItemBase {
 					flag = true;
 					EntityLivingBase etarget = (EntityLivingBase) event.getTarget();
 					PlayerData attacker = main.game.getPlayerData(event.getEntityPlayer().getUniqueID());
-					EntityData target = (etarget instanceof EntityPlayer) ? main.game.getPlayerData(etarget.getUniqueID()) : ((AbstractMob) etarget).getData();
+					EntityData target = (etarget instanceof EntityPlayer) ? main.game.getPlayerData(etarget.getUniqueID()) : ((IMob) etarget).getData();
 					DamageSource sourcee = DamageSource.causeUnknownPhysics(attacker, target, damage + adcoe * attacker.getAd());
 					DamageSource.attackDamage(sourcee, true);
 					DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);

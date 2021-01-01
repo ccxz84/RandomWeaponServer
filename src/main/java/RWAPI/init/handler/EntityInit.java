@@ -5,6 +5,9 @@ import java.util.List;
 
 import RWAPI.Character.ForceMaster.entity.*;
 import RWAPI.Character.MasterYi.entity.EntityAlpha;
+import RWAPI.Character.monster.entity.EntityDragon;
+import RWAPI.Character.monster.entity.EntityGolem;
+import RWAPI.Character.monster.entity.EntityWitch;
 import RWAPI.main;
 import RWAPI.Character.Leesin.entity.EntityTempest;
 import RWAPI.Character.Leesin.entity.EntityResonating;
@@ -50,7 +53,6 @@ private static List<registData> data = new ArrayList<registData>();
 		data.add(new registData("strike",EntityStrike.class,Reference.ENTITY_STRIKE));
 		data.add(new registData("tempest",EntityTempest.class,Reference.ENTITY_TEMPEST));
 		data.add(new registData("merchant",EntityMerchant.class,Reference.ENTITY_MERCHANT));
-		data.add(new registData("minion",EntityMinion.class,Reference.ENTITY_MINION));
 		data.add(new registData("alphastrike", EntityAlpha.class,Reference.ENTITY_ALPHA));
 		data.add(new registData("blazingpalm", EntityBlazingpalm.class,Reference.ENTITY_BLAZINGPALM));
 		data.add(new registData("firstorm", EntityBlazingbeam.class,Reference.ENTITY_FIRESTORM));
@@ -61,5 +63,14 @@ private static List<registData> data = new ArrayList<registData>();
 		data.add(new registData("heatwave", EntityHeatwave.class,Reference.ENTITY_HEATWAVE));
 		data.add(new registData("tempheatwave", EntitytempHeatwave.class,Reference.ENTITY_TEMPHEATWAVE));
 		data.add(new registData("icerain", EntityIcerain.class,Reference.ENTITY_ICERAIN));
+
+
+
+		//monster
+		data.add(new registData("minion",EntityMinion.class,Reference.ENTITY_MINION));
+		data.add(new registData("dragon", EntityDragon.class,Reference.ENTITY_DRAGON));
+		data.add(new registData("witch", EntityWitch.class,Reference.ENTITY_WITCH));
+		data.add(new registData("golem", EntityGolem.class,Reference.ENTITY_GOLEM));
+		data.add(new registData("witcheffect", EntityWitch.effect.class,Reference.ENTITY_WITCHEFFECT));
 	}
 }
