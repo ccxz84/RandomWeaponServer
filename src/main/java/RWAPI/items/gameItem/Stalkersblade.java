@@ -91,12 +91,15 @@ public class Stalkersblade extends ItemBase implements ItemBase.jungle{
         return new usage_handler(data,stack);
     }
 
-    protected class usage_handler extends ItemBase.usage_handler{
+    public static class usage_handler extends ItemBase.usage_handler{
 
         PlayerData data;
         ItemStack stack;
         buff buff;
         cool cool;
+        private final int duration = 10;
+        private final double minusmove = 25;
+        private final int cooltime = 20;
 
         public usage_handler(PlayerData data, ItemStack stack) {
             super(data,stack);

@@ -19,6 +19,7 @@ public class Runicechoes extends ItemBase implements ItemBase.jungle{
 
     private final double expPer = 50;
     private final int plusGold = 20;
+    ItemBase type;
 
     public Runicechoes(String name, ItemBase type) {
         super(name);
@@ -29,6 +30,7 @@ public class Runicechoes extends ItemBase implements ItemBase.jungle{
         down_item[1] = ModItems.Fiendishcodex;
 
         phase = 1;
+        this.type = type;
         this.name = type.name + " : 룬의 메이리";
         this.gold = 2500;
         refund_gold = 1750;
@@ -68,6 +70,17 @@ public class Runicechoes extends ItemBase implements ItemBase.jungle{
 
         return null;
 
+    }
+
+    @Override
+    public ItemBase.usage_handler create_usage_handler(PlayerData data, ItemStack stack) {
+        if(type instanceof Skirmisherssaber){
+            return new Skirmisherssaber.usage_handler(data,stack);
+        }
+        else if(type instanceof Stalkersblade){
+            return new Stalkersblade.usage_handler(data,stack);
+        }
+        return null;
     }
 
     @Override

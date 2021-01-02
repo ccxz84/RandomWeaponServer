@@ -602,6 +602,7 @@ public class PlayerData extends EntityData{
 		public void InventoryHandler(TickEvent.ServerTickEvent event){
 			if(data.getPlayer().inventory.currentItem != 0){
 				if(data.usageitemhandler[data.getPlayer().inventory.currentItem-1] != null){
+					System.out.println("asdf");
 					data.usageitemhandler[data.getPlayer().inventory.currentItem-1].ItemUse();
 				}
 

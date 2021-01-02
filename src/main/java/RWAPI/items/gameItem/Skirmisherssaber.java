@@ -90,11 +90,13 @@ public class Skirmisherssaber extends ItemBase implements ItemBase.jungle{
         return new usage_handler(data,stack);
     }
 
-    protected class usage_handler extends ItemBase.usage_handler{
+    public static class usage_handler extends ItemBase.usage_handler{
 
         PlayerData data;
         ItemStack stack;
         cool cool;
+        private final int cooltime = 20;
+        private final double damageper = 10;
 
         public usage_handler(PlayerData data, ItemStack stack) {
             super(data,stack);
