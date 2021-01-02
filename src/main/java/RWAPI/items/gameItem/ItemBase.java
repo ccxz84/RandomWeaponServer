@@ -166,4 +166,8 @@ public class ItemBase extends Item{
 
 	}
 
+	public interface jungle{
+
+	}
+
 }

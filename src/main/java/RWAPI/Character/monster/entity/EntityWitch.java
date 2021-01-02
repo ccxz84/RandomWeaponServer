@@ -59,8 +59,6 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
                 new double[]{170,5,12,5});
         if(main.game.start == GameStatus.START){
             int gametime = (Reference.GAMEITME - main.game.gettimer()) - 300 <= 0 ? 0 :  ((Reference.GAMEITME - main.game.gettimer()) - 300)/60;
-            System.out.println(main.game.gettimer());
-            System.out.println(gametime);
             this.getData().setMaxHealth(3600+(170 * gametime));
             this.getData().setCurrentHealth(3600+(170 * gametime));
             this.getData().setAd(145f +(5 * gametime));
@@ -74,7 +72,7 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
     protected void initEntityAI()
     {
         //this.tasks.addTask(2, new PlayerAIZombieAttackObject(this, 1.0D, false, 30));
-        this.tasks.addTask(2, new EntityAIAttackRanged(this, 1.0D, 60, 10.0F));
+        this.tasks.addTask(2, new EntityAIAttackRanged(this, 1.5D, 60, 10.0F));
         //this.tasks.addTask(1, new EntityAISwimming(this));
         //this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
         //this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
@@ -137,7 +135,12 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
         return false;
     }
 
-
+    @Override
+    public void onLivingUpdate() {
+        super.onLivingUpdate();
+        if(main.game.start != GameStatus.START)
+            setDead();
+    }
 
     protected void applyEntityAttributes()
     {
@@ -186,7 +189,7 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
         if(entityIn instanceof EntityPlayer) {
             //EntityPotion potion = new EntityPotion(this.world,this,PotionUtils.addPotionToItemStack(new ItemStack(new ItemPotion()),ModPotion.Witch_Dark_Type));
             EntityPotion potion = new EntityPotion(this.world,this,new ItemStack(new ItemPotion()));
-            potion.shoot(this,this.rotationPitch,this.rotationYaw,0,0.4f,0);
+            potion.shoot(this,this.rotationPitch,this.rotationYaw,0,3f,0);
             this.world.spawnEntity(potion);
             //effect ef = new effect(this.world, this, this.getData().getAd());
             //ef.shoot(this, this.rotationPitch, this.rotationYaw, 0f, 0.4f, 0);
@@ -209,6 +212,9 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
 
     @Override
     protected boolean canDespawn() {
+        if (main.game.start != GameStatus.START || (Reference.GAMEITME - main.game.gettimer()) - 300 <= 0){
+            return true;
+        }
         return false;
     }
 
@@ -247,42 +253,6 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
 
     }
 
-    public static class effect extends SkillEntity {
-
-        private EntityWitch witch;
-
-        public effect(World world){
-            super(world);
-        }
-
-        public effect(World worldIn, EntityWitch playerin, double skilldamage) {
-            super(worldIn, playerin, skilldamage);
-            this.witch = playerin;
-        }
-
-        @Override
-        public void setDead() {
-            List<Entity> mini =  this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().grow(2.5,0.75,2.5));
-            EntityData target = null;
-            EntityData attacker = null;
-            if(this.witch != null)
-            {
-                attacker = this.witch.getData();
-                for(Entity mi : mini) {
-                    if(mi instanceof EntityPlayerMP) {
-                        target = main.game.getPlayerData(((EntityPlayerMP) mi).getUniqueID());
-                    }
-                    if(target != null && attacker != null) {
-                        RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
-                        RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
-                        RWAPI.util.DamageSource.DamageSource.EnemyStatHandler.EnemyStatSetter(source);
-                        mi.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
-                    }
-                }
-            }
-        }
-    }
-
     public void writeEntityToNBT(NBTTagCompound compound)
     {
         compound.setString("boss", "witch");
@@ -297,7 +267,6 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
 
     @Override
     public void setBuff(PlayerData data) {
-        System.out.println("test");
         data.setAd(data.getAd() + (data.getAd()/100) * attper);
         data.setAp(data.getAp() + (data.getAp()/100) * attper);
         main.game.getEventHandler().register(new lvEventClass(data));

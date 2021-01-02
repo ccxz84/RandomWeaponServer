@@ -84,6 +84,9 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
     public void onLivingUpdate()
     {
         if(main.game.start == GameStatus.START){
+            if((Reference.GAMEITME - main.game.gettimer()) - 300 <= 0){
+                setDead();
+            }
             if(attackTicks >= 0){
                 if(attackTicks % 60 == 0){
                     List<Entity> mini =  this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().grow(6,6,6));
@@ -91,6 +94,7 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
                         EntityData target = null;
                         if(mi instanceof EntityPlayerMP) {
                             target = main.game.getPlayerData(mi.getUniqueID());
+                            this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D);
                             RWAPI.util.DamageSource.DamageSource dsource = RWAPI.util.DamageSource.DamageSource.causeUnknownMagic(this.getData(),target,this.getData().getAd()/2);
                             RWAPI.util.DamageSource.DamageSource dsource1 = RWAPI.util.DamageSource.DamageSource.causeUnknownPhysics(this.getData(),target,this.getData().getAd()/2);
                             RWAPI.util.DamageSource.DamageSource.attackDamage(dsource,false);
@@ -105,6 +109,11 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
                 }
             }
         }
+        else{
+            setDead();
+        }
+
+
 
 
         if (this.world.isRemote)
@@ -181,6 +190,7 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
             multipartentitypart.onUpdate();
         }
 
+
         for (int l = 0; l < this.dragonPartArray.length; ++l)
         {
             this.dragonPartArray[l].prevPosX = avec3d[l].x;
@@ -196,25 +206,30 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
 
     public boolean attackEntityFromPart(DragonPart dragonPart, DamageSource source, float damage)
     {
+        attackTicks = 0;
+        if(source.getTrueSource() instanceof EntityPlayer) {
+            float f = (this.rand.nextFloat() - 0.5F) * 8.0F;
+            float f1 = (this.rand.nextFloat() - 0.5F) * 4.0F;
+            float f2 = (this.rand.nextFloat() - 0.5F) * 8.0F;
+            //this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX + (double)f, this.posY + 2.0D + (double)f1, this.posZ + (double)f2, 0.0D, 0.0D, 0.0D);
+            PlayerData attacker = main.game.getPlayerData(source.getTrueSource().getUniqueID());
+            RWAPI.util.DamageSource.DamageSource sourcee = RWAPI.util.DamageSource.DamageSource.causeAttackPhysics(attacker, data,attacker.getAd());
+            RWAPI.util.DamageSource.DamageSource.attackDamage(sourcee,true);
+            RWAPI.util.DamageSource.DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);
+        }
         return super.attackEntityFrom(source, 0.1f);
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        if(!(source instanceof EntityDamageSourceIndirect)) {
-            System.out.println("attack");
-            attackTicks = 0;
-            if(source.getTrueSource() instanceof EntityPlayer) {
-                float f = (this.rand.nextFloat() - 0.5F) * 8.0F;
-                float f1 = (this.rand.nextFloat() - 0.5F) * 4.0F;
-                float f2 = (this.rand.nextFloat() - 0.5F) * 8.0F;
-                this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX + (double)f, this.posY + 2.0D + (double)f1, this.posZ + (double)f2, 0.0D, 0.0D, 0.0D);
-                PlayerData attacker = main.game.getPlayerData(source.getTrueSource().getUniqueID());
-                RWAPI.util.DamageSource.DamageSource sourcee = RWAPI.util.DamageSource.DamageSource.causeAttackPhysics(attacker, data,attacker.getAd());
-                RWAPI.util.DamageSource.DamageSource.attackDamage(sourcee,true);
-                RWAPI.util.DamageSource.DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);
-            }
+    protected boolean canDespawn() {
+        if (main.game.start != GameStatus.START){
+            return true;
         }
+        return false;
+    }
+
+    @Override
+    public boolean attackEntityFrom(DamageSource source, float amount) {
         return super.attackEntityFrom(source, amount);
     }
 

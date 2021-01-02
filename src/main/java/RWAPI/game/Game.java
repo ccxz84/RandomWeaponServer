@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -129,6 +130,7 @@ public class Game {
 	public void startGame() {
 		// TODO Auto-generated method stub
 		main.game.start = GameStatus.START;
+		server.getWorld(0).getGameRules().addGameRule("doDaylightCycle", "false", GameRules.ValueType.BOOLEAN_VALUE);
 
 
 		for(PlayerData player : main.game.player().values()) {
@@ -139,18 +141,6 @@ public class Game {
 			player.get_class().initSkill(player);
 			player.setKeyinputListener();
 			player.getPlayer().getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1d);
-		}
-
-		List<AbstractObject> list = server.getWorld(0).getEntities(AbstractObject.class, input -> {
-			if(input instanceof AbstractObject) {
-				System.out.println(input);
-				return true;
-			}
-			return false;
-		});
-
-		for(AbstractObject entity : list){
-			entity.setDead();
 		}
 		
 		this.initTimer("게임 시간", Reference.GAMEITME);

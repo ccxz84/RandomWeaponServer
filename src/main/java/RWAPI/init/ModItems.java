@@ -13,7 +13,8 @@ public class ModItems {
 	public static final Class[] NO_OVERLAP_ITEMS = {
 			ItemBase.shoes.class,
 			Lastwhisper.class,
-			Voidstaff.class
+			Voidstaff.class,
+			ItemBase.jungle.class
 	};
 	
 	
@@ -69,5 +70,13 @@ public class ModItems {
 	public static final ItemBase Spiritvisage = new Spiritvisage("spiritvisage");
 	public static final ItemBase Stinger = new Stinger("stinger");
 	public static final ItemBase Nashorstooth = new Nashorstooth("nashor'stooth");
+	public static final ItemBase Skirmisherssaber = new Skirmisherssaber("skirmisherssaber");
+	public static final ItemBase Stalkersblade = new Stalkersblade("stalkersblade");
+	public static final ItemBase Skirmisherssaber_cinderhulk = new Cinderhulk("skirmisherssaber-cinderhulk",Skirmisherssaber);
+	public static final ItemBase Stalkersblade_cinderhulk = new Cinderhulk("stalkersblade-cinderhulk",Stalkersblade);
+	public static final ItemBase Skirmisherssaber_runicechoes = new Runicechoes("skirmisherssaber-runicechoes",Skirmisherssaber);
+	public static final ItemBase Stalkersblade_runicechoes = new Runicechoes("stalkersblade-runicechoes",Stalkersblade);
+	public static final ItemBase Skirmisherssaber_warrior = new Warrior("skirmisherssaber-warrior",Skirmisherssaber);
+	public static final ItemBase Stalkersblade_warrior = new Warrior("stalkersblade-warrior",Stalkersblade);
 
 }

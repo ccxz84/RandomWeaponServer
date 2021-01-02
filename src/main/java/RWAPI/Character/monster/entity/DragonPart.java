@@ -40,8 +40,8 @@ public class DragonPart extends Entity implements IMob{
 
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        //System.out.println(this.isEntityInvulnerable(source) ? false : this.parent.attackEntityFromPart(this, source, amount));
-        return this.isEntityInvulnerable(source) ? false : this.parent.attackEntityFromPart(this, source, amount);
+        System.out.println(this.isEntityInvulnerable(source));
+        return this.parent.attackEntityFromPart(this, source, amount);
     }
 
     public boolean isEntityEqual(Entity entityIn)

@@ -22,7 +22,6 @@ public class PlayerAIZombieAttackObject extends EntityAIBase {
     private double targetX;
     private double targetY;
     private double targetZ;
-    protected final int attackInterval = 20;
     private int failedPathFindingPenalty = 0;
     private boolean canPenalize = false;
     double reach;
@@ -179,6 +178,7 @@ public class PlayerAIZombieAttackObject extends EntityAIBase {
 
         if (p_190102_2_ <= reach && this.attackTick <= 0)
         {
+            System.out.println(p_190102_1_);
             this.attackTick = 20;
             this.attacker.swingArm(EnumHand.MAIN_HAND);
             this.attacker.attackmob(p_190102_1_);

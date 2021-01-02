@@ -25,7 +25,7 @@ public class EntityBlazingbeam extends SkillEntity {
 
     @Override
     public void onUpdate() {
-        if(ticksExisted >15) {
+        if(ticksExisted >7) {
             setDead();
         }
         super.onUpdate();

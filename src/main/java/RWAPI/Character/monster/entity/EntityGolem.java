@@ -54,6 +54,9 @@ public class EntityGolem extends AbstractObject{
 
     @Override
     protected boolean canDespawn() {
+        if (main.game.start != GameStatus.START || (Reference.GAMEITME - main.game.gettimer()) - 300 <= 0){
+            return true;
+        }
         return false;
     }
 
@@ -128,6 +131,8 @@ public class EntityGolem extends AbstractObject{
     {
         super.onLivingUpdate();
 
+        if(main.game.start != GameStatus.START)
+            setDead();
         if (this.attackTimer > 0)
         {
             --this.attackTimer;

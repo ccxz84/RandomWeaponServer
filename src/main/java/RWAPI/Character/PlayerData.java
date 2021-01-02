@@ -611,15 +611,34 @@ public class PlayerData extends EntityData{
 
 		public boolean ItemOverlap(int idx){
 			for(Class item : ModItems.NO_OVERLAP_ITEMS){
-				if(data.getPlayer().inventory.getStackInSlot(idx).getItem().getClass().equals(item)){
+				try{
+					item.cast(data.getPlayer().inventory.getStackInSlot(idx).getItem());
+					for(int j = 0; j < 9 ; j ++ ){
+						try{
+							item.cast(data.getPlayer().inventory.getStackInSlot(j).getItem());
+							if(idx != j){
+								//System.out.println(data.getPlayer().inventory.getStackInSlot(j).getItem() + "   " + data.getPlayer().inventory.getStackInSlot(idx).getItem());
+								return true;
+							}
+						}
+						catch (Exception e){
+							continue;
+						}
+					}
+					return false;
+				}catch (Exception e){
+					continue;
+				}
+				/*if(data.getPlayer().inventory.getStackInSlot(idx).getItem().getClass().isInstance() instanceof item){
 					for(int j = 0; j < 9 ; j ++ ){
 						if((data.getPlayer().inventory.getStackInSlot(j).getItem().getClass().equals(item))&& idx != j){
 							//System.out.println(data.getPlayer().inventory.getStackInSlot(j).getItem() + "   " + data.getPlayer().inventory.getStackInSlot(idx).getItem());
 							return true;
 						}
 					}
-				}
+				}*/
 			}
+
 			return false;
 		}
 

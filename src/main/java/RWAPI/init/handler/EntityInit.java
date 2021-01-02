@@ -71,6 +71,5 @@ private static List<registData> data = new ArrayList<registData>();
 		data.add(new registData("dragon", EntityDragon.class,Reference.ENTITY_DRAGON));
 		data.add(new registData("witch", EntityWitch.class,Reference.ENTITY_WITCH));
 		data.add(new registData("golem", EntityGolem.class,Reference.ENTITY_GOLEM));
-		data.add(new registData("witcheffect", EntityWitch.effect.class,Reference.ENTITY_WITCHEFFECT));
 	}
 }

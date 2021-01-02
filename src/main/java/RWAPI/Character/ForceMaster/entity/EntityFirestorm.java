@@ -61,8 +61,8 @@ public class EntityFirestorm extends SkillEntity {
                 if(target != null && attacker != null) {
                     if(mi instanceof EntityLivingBase){
                         double distance = mi.getDistance(this.thrower);
-                        Vec3d vec = new Vec3d((mi.posX-this.thrower.posX)/distance, (mi.posY-this.thrower.posY)/distance,(mi.posZ-this.thrower.posZ)/distance);
-                        knockBack((EntityLivingBase) mi,this.thrower,3f,vec.x,vec.z);
+                        Vec3d vec = new Vec3d((this.thrower.posX-mi.posX)/distance, (this.thrower.posY-mi.posY)/distance,(this.thrower.posZ-mi.posZ)/distance);
+                        knockBack((EntityLivingBase) mi,this.thrower,1f,vec.x,vec.z);
                     }
                     DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
                     DamageSource.attackDamage(source,true);
