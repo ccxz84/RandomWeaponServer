@@ -38,7 +38,7 @@ public class Warmogsarmor extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	800,	0,	0,	0,	0,	0,	10,	0,	0,	0
+				0,	0,	800,	0,	0,	0,	0,	0,	10,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}
@@ -125,6 +125,21 @@ public class Warmogsarmor extends ItemBase {
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.target;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return null;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return data;
 			}
 
 			private void resetTimer(){

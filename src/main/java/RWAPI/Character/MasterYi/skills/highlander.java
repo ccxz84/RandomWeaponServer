@@ -3,9 +3,12 @@ package RWAPI.Character.MasterYi.skills;
 import RWAPI.Character.*;
 import RWAPI.Character.buff.Buff;
 import RWAPI.game.event.EntityDeathEventHandle;
+import RWAPI.init.ModSkills;
 import RWAPI.main;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 public class highlander extends MasterYiS {
 
@@ -157,9 +160,9 @@ public class highlander extends MasterYiS {
             data.nonWorking = true;
 
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
-            cool = new cool(cooldown[lv-1],4, (EntityPlayerMP) player);
-            buft = new bufftimer(7, (EntityPlayerMP) player,(float)skilldamage[0][lv-1],(float)skilldamage[1][lv-1]);
-            data.addBuff(buft);
+            this.raiseevent(data,skillcost[lv-1]);
+            cool = new cool(cooldown[lv-1],4, (EntityPlayerMP) player,data.getSkillacc());
+            buft = new bufftimer(7, data,(float)skilldamage[0][lv-1],(float)skilldamage[1][lv-1]);
             data.nonWorking = false;
         }
     }
@@ -183,8 +186,8 @@ public class highlander extends MasterYiS {
 
     class cool extends CooldownHandler {
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
 
         public void reduceCool(){
@@ -196,29 +199,33 @@ public class highlander extends MasterYiS {
 
         private eventHandle handle;
 
-        public bufftimer(double duration, EntityPlayerMP player, double... data) {
-            super(duration, player, data);
+        public bufftimer(double duration, PlayerData player, double... data) {
+            super(duration, player,false,false, data);
         }
 
         @Override
         public void resetEffect() {
             // TODO Auto-generated method stub
-            PlayerData data = main.game.getPlayerData(player.getUniqueID());
-            data.setPlusAttackspeed(data.getPlusAttackspeed()-this.data[1]);
-            data.setMove(data.getMove() - this.data[0]);
+            player.setPlusAttackspeed(player.getPlusAttackspeed()-this.data[1]);
+            player.setMove(player.getMove() - this.data[0]);
             main.game.getEventHandler().unregister(handle);
-            data.removeBuff(this);
-            Skillset(player);
+            player.removeBuff(this);
+            Skillset(player.getPlayer());
+        }
+
+        @Override
+        public ItemStack getBuffIcon() {
+            return new ItemStack(ModSkills.highlander);
         }
 
         @Override
         public void setEffect() {
             // TODO Auto-generated method stub
-            PlayerData data = main.game.getPlayerData(player.getUniqueID());
-            data.setPlusAttackspeed(this.data[1] + data.getPlusAttackspeed());
-            handle = new eventHandle(data);
+            player.setPlusAttackspeed(this.data[1] + player.getPlusAttackspeed());
+            handle = new eventHandle(player);
             main.game.getEventHandler().register(handle);
-            data.setMove(this.data[0] + data.getMove());
+            player.setMove(this.data[0] + player.getMove());
+            player.addBuff(this);
         }
 
         private class eventHandle extends EntityDeathEventHandle {
@@ -236,7 +243,6 @@ public class highlander extends MasterYiS {
                 EntityData target = ((EntityDeathEvent)event).getSource().getTarget();
 
                 if(attacker.equals(data) && !(target instanceof PlayerData)){
-                    System.out.println("highlander run");
                     duration += 5 * 40;
                 }
             }
@@ -244,6 +250,21 @@ public class highlander extends MasterYiS {
             @Override
             public EventPriority getPriority() {
                 return EventPriority.HIGHTEST;
+            }
+
+            @Override
+            public code getEventCode() {
+                return code.attacker;
+            }
+
+            @Override
+            public EntityData getAttacker() {
+                return data;
+            }
+
+            @Override
+            public EntityData getTarget() {
+                return null;
             }
         }
 

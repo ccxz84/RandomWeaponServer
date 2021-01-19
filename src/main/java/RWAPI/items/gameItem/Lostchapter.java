@@ -25,7 +25,7 @@ public class Lostchapter extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	35,	0,	300,	0,	0,	0,	0,	0,	2,	0,	0
+				0,	35,	0,	300,	0,	0,	0,	0,	0,	2,	0,	0,0
 		};
 		this.stat = stat;
 	}

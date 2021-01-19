@@ -4,6 +4,7 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.buff.Buff;
 import RWAPI.game.event.PlayerAttackEventHandle;
+import RWAPI.init.ModItems;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.main;
 import RWAPI.util.DamageSource.*;
@@ -67,7 +68,7 @@ public class Coldsteel_passive extends ItemBase.inherence_handler{
                     }
                 }
                 if(inst == null){
-                    bufflist.add(new buff(time, attacker.getPlayer()));
+                    bufflist.add(new buff(time, attacker));
                 }
                 else{
                     inst.resettime();
@@ -79,30 +80,50 @@ public class Coldsteel_passive extends ItemBase.inherence_handler{
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
         }
+
+        @Override
+        public code getEventCode() {
+            return code.target;
+        }
+
+        @Override
+        public EntityData getAttacker() {
+            return null;
+        }
+
+        @Override
+        public EntityData getTarget() {
+            return data;
+        }
     }
 
     private class buff extends Buff {
 
-        PlayerData pdata;
 
-        public buff(double duration, EntityPlayerMP player, double... data) {
-            super(duration, player, data);
+        public buff(double duration, PlayerData player, double... data) {
+            super(duration, player,true,true, data);
         }
 
         @Override
         public void setEffect() {
-            this.pdata = main.game.getPlayerData(player.getUniqueID());
-            this.pdata.setPlusAttackspeed(this.pdata.getPlusAttackspeed() - minusas);
+            this.player.setPlusAttackspeed(this.player.getPlusAttackspeed() - minusas);
+            player.addBuff(this);
         }
 
         @Override
         public void resetEffect() {
-            this.pdata.setPlusAttackspeed(this.pdata.getPlusAttackspeed() + minusas);
+            this.player.setPlusAttackspeed(this.player.getPlusAttackspeed() + minusas);
             bufreset(this);
+            player.removeBuff(this);
+        }
+
+        @Override
+        public ItemStack getBuffIcon() {
+            return new ItemStack(stack.getItem());
         }
 
         public PlayerData getPlayerdata() {
-            return pdata;
+            return player;
         }
 
         public void resettime(){

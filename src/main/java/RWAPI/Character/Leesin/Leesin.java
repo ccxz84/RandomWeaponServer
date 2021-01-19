@@ -1,13 +1,18 @@
 package RWAPI.Character.Leesin;
 
+import RWAPI.Character.ForceMaster.ForceMaster;
 import RWAPI.Character.Leesin.skills.*;
 import RWAPI.Character.Skill;
 
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.StatChangeEventHandle;
 import RWAPI.init.ModSkills;
 import RWAPI.init.ModWeapons;
+import RWAPI.main;
 import RWAPI.util.ClassList;
+import RWAPI.util.StatList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentString;
@@ -16,6 +21,8 @@ import net.minecraft.util.text.TextFormatting;
 public class Leesin extends PlayerClass{
 
 	//private float[] cool = new float[14];
+
+	private EventClass maxmanahandler,curmanahandler,managenhandler;
 
 	public Leesin(){
 		default_health = 750;
@@ -96,6 +103,16 @@ public class Leesin extends PlayerClass{
 		skills[4].skillpreExecute(player);
 		skills[4].skillExecute(player);
 		skills[4].skillEnd(player);
+	}
+
+	@Override
+	public void preinitSkill(PlayerData data){
+		this.maxmanahandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST,StatList.MAXMANA);
+		this.curmanahandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST,StatList.CURRENTMANA);
+		this.managenhandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST,StatList.REGENMANA);
+		main.game.getEventHandler().register(this.maxmanahandler);
+		main.game.getEventHandler().register(this.curmanahandler);
+		main.game.getEventHandler().register(this.managenhandler);
 	}
 	
 	@Override
@@ -375,5 +392,51 @@ public class Leesin extends PlayerClass{
 				TextFormatting.RESET +")의 데미지를 입히며 뒤로 날려보냅니다. 쿨타임 : "+
 				TextFormatting.GOLD + skills[4].getcooldown()[lv-1]+
 				TextFormatting.RESET+"초  소모값 : " + skills[4].getskillcost()[lv-1]));
+	}
+
+	private class EventClass extends StatChangeEventHandle {
+		PlayerData data;
+		EventPriority priority;
+		StatList code;
+
+		public EventClass(PlayerData data, EventPriority priority, StatList code) {
+			this.code = code;
+			this.data = data;
+			this.priority = priority;
+		}
+
+		@Override
+		public void EventListener(BaseEvent.AbstractBaseEvent event) {
+			StatChangeEvent sevent = (StatChangeEvent) event;
+			PlayerData data = sevent.getData();
+
+			if(this.data.equals(data) && sevent.getCode() == StatList.MAXMANA){
+				double mana = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+				sevent.getRef().setData(sevent.getRef().getData().doubleValue() - mana);
+			}
+			if(this.data.equals(data) && sevent.getCode() == StatList.CURRENTMANA){
+				double mana = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+				sevent.getRef().setData(sevent.getRef().getData().doubleValue() - mana);
+			}
+			if(this.data.equals(data) && sevent.getCode() == StatList.REGENMANA){
+				double mana = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+				sevent.getRef().setData(sevent.getRef().getData().doubleValue() - mana);
+			}
+		}
+
+		@Override
+		public EventPriority getPriority() {
+			return this.priority;
+		}
+
+		@Override
+		public PlayerData getPlayer() {
+			return this.data;
+		}
+
+		@Override
+		public StatList getCode() {
+			return this.code;
+		}
 	}
 }

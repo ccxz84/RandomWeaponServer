@@ -6,6 +6,8 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.CooldownHandler;
 import RWAPI.Character.monster.entity.IMob;
 import RWAPI.Character.Skill;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.UseSkillEventHandle;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.Entity;
@@ -148,7 +150,8 @@ public class dragonsrage implements Skill {
             data.nonWorking = true;
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
             data.nonWorking = false;
-            this.handler = new cool(3, 4, (EntityPlayerMP) player,(float) (skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd() - data.getAd()),cooldown[lv-1]);
+            this.handler = new cool(3, 4, (EntityPlayerMP) player,(float) (skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd() - data.getAd()),cooldown[lv-1],data.getSkillacc());
+            this.raiseevent(data,skillcost[lv-1]);
             _class.skill0(player);
 
         }
@@ -163,12 +166,21 @@ public class dragonsrage implements Skill {
     public void skillEnd(EntityPlayer player) {
 
     }
+
+    @Override
+    public void raiseevent(PlayerData data, double mana) {
+        UseSkillEventHandle.UseSkillEvent event = new UseSkillEventHandle.UseSkillEvent(data,mana);
+        for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+            main.game.getEventHandler().RunEvent(event,priority);
+        }
+    }
+
     class cool extends CooldownHandler {
         float skilldamage1;
         double cool;
 
-        public cool(double cool, int id, EntityPlayerMP player, float skilldamage1, double waiting_time) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player, float skilldamage1, double waiting_time,int skillacc) {
+            super(cool, id, player,false, 0);
             this.skilldamage1 = skilldamage1;
             this.cool = waiting_time;
         }
@@ -176,7 +188,7 @@ public class dragonsrage implements Skill {
         @Override
         public void skillTimer(TickEvent.ServerTickEvent event) throws Throwable {
             if(skillTimer > cooldown) {
-                new CooldownHandler(cool, 4, (EntityPlayerMP) player);
+                new CooldownHandler(cool, 4, (EntityPlayerMP) player,true,skillacc);
                 MinecraftForge.EVENT_BUS.unregister(this);
             }
             data.setCool(this.id, ((float)(cooldown-skillTimer)/40));
@@ -194,7 +206,7 @@ public class dragonsrage implements Skill {
                 DamageSource sourcee = DamageSource.causeSkillPhysics(attacker, target, skilldamage1);
                 DamageSource.attackDamage(sourcee,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);
-                new CooldownHandler(cool, 4, (EntityPlayerMP) player);
+                new CooldownHandler(cool, 4, (EntityPlayerMP) player,true,skillacc);
                 MinecraftForge.EVENT_BUS.unregister(this);
 
             }

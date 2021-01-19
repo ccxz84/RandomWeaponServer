@@ -122,6 +122,11 @@ public class flurry implements Skill {
     }
 
     @Override
+    public void raiseevent(PlayerData data, double mana) {
+
+    }
+
+    @Override
     public double[] getskilldamage() {
         return this.skilldamage;
     }
@@ -154,7 +159,7 @@ public class flurry implements Skill {
         double attackspeed;
 
         public cool(double cool, int id, EntityPlayerMP player, double attackspeed) {
-            super(cool, id, player);
+            super(cool, id, player,false,0);
             this.attackspeed = attackspeed;
             this.data = main.game.getPlayerData(player.getUniqueID());
             data.setPlusAttackspeed(this.data.getPlusAttackspeed() + this.attackspeed);

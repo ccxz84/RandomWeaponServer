@@ -9,12 +9,14 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.Skill;
 import RWAPI.game.event.BaseEvent;
 import RWAPI.game.event.ItemChangeEventHandle;
+import RWAPI.game.event.StatChangeEventHandle;
 import RWAPI.init.ModSkills;
 import RWAPI.init.ModWeapons;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.items.skillItem.SkillBase;
 import RWAPI.main;
 import RWAPI.util.ClassList;
+import RWAPI.util.StatList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -26,7 +28,9 @@ public class ForceMaster extends PlayerClass {
 
     private formaster[] allskills = new formaster[10];
     private Item[] allskillset = new Item[10];
-    private EventClass Higheventhandler, Loweventhandler;
+    private EventClass maxmanahandler,curmanahandler,managenhandler;
+    private static final int manaapper = 1;
+    private static final int managenapper = 100;
 
     public ForceMaster(){
         default_health = 680;
@@ -137,10 +141,12 @@ public class ForceMaster extends PlayerClass {
 
     @Override
     public void preinitSkill(PlayerData data){
-        this.Higheventhandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST);
-        this.Loweventhandler = new EventClass(data, BaseEvent.EventPriority.LOWEST);
-        main.game.getEventHandler().register(this.Loweventhandler);
-        main.game.getEventHandler().register(this.Higheventhandler);
+        this.maxmanahandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST,StatList.MAXMANA);
+        this.curmanahandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST,StatList.CURRENTMANA);
+        this.managenhandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST,StatList.REGENMANA);
+        main.game.getEventHandler().register(this.maxmanahandler);
+        main.game.getEventHandler().register(this.curmanahandler);
+        main.game.getEventHandler().register(this.managenhandler);
     }
 
     public void skillSwitching(PlayerData data,int idx){
@@ -390,11 +396,14 @@ public class ForceMaster extends PlayerClass {
                 skill.skillEnd(player);
             }
         }
-        if(Higheventhandler != null){
-            main.game.getEventHandler().unregister(this.Higheventhandler);
+        if(maxmanahandler != null){
+            main.game.getEventHandler().unregister(this.maxmanahandler);
         }
-        if(Loweventhandler != null){
-            main.game.getEventHandler().unregister(this.Loweventhandler);
+        if(curmanahandler != null){
+            main.game.getEventHandler().unregister(this.curmanahandler);
+        }
+        if(managenhandler != null){
+            main.game.getEventHandler().unregister(this.managenhandler);
         }
     }
 
@@ -495,72 +504,53 @@ public class ForceMaster extends PlayerClass {
                 TextFormatting.RESET +" : 기공사가 결빙공을 사용한 상태에서 3초 이내에 사용할 수 있습니다. 사용 시, 회복 효과와 무적효과는 해제됩니다. 사용하지 않을 시, 3초 후에 결빙공이 해제됩니다." ));
     }
 
-    private class EventClass extends ItemChangeEventHandle {
+    private class EventClass extends StatChangeEventHandle {
         PlayerData data;
         EventPriority priority;
+        StatList code;
 
-        public EventClass(PlayerData data, EventPriority priority) {
-            super();
+        public EventClass(PlayerData data, EventPriority priority, StatList code) {
             this.data = data;
             this.priority = priority;
+            this.code = code;
         }
 
         @Override
         public void EventListener(BaseEvent.AbstractBaseEvent event) {
-            PlayerData data = ((ItemChangeEvent)event).getData();
+            StatChangeEvent sevent = (StatChangeEvent) event;
+            PlayerData data = sevent.getData();
 
-            if(this.data.equals(data)){
-                ItemStack stack = ((ItemChangeEvent)event).getStack();
-                ItemBase item = (ItemBase) stack.getItem();
-
-                if(((ItemChangeEvent) event).isRemove() && priority == EventPriority.HIGHTEST){
-                    if(item.getstat()[3] > 0){
-                        double mana = item.getstat()[3];
-                        //System.out.println("해체 high mana : " + mana);
-                        data.setMaxMana(data.getMaxMana() + mana);
-                        data.setCurrentMana(data.getCurrentMana() + mana);
-                    }
-                    if(item.getstat()[9] > 0){
-                        double manaregen = item.getstat()[9];
-                        //System.out.println("해체 high manaregen : " + manaregen);
-                        data.setRegenMana(data.getRegenMana() + manaregen);
-                    }
-                }
-
-                if(((ItemChangeEvent) event).isRemove() && priority == EventPriority.LOWEST){
-                    if(item.getstat()[3] > 0){
-                        int mana = (int) item.getstat()[3];
-                        //System.out.println("해체 low mana : " + mana);
-                        data.setAp(data.getAp() - mana/10);
-                    }
-                    if(item.getstat()[9] > 0){
-                        int manaregen = (int) item.getstat()[9];
-                        //System.out.println("해체 low manaregen : " + manaregen);
-                        data.setAp(data.getAp() - manaregen/1);
-                    }
-                }
-                else if(priority == EventPriority.LOWEST){
-
-                    if(item.getstat()[3] > 0){
-                        double mana = item.getstat()[3];
-                        //System.out.println("착용 mana : " + mana);
-                        data.setMaxMana(data.getMaxMana() - mana);
-                        data.setCurrentMana(data.getCurrentMana() - mana);
-                        data.setAp(data.getAp() + (int)mana/10);
-                    }
-                    if(item.getstat()[9] > 0){
-                        double manaregen = item.getstat()[9];
-                        //System.out.println("착용 manaregen : " + manaregen);
-                        data.setRegenMana(data.getRegenMana() - manaregen);
-                        data.setAp(data.getAp() + (int)manaregen/1);
-                    }
-                }
+            if(this.data.equals(data) && sevent.getCode() == StatList.MAXMANA){
+                double mana = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+                System.out.println("chmaxmana : " + mana);
+                this.data.setAp(this.data.getAp() + (mana / 100)*manaapper);
+                sevent.getRef().setData(sevent.getRef().getData().doubleValue() - mana);
+                System.out.println(sevent.getRef().getData());
+            }
+            if(this.data.equals(data) && sevent.getCode() == StatList.CURRENTMANA){
+                double mana = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+                sevent.getRef().setData(sevent.getRef().getData().doubleValue() - mana);
+            }
+            if(this.data.equals(data) && sevent.getCode() == StatList.REGENMANA){
+                double mana = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+                this.data.setAp(this.data.getAp() + (mana / 100)*managenapper);
+                sevent.getRef().setData(sevent.getRef().getData().doubleValue() - mana);
             }
         }
 
         @Override
         public EventPriority getPriority() {
             return this.priority;
+        }
+
+        @Override
+        public PlayerData getPlayer() {
+            return data;
+        }
+
+        @Override
+        public StatList getCode() {
+            return code;
         }
     }
 }

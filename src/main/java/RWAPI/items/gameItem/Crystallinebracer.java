@@ -24,7 +24,8 @@ public class Crystallinebracer extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	200,	0,	0,	0,	0,	0,	2,	0,	0,	0
+				0,	0,	200,	0,	0,	0,	0,	0,	2,	0,	0,	0,	0
+
 		};
 		this.stat = stat;
 	}

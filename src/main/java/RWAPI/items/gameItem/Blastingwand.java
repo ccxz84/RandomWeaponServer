@@ -24,7 +24,7 @@ public class Blastingwand extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	45,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+				0,	45,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}

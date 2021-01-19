@@ -5,7 +5,6 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.main;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.item.ItemStack;
 
@@ -61,6 +60,21 @@ public class Bladeoftheruinedking_passive extends ItemBase.inherence_handler{
         @Override
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
+        }
+
+        @Override
+        public code getEventCode() {
+            return code.attacker;
+        }
+
+        @Override
+        public EntityData getAttacker() {
+            return data;
+        }
+
+        @Override
+        public EntityData getTarget() {
+            return null;
         }
     }
 }

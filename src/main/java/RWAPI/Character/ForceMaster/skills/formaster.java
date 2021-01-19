@@ -4,6 +4,9 @@ import RWAPI.Character.CooldownHandler;
 import RWAPI.Character.ForceMaster.ForceMaster;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.Skill;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.UseSkillEventHandle;
+import RWAPI.main;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
@@ -29,8 +32,8 @@ public abstract class formaster implements Skill {
         boolean flag = true;
         formaster instance;
 
-        public cool(double cool, int id, EntityPlayerMP player, formaster instance) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player, formaster instance,int skillacc) {
+            super(cool, id, player,true,skillacc);
             this.instance = instance;
         }
 
@@ -65,4 +68,11 @@ public abstract class formaster implements Skill {
         this.skill = skill;
     }
 
+    @Override
+    public void raiseevent(PlayerData data, double mana) {
+        UseSkillEventHandle.UseSkillEvent event = new UseSkillEventHandle.UseSkillEvent(data,mana);
+        for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+            main.game.getEventHandler().RunEvent(event,priority);
+        }
+    }
 }

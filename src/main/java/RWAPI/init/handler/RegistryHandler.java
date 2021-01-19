@@ -1,9 +1,6 @@
 package RWAPI.init.handler;
 
-import RWAPI.init.ModItems;
-import RWAPI.init.ModPotion;
-import RWAPI.init.ModSkills;
-import RWAPI.init.ModWeapons;
+import RWAPI.init.*;
 import RWAPI.util.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -26,7 +23,10 @@ public class RegistryHandler {
 		event.getRegistry().registerAll(ModItems.ITEMS.toArray(new Item[0]));
 		event.getRegistry().registerAll(ModSkills.skill.toArray(new Item[0]));
 		event.getRegistry().registerAll(ModWeapons.weapon.toArray(new Item[0]));
+		event.getRegistry().registerAll(ModBuff.buff.toArray(new Item[0]));
 		event.getRegistry().register(ModItems.RUBY);
+		event.getRegistry().register(ModItems.Muramana);
+		event.getRegistry().register(ModItems.Seraphsembrace);
 	}
 
 	@SubscribeEvent

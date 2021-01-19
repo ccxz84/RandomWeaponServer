@@ -143,7 +143,8 @@ public class firestorm extends formaster {
             storm.setNoGravity(true);
             storm.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.0f, 0);
             player.world.spawnEntity(storm);
-            this.handler = new cool(cooldown[lv-1], 1, (EntityPlayerMP)player,this);
+            this.raiseevent(data,skillcost[lv-1]);
+            this.handler = new cool(cooldown[lv-1], 1, (EntityPlayerMP)player,this,data.getSkillacc());
             data.nonWorking = false;
         }
 

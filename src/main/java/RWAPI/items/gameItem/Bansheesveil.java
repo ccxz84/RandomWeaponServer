@@ -36,7 +36,7 @@ public class Bansheesveil extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	70,	0,	0,	0,	65,	0,	0,	0,	0,	0,	0
+				0,	70,	0,	0,	0,	65,	0,	0,	0,	0,	0,	0,	10
 		};
 		this.stat = stat;
 	}
@@ -59,9 +59,9 @@ public class Bansheesveil extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(Bansheesveil_passive.class)){
-			return new Bansheesveil_passive(data,stack,cooltime);
+			return new Bansheesveil_passive(data,stack,cooltime,idx);
 		}
 
 		return null;

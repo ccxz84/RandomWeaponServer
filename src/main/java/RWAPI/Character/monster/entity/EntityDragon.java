@@ -4,23 +4,18 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
 import RWAPI.game.event.ItemChangeEventHandle;
-import RWAPI.game.event.LevelUpEventHandle;
+import RWAPI.game.event.StatChangeEventHandle;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.main;
 import RWAPI.util.GameStatus;
 import RWAPI.util.Reference;
+import RWAPI.util.StatList;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -45,7 +40,7 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
 
     public EntityDragon(World worldIn) throws IllegalAccessException, InstantiationException {
         super(worldIn,new EntityData(null,4200f,21f,30f,200f,300,300,"드래곤",1)
-        ,new double[]{240,4,13,13});
+        ,new double[]{240,4,13,13}, new double[]{4200,130,21,30});
         this.dragonPartArray = new DragonPart[] {this.dragonPartHead, this.dragonPartNeck, this.dragonPartBody, this.dragonPartTail1, this.dragonPartTail2, this.dragonPartTail3, this.dragonPartWing1, this.dragonPartWing2};
         this.setHealth(this.getMaxHealth());
         this.setSize(16.0F, 8.0F);
@@ -53,7 +48,7 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
         this.isImmuneToFire = true;
         this.ignoreFrustumCheck = true;
         if(main.game.start == GameStatus.START){
-            int gametime = (Reference.GAMEITME - main.game.gettimer()) - 300 <= 0 ? 0 :  ((Reference.GAMEITME - main.game.gettimer()) - 300)/60;
+            int gametime = ((Reference.GAMEITME - main.game.gettimer())/60) - 5 <= 0 ? 0 : ((Reference.GAMEITME - main.game.gettimer())/60) - 5;
             this.getData().setMaxHealth(4200+(240 * gametime));
             this.getData().setCurrentHealth(4200+(240 * gametime));
             this.getData().setAd(130f +(4 * gametime));
@@ -288,7 +283,7 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
 
     @Override
     public int getGametime() {
-        return (Reference.GAMEITME - main.game.gettimer()) - 300 <= 0 ? 0 :  ((Reference.GAMEITME - main.game.gettimer()) - 300)/60;
+        return ((Reference.GAMEITME - main.game.gettimer())/60) - 5 <= 0 ? 0 : ((Reference.GAMEITME - main.game.gettimer())/60) - 5;
     }
 
     @Override
@@ -296,26 +291,27 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
         double health = (data.getMaxHealth()/100) * hpper;
         data.setMaxHealth(data.getMaxHealth() + health);
         data.setCurrentHealth(data.getCurrentHealth() + health);
-        main.game.getEventHandler().register(new lvEventClass(data));
-        main.game.getEventHandler().register(new itemEventClass(data));
+        main.game.getEventHandler().register(new lvEventClass(data,StatList.MAXHEALTH));
+        //main.game.getEventHandler().register(new itemEventClass(data));
     }
 
-    private class lvEventClass extends LevelUpEventHandle{
+    private class lvEventClass extends StatChangeEventHandle {
 
         PlayerData data;
+        StatList code;
 
-        public lvEventClass(PlayerData data) {
-            super();
+        public lvEventClass(PlayerData data, StatList code) {
             this.data = data;
+            this.code = code;
         }
 
         @Override
         public void EventListener(AbstractBaseEvent event) {
-            PlayerData data = ((LevelUpEvent)event).getData();
-            if(this.data.equals(data)) {
-                PlayerClass _class = data.get_class();
-                double health = _class.matrix.hp[data.getLevel() - 1] - _class.matrix.hp[data.getLevel() - 2];
-                data.setMaxHealth(data.getMaxHealth() + (health / 100) * hpper);
+            StatChangeEvent sevent = ((StatChangeEvent)event);
+            PlayerData data = sevent.getData();
+            if(this.data.equals(data) && sevent.getCode().equals(StatList.MAXHEALTH)){
+                double health = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+                sevent.getRef().setData(sevent.getRef().getData().doubleValue() + (health / 100) * hpper);
                 data.setCurrentHealth(data.getCurrentHealth() + (health / 100) * hpper);
             }
         }
@@ -324,39 +320,15 @@ public class EntityDragon extends AbstractObject implements IEntityMultiPart {
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
         }
-    }
 
-    private class itemEventClass extends ItemChangeEventHandle {
-
-        PlayerData data;
-
-        public itemEventClass(PlayerData data) {
-            super();
-            this.data = data;
+        @Override
+        public PlayerData getPlayer() {
+            return data;
         }
 
         @Override
-        public void EventListener(AbstractBaseEvent event) {
-            PlayerData data = ((ItemChangeEvent)event).getData();
-            if(this.data.equals(data)) {
-                ItemStack stack = ((ItemChangeEvent) event).getStack();
-                ItemBase item = (ItemBase) stack.getItem();
-                double health = item.getstat()[2];
-                if(((ItemChangeEvent) event).isRemove()){
-                    data.setMaxHealth(data.getMaxHealth() - (health/100) * hpper);
-                    data.setCurrentHealth(data.getCurrentHealth() - (health/100) * hpper);
-                }
-                else{
-                    data.setMaxHealth(data.getMaxHealth() + (health/100) * hpper);
-                    data.setCurrentHealth(data.getCurrentHealth() + (health/100) * hpper);
-                }
-            }
-
-        }
-
-        @Override
-        public EventPriority getPriority() {
-            return EventPriority.NORMAL;
+        public StatList getCode() {
+            return code;
         }
     }
 }

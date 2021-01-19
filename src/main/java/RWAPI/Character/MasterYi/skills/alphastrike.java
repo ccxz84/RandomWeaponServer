@@ -182,8 +182,8 @@ public class alphastrike extends MasterYiS {
                 entity.setNoGravity(true);
                 entity.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.0f, 0);
                 player.world.spawnEntity(entity);
-                //player.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 40, 255,false,false));
-                this.cool = new cool(cooldown[lv - 1], 1, (EntityPlayerMP) player);
+                this.raiseevent(data,skillcost[lv-1]);
+                this.cool = new cool(cooldown[lv - 1], 1, (EntityPlayerMP) player,data.getSkillacc());
                 data.nonWorking = false;
             }
         }
@@ -212,8 +212,8 @@ public class alphastrike extends MasterYiS {
 
     class cool extends CooldownHandler {
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
 
         public void reduceCool(){

@@ -17,13 +17,15 @@ public class Dreadnought_passive extends ItemBase.inherence_handler{
     int walkingstack = 0;
     double plusmove;
     ItemStack stack;
+    private int idx;
     double distanceWalkedModified;
 
-    public Dreadnought_passive(PlayerData data, ItemStack stack, double plusmove) {
+    public Dreadnought_passive(PlayerData data, ItemStack stack, double plusmove, int idx) {
         super(data, stack);
         this.stack = stack;
         this.data = data;
         this.plusmove = plusmove;
+        this.idx = idx;
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -37,6 +39,9 @@ public class Dreadnought_passive extends ItemBase.inherence_handler{
                 ++walkingstack;
                 walking = 0;
                 data.setMove(data.getMove() + plusmove);
+            }
+            if(!this.stack.equals(this.data.getPlayer().inventory.getStackInSlot(this.idx))){
+                this.stack = this.data.getPlayer().inventory.getStackInSlot(this.idx);
             }
             NetworkUtil.setCool(stack,walkingstack);
             this.distanceWalkedModified = data.getPlayer().distanceWalkedModified;

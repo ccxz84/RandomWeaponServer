@@ -6,10 +6,14 @@ import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.Skill;
 import RWAPI.Character.buff.Buff;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.UseSkillEventHandle;
+import RWAPI.init.ModSkills;
 import RWAPI.main;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
+import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 
 public class tempest implements Skill {
@@ -143,28 +147,40 @@ public class tempest implements Skill {
             tempest.setNoGravity(true);
             tempest.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.0f, 0);
             player.world.spawnEntity(tempest);
-            buff = new Buff(1, data.getPlayer()) {
+            buff = new Buff(1, data,true,false) {
                 double minus;
                 @Override
                 public void setEffect() {
-                    PlayerData data = main.game.getPlayerData(player.getUniqueID());
-                    minus = (data.getMove() * 0.7);
-                    data.setMove(data.getMove() - minus);
+                    minus = (player.getMove() * 0.7);
+                    player.setMove(player.getMove() - minus);
+                    player.addBuff(this);
                 }
 
                 @Override
                 public void resetEffect() {
-                    PlayerData data = main.game.getPlayerData(player.getUniqueID());
-                    data.setMove(data.getMove() + minus);
-                    data.removeBuff(this);
+                    player.setMove(player.getMove() + minus);
+                    player.removeBuff(this);
                     buff = null;
-                    data.nonWorking = false;
+                    player.nonWorking = false;
+                }
+
+                @Override
+                public ItemStack getBuffIcon() {
+                    return new ItemStack(ModSkills.tempest);
                 }
             };
-            data.addBuff(buff);
-            this.handler = new cool(cooldown[lv-1], 3, (EntityPlayerMP) player);
+            this.raiseevent(data,skillcost[lv-1]);
+            this.handler = new cool(cooldown[lv-1], 3, (EntityPlayerMP) player,data.getSkillacc());
             _class.skill0(player);
 
+        }
+    }
+
+    @Override
+    public void raiseevent(PlayerData data,double mana) {
+        UseSkillEventHandle.UseSkillEvent event = new UseSkillEventHandle.UseSkillEvent(data,mana);
+        for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+            main.game.getEventHandler().RunEvent(event,priority);
         }
     }
 
@@ -179,8 +195,8 @@ public class tempest implements Skill {
     }
     class cool extends CooldownHandler {
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
     }
 

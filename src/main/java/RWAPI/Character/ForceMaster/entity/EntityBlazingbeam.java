@@ -38,9 +38,11 @@ public class EntityBlazingbeam extends SkillEntity {
         }
         if(!(result.entityHit != null && result.entityHit instanceof Entity)){
             super.setDead();
+            return;
         }
         if(this.thrower == null){
             super.setDead();
+            return;
         }
         else if(!(result.entityHit.getUniqueID().equals(this.thrower.getUniqueID()))) {
             PlayerData attacker = main.game.getPlayerData(this.thrower.getUniqueID());

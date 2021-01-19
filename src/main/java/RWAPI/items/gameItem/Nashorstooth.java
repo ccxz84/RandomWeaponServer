@@ -1,14 +1,8 @@
 package RWAPI.items.gameItem;
 
-import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
-import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.items.gameItem.inherence.Nahorstooth_passive;
-import RWAPI.items.gameItem.inherence.Sanguineblade_passive;
-import RWAPI.main;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
-import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,7 +43,7 @@ public class Nashorstooth extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	80,	0,	0,	0,	0,	0,	0.5,	0,	0,	0,	0
+				0,	80,	0,	0,	0,	0,	0,	0.5,	0,	0,	0,	0,	20
 		};
 		this.stat = stat;
 	}
@@ -62,7 +56,7 @@ public class Nashorstooth extends ItemBase {
 	}
 
 	@Override
-	public inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends inherence_handler> _class) {
+	public inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends inherence_handler> _class, int idx) {
 		if(_class.equals(Nahorstooth_passive.class)){
 			return new Nahorstooth_passive(data,stack,plusdamageper,plusdamage);
 		}

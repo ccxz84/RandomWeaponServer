@@ -47,7 +47,7 @@ public class Thorn_passive extends ItemBase.inherence_handler{
 
             EntityData data = source.getTarget();
 
-            if(data.equals(this.data) && source instanceof AttackPhysicsDamageSource){
+            if(data.equals(this.data) && source instanceof AttackPhysicsMeleeDamageSource){
 
                 double aDamage = damage + (data.getArmor()/100)*armorPer;
                 DamageSource sourcee = DamageSource.causeUnknownMagic(source.getTarget(),source.getAttacker(),aDamage);
@@ -60,6 +60,21 @@ public class Thorn_passive extends ItemBase.inherence_handler{
         @Override
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
+        }
+
+        @Override
+        public code getEventCode() {
+            return code.target;
+        }
+
+        @Override
+        public EntityData getAttacker() {
+            return null;
+        }
+
+        @Override
+        public EntityData getTarget() {
+            return data;
         }
     }
 }

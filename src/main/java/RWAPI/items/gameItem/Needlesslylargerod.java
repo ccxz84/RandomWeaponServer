@@ -23,7 +23,7 @@ public class Needlesslylargerod extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	60,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+				0,	60,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}

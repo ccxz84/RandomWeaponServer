@@ -5,12 +5,14 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
 import RWAPI.Character.buff.Buff;
 import RWAPI.Character.monster.entity.IMob;
+import RWAPI.init.ModSkills;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
@@ -53,13 +55,13 @@ public class EntitySnowball extends SkillEntity {
                 DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
-                new debuff(timer,attacker.getPlayer(),target);
+                new debuff(timer,attacker,target);
             } else if (result.entityHit instanceof EntityPlayer) {
                 target = main.game.getPlayerData(result.entityHit.getUniqueID());
                 DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
-                new debuff(timer,attacker.getPlayer(),target);
+                new debuff(timer,attacker,target);
             }
             result.entityHit.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
 
@@ -72,8 +74,8 @@ public class EntitySnowball extends SkillEntity {
         double minus;
         EntityData target;
 
-        public debuff(double duration, EntityPlayerMP player, EntityData target, double... data) {
-            super(duration, player, data);
+        public debuff(double duration, PlayerData player, EntityData target, double... data) {
+            super(duration, player,true,true, data);
             this.target = target;
             minus = (target.getMove() * (debuffA/100));
             target.setMove(target.getMove() - minus);
@@ -89,6 +91,11 @@ public class EntitySnowball extends SkillEntity {
         public void resetEffect() {
             target.setMove(target.getMove() + minus);
             target.removeBuff(this);
+        }
+
+        @Override
+        public ItemStack getBuffIcon() {
+            return new ItemStack(ModSkills.snowball);
         }
     }
 }

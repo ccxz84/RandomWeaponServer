@@ -14,14 +14,19 @@ public class Bansheesveil_passive extends ItemBase.inherence_handler{
     EventClass eventClass;
     PlayerData data;
     ItemStack stack;
+    private int idx;
     private int cooltime;
     private cool cool;
 
-    public Bansheesveil_passive(PlayerData data, ItemStack stack, int cooltime) {
+    public Bansheesveil_passive(PlayerData data, ItemStack stack, int cooltime, int idx) {
         super(data, stack);
         this.cooltime = cooltime;
         this.data = data;
         this.stack = stack;
+        this.idx = idx;
+        if(!this.stack.equals(this.data.getPlayer().inventory.getStackInSlot(this.idx))){
+            this.stack = this.data.getPlayer().inventory.getStackInSlot(this.idx);
+        }
         registerAttackEvent();
     }
 
@@ -54,7 +59,6 @@ public class Bansheesveil_passive extends ItemBase.inherence_handler{
             double damage = source.getDamage();
 
             EntityData target = source.getTarget();
-
             if (target.equals(this.data) && source instanceof DamageSource.SkillDamage && cool == null) {
                 double hp = data.getCurrentHealth() + damage >= data.getMaxHealth() ? data.getMaxHealth() : data.getCurrentHealth() + damage;
                 data.setCurrentHealth(hp);
@@ -65,6 +69,21 @@ public class Bansheesveil_passive extends ItemBase.inherence_handler{
         @Override
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
+        }
+
+        @Override
+        public code getEventCode() {
+            return code.target;
+        }
+
+        @Override
+        public EntityData getAttacker() {
+            return null;
+        }
+
+        @Override
+        public EntityData getTarget() {
+            return data;
         }
     }
 

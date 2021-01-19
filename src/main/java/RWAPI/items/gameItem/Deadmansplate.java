@@ -44,7 +44,8 @@ public class Deadmansplate extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	450,	0,	60,	0,	0,	0,	0,	0,	0,	0
+				0,	0,	450,	0,	60,	0,	0,	0,	0,	0,	0,	0,	0
+
 		};
 		this.stat = stat;
 	}
@@ -57,9 +58,9 @@ public class Deadmansplate extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(Dreadnought_passive.class)){
-			return new Dreadnought_passive(data,stack,plusmove);
+			return new Dreadnought_passive(data,stack,plusmove, idx);
 		}
 
 		return null;

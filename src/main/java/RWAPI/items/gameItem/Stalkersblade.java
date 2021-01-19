@@ -49,7 +49,7 @@ public class Stalkersblade extends ItemBase implements ItemBase.jungle{
     @Override
     protected void initstat() {
         double[] stat = {
-                0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+                0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,0
         };
         this.stat = stat;
     }
@@ -73,7 +73,7 @@ public class Stalkersblade extends ItemBase implements ItemBase.jungle{
     }
 
     @Override
-    public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+    public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
         if(_class.equals(Hunterstalisman_passive.class)){
             return new Hunterstalisman_passive(data,stack,plusGold);
         }
@@ -140,7 +140,8 @@ public class Stalkersblade extends ItemBase implements ItemBase.jungle{
             List<Entity> mini =  data.getPlayer().world.getEntitiesWithinAABB(Entity.class, data.getPlayer().getEntityBoundingBox().grow(2.5,0.75,2.5));
             for(Entity mi : mini) {
                 if(mi instanceof EntityPlayerMP && !(mi.equals(data.getPlayer()))) {
-                    buff = new buff(duration, (EntityPlayerMP) mi);
+                    PlayerData pdata = main.game.getPlayerData(mi.getUniqueID());
+                    buff = new buff(duration, pdata);
                 }
             }
             NetworkUtil.setStackData(stack,false,"buff");
@@ -149,10 +150,8 @@ public class Stalkersblade extends ItemBase implements ItemBase.jungle{
 
         private class buff extends Buff {
 
-            PlayerData pdata;
-
-            public buff(double duration, EntityPlayerMP player, double... data) {
-                super(duration, player, data);
+            public buff(double duration, PlayerData player, double... data) {
+                super(duration, player,true,true, data);
             }
 
             @Override
@@ -162,13 +161,19 @@ public class Stalkersblade extends ItemBase implements ItemBase.jungle{
 
             @Override
             public void setEffect(){
-                this.pdata = main.game.getPlayerData(player.getUniqueID());
-                this.pdata.setMove(this.pdata.getMove() - minusmove);
+                this.player.setMove(this.player.getMove() - minusmove);
+                player.addBuff(this);
             }
 
             @Override
             public void resetEffect() {
-                this.pdata.setMove(this.pdata.getMove() + minusmove);
+                this.player.setMove(this.player.getMove() + minusmove);
+                player.removeBuff(this);
+            }
+
+            @Override
+            public ItemStack getBuffIcon() {
+                return new ItemStack(stack.getItem());
             }
         }
 
@@ -230,6 +235,21 @@ public class Stalkersblade extends ItemBase implements ItemBase.jungle{
             @Override
             public EventPriority getPriority() {
                 return EventPriority.NORMAL;
+            }
+
+            @Override
+            public code getEventCode() {
+                return code.attacker;
+            }
+
+            @Override
+            public EntityData getAttacker() {
+                return data;
+            }
+
+            @Override
+            public EntityData getTarget() {
+                return null;
             }
         }
     }

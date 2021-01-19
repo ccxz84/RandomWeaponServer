@@ -3,13 +3,12 @@ package RWAPI.items.gameItem.inherence;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
-import RWAPI.items.gameItem.Deathfiregrasp;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
-import RWAPI.util.DamageSource.SkillFixedDamageSource;
-import RWAPI.util.DamageSource.SkillMagicDamageSource;
-import RWAPI.util.DamageSource.SkillPhysicsDamageSource;
+import RWAPI.util.DamageSource.SkillFixedMeleeDamageSource;
+import RWAPI.util.DamageSource.SkillMagicMeleeDamageSource;
+import RWAPI.util.DamageSource.SkillPhysicsMeleeDamageSource;
 import net.minecraft.item.ItemStack;
 
 public class Deathfiregrasp_passive extends ItemBase.inherence_handler{
@@ -50,7 +49,7 @@ public class Deathfiregrasp_passive extends ItemBase.inherence_handler{
 
             EntityData data = source.getAttacker();
 
-            if(data.equals(this.data) && (source instanceof SkillMagicDamageSource || source instanceof SkillPhysicsDamageSource || source instanceof SkillFixedDamageSource)){
+            if(data.equals(this.data) && (source instanceof SkillMagicMeleeDamageSource || source instanceof SkillPhysicsMeleeDamageSource || source instanceof SkillFixedMeleeDamageSource)){
 
                 double aDamage = source.getTarget().getCurrentHealth() - (source.getTarget().getCurrentHealth()/100)*reducePercent > 0 ?
                         (source.getTarget().getCurrentHealth()/100)*reducePercent : source.getTarget().getCurrentHealth();
@@ -64,6 +63,21 @@ public class Deathfiregrasp_passive extends ItemBase.inherence_handler{
         @Override
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
+        }
+
+        @Override
+        public code getEventCode() {
+            return code.attacker;
+        }
+
+        @Override
+        public EntityData getAttacker() {
+            return data;
+        }
+
+        @Override
+        public EntityData getTarget() {
+            return null;
         }
     }
 }

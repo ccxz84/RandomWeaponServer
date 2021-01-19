@@ -5,7 +5,6 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -34,7 +33,7 @@ public class Recurvebow extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	0,	0,	0,	0.2,	0,	0,	0,	0
+				0,	0,	0,	0,	0,	0,	0,	0.2,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}
@@ -104,6 +103,21 @@ public class Recurvebow extends ItemBase {
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.attacker;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return data;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return null;
 			}
 		}
 	}

@@ -5,11 +5,8 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.items.gameItem.inherence.Bladeoftheruinedking_passive;
-import RWAPI.items.gameItem.inherence.Lifeline_passive;
-import RWAPI.items.gameItem.inherence.Thorn_passive;
 import RWAPI.main;
-import RWAPI.util.DamageSource.AttackMagicDamageSource;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
+import RWAPI.util.DamageSource.AttackPhysicsMeleeDamageSource;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -54,7 +51,7 @@ public class Bladeoftheruinedking extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				30,	0,	0,	0,	0,	0,	0,	0.25,	0,	0,	0,	0
+				30,	0,	0,	0,	0,	0,	0,	0.25,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}
@@ -72,7 +69,7 @@ public class Bladeoftheruinedking extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(Bladeoftheruinedking_passive.class)){
 			return new Bladeoftheruinedking_passive(data,stack,reducePercent);
 		}
@@ -117,7 +114,7 @@ public class Bladeoftheruinedking extends ItemBase {
 
 				EntityData data = source.getAttacker();
 
-				if(data.equals(this.data) && source instanceof AttackPhysicsDamageSource){
+				if(data.equals(this.data) && source instanceof AttackPhysicsMeleeDamageSource){
 					if(source.getAttacker().getCurrentHealth() < source.getAttacker().getMaxHealth()){
 						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent > source.getAttacker().getMaxHealth() ?
 								source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent;
@@ -132,6 +129,21 @@ public class Bladeoftheruinedking extends ItemBase {
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.attacker;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return data;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return null;
 			}
 		}
 	}

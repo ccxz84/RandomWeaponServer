@@ -38,7 +38,7 @@ public class Rabadonsdeathcap extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	150,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+				0,	150,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}
@@ -61,7 +61,7 @@ public class Rabadonsdeathcap extends ItemBase {
 	}
 
 	@Override
-	public inherence_handler create_inherence_handler (PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public inherence_handler create_inherence_handler (PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(Rabadonsdeathcap_passive.class)){
 			return new Rabadonsdeathcap_passive(data,stack,APPer);
 		}

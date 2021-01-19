@@ -26,7 +26,7 @@ public class EntityMinion extends AbstractMob{
 
 	public EntityMinion(World worldIn) {
 		super(worldIn,new EntityData(null,800f,10f,10f,80f,50,70,"미니언",0.03),
-				new double[]{50,50,10,5,5,10,5});
+				new double[]{50,10,5,5,10,5}, new double[]{800,80,10,10,50,70});
 		if(main.game.start == GameStatus.START){
 			this.getData().setMaxHealth(800+(50 * ((Reference.GAMEITME - main.game.gettimer())/300)));
 			this.getData().setCurrentHealth(800+(50 * ((Reference.GAMEITME - main.game.gettimer())/300)));

@@ -20,7 +20,6 @@ public class GuiHandler implements IGuiHandler {
 		}
 		
 		if(ID == MOD_SHOP_GUI) {
-			
 			return new Shopui(player.inventory);
 		}
 		// TODO Auto-generated method stub

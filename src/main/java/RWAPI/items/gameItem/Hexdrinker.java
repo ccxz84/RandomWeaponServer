@@ -35,7 +35,7 @@ public class Hexdrinker extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				20,	0,	0,	0,	0,	35,	0,	0,	0,	0,	0,	0
+				20,	0,	0,	0,	0,	35,	0,	0,	0,	0,	0,	0, 0
 		};
 		this.stat = stat;
 	}
@@ -58,9 +58,9 @@ public class Hexdrinker extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(Lifeline_passive.class)){
-			return new Lifeline_passive(data,stack,cooltime,time,vamPer,plusad,shield);
+			return new Lifeline_passive(data,stack,cooltime,time,vamPer,plusad,shield, idx);
 		}
 		return null;
 	}

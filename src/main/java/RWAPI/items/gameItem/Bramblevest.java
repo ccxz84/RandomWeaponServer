@@ -51,7 +51,7 @@ public class Bramblevest extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		System.out.println("덤불 조끼");
 		if(_class.equals(Thorn_passive.class)){
 			return new Thorn_passive(data,stack,damage,armorPer);
@@ -63,7 +63,7 @@ public class Bramblevest extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	35,	0,	0,	0,	0,	0,	0,	0
+				0,	0,	0,	0,	35,	0,	0,	0,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}

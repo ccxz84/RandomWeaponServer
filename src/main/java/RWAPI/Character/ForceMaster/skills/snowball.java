@@ -162,7 +162,8 @@ public class snowball extends formaster{
             snowball.setNoGravity(true);
             snowball.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 1f, 0);
             player.world.spawnEntity(snowball);
-            this.handler = new cool(cooldown[lv-1], 2, (EntityPlayerMP)player,this);
+            this.raiseevent(data,skillcost[lv-1]);
+            this.handler = new cool(cooldown[lv-1], 2, (EntityPlayerMP)player,this,data.getSkillacc());
             data.nonWorking = false;
         }
 

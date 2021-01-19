@@ -37,7 +37,8 @@ public class Spiritvisage extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	450,	0,	0,	40,	0,	0,	5,	0,	0,	0
+				0,	0,	400,	0,	0,	40,	0,	0,	5,	0,	0,	0,	10
+
 		};
 		this.stat = stat;
 	}
@@ -103,6 +104,21 @@ public class Spiritvisage extends ItemBase {
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.target;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return null;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return data;
 			}
 
 			private void resetTimer(){

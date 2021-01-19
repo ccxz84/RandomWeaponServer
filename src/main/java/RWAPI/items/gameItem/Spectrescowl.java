@@ -37,7 +37,7 @@ public class Spectrescowl extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	250,	0,	0,	30,	0,	0,	3,	0,	0,	0
+				0,	0,	250,	0,	0,	30,	0,	0,	3,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}
@@ -103,6 +103,21 @@ public class Spectrescowl extends ItemBase {
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.target;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return null;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return data;
 			}
 
 			private void resetTimer(){
