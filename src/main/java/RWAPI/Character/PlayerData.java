@@ -592,8 +592,6 @@ public class PlayerData extends EntityData{
 							item.cast(this.getPlayer().inventory.getStackInSlot(j).getItem());
 							for(ItemBase temp : ((ItemBase) stack1.getItem()).down_item){
 								if(temp.equals(this.getPlayer().inventory.getStackInSlot(j).getItem())){
-									System.out.println("temp : " + temp.getUnlocalizedName());
-									System.out.println("item : " + this.getPlayer().inventory.getStackInSlot(j).getItem().getUnlocalizedName());
 									flag = true;
 									break;
 								}
@@ -606,7 +604,6 @@ public class PlayerData extends EntityData{
 						}
 					}
 				}catch (Exception e){
-					e.printStackTrace();
 					continue;
 				}
 			}
