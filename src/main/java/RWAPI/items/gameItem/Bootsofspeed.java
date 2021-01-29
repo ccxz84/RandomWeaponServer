@@ -23,7 +23,7 @@ public class Bootsofspeed extends ItemBase implements ItemBase.shoes {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	0,	0,	5,	0,	0,	0,	0,	0
+				0,	0,	0,	0,	0,	0,	5,	0,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}

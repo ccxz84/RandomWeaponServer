@@ -92,8 +92,8 @@ public class PlayerClass implements Cloneable {
 		int lv = data.getLevel();
 		data.setAd((float) (data.getAd() - matrix.ad[lv-1] + matrix.ad[lv]));
 		data.setAp((float) (data.getAp() - matrix.ap[lv-1] + matrix.ap[lv]));
-		data.setRegenHealth((float) (data.getRegenHealth() - matrix.hregen[lv-1] + matrix.hregen[lv]));
-		data.setRegenMana((float) (data.getRegenMana() - matrix.mregen[lv-1] + matrix.mregen[lv]));
+		data.setBaseHealthRegen((float) (data.getBaseHealthRegen() - matrix.hregen[lv-1] + matrix.hregen[lv]));
+		data.setBaseManaRegen((float) (data.getBaseManaRegen() - matrix.mregen[lv-1] + matrix.mregen[lv]));
 		data.setMaxHealth((float) (data.getMaxHealth() - matrix.hp[lv-1] + matrix.hp[lv]));
 		data.setMaxMana((float) (data.getMaxMana() - matrix.mana[lv-1] + matrix.mana[lv]));
 		data.setCurrentHealth(data.getMaxHealth());

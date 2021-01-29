@@ -35,4 +35,16 @@ public class ModSkills {
 	public static final SkillBase inferno = new SkillBase("forcemaster","inferno",20);
 	public static final SkillBase frostarmor = new SkillBase("forcemaster","frostarmor",21);
 	public static final SkillBase frostarmor2 = new SkillBase("forcemaster","frostarmor2",22);
+
+	public static final SkillBase furyofthesands = new SkillBase("nasus","furyofthesands",23);
+	public static final SkillBase siphoningstrike = new SkillBase("nasus","siphoningstrike",24);
+	public static final SkillBase souleater = new SkillBase("nasus","souleater",25);
+	public static final SkillBase spiritfire = new SkillBase("nasus","spiritfire",26);
+	public static final SkillBase wither = new SkillBase("nasus","wither",27);
+
+	public static final SkillBase voidstone = new SkillBase("kassadin","voidstone",28);
+	public static final SkillBase nullsphere = new SkillBase("kassadin","nullsphere",29);
+	public static final SkillBase netherblade = new SkillBase("kassadin","netherblade",30);
+	public static final SkillBase forcepulse = new SkillBase("kassadin","forcepulse",31);
+	public static final SkillBase riftwalk = new SkillBase("kassadin","riftwalk",32);
 }

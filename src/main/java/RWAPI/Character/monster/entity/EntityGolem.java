@@ -3,20 +3,17 @@ package RWAPI.Character.monster.entity;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
-import RWAPI.Character.ai.PlayerAIHurtByTarget;
 import RWAPI.Character.ai.PlayerAIHurtByTargetObject;
-import RWAPI.Character.ai.PlayerAIZombieAttack;
 import RWAPI.Character.ai.PlayerAIZombieAttackObject;
 import RWAPI.game.event.ItemChangeEventHandle;
-import RWAPI.game.event.LevelUpEventHandle;
+import RWAPI.game.event.StatChangeEventHandle;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.main;
 import RWAPI.util.GameStatus;
 import RWAPI.util.Reference;
+import RWAPI.util.StatList;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,7 +23,6 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
@@ -39,10 +35,10 @@ public class EntityGolem extends AbstractObject{
 
     public EntityGolem(World world) {
         super(world, new EntityData(null,3700f,40f,53f,190f,300,300,"골렘",1),
-                new double[]{180,4,14,14});
+                new double[]{180,4,14,14}, new double[]{3700,125,40,53});
         this.getEntityData().setInteger("attackTimer", 0);
         if(main.game.start == GameStatus.START){
-            int gametime = (Reference.GAMEITME - main.game.gettimer()) - 300 <= 0 ? 0 :  ((Reference.GAMEITME - main.game.gettimer()) - 300)/60;
+            int gametime = ((Reference.GAMEITME - main.game.gettimer())/60) - 5 <= 0 ? 0 : ((Reference.GAMEITME - main.game.gettimer())/60) - 5;
             this.getData().setMaxHealth(3700+(180 * gametime));
             this.getData().setCurrentHealth(3700+(180 * gametime));
             this.getData().setAd(125f +(4 * gametime));
@@ -179,7 +175,7 @@ public class EntityGolem extends AbstractObject{
         if(!(source instanceof EntityDamageSourceIndirect)) {
             if(source.getTrueSource() instanceof EntityPlayer) {
                 PlayerData attacker = main.game.getPlayerData(source.getTrueSource().getUniqueID());
-                RWAPI.util.DamageSource.DamageSource sourcee = RWAPI.util.DamageSource.DamageSource.causeAttackPhysics(attacker, data,attacker.getAd());
+                RWAPI.util.DamageSource.DamageSource sourcee = RWAPI.util.DamageSource.DamageSource.causeAttackMeleePhysics(attacker, data,attacker.getAd());
                 RWAPI.util.DamageSource.DamageSource.attackDamage(sourcee,true);
                 RWAPI.util.DamageSource.DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);
             }
@@ -200,7 +196,7 @@ public class EntityGolem extends AbstractObject{
         this.attackTimer = 10;
         if(entityIn instanceof EntityPlayer) {
             PlayerData target = main.game.getPlayerData(entityIn.getUniqueID());
-            RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeAttackPhysics(data, target,data.getAd());
+            RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeAttackMeleePhysics(data, target,data.getAd());
             RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
             RWAPI.util.DamageSource.DamageSource.EnemyStatHandler.EnemyStatSetter(source);
         }
@@ -221,35 +217,34 @@ public class EntityGolem extends AbstractObject{
 
     @Override
     public int getGametime() {
-        return ((Reference.GAMEITME - main.game.gettimer()) - 300 <= 0 ? 0 :  (Reference.GAMEITME - main.game.gettimer()) - 300)/60;
+        return ((Reference.GAMEITME - main.game.gettimer())/60) - 5 <= 0 ? 0 : ((Reference.GAMEITME - main.game.gettimer())/60) - 5;
     }
 
     @Override
     public void setBuff(PlayerData data) {
         data.setArmor(data.getArmor() + (data.getArmor() / 100) * armorper);
         data.setMagicresistance(data.getMagicresistance() + (data.getMagicresistance() / 100) * armorper);
-        main.game.getEventHandler().register(new lvEventClass(data));
-        main.game.getEventHandler().register(new itemEventClass(data));
+        main.game.getEventHandler().register(new lvEventClass(data, StatList.ARMOR));
+        main.game.getEventHandler().register(new lvEventClass(data, StatList.MAGICRESISTANCE));
     }
 
-    private class lvEventClass extends LevelUpEventHandle {
+    private class lvEventClass extends StatChangeEventHandle {
 
         PlayerData data;
+        StatList code;
 
-        public lvEventClass(PlayerData data) {
-            super();
+        public lvEventClass(PlayerData data, StatList code) {
             this.data = data;
+            this.code = code;
         }
 
         @Override
         public void EventListener(AbstractBaseEvent event) {
-            PlayerData data = ((LevelUpEvent)event).getData();
-            if(this.data.equals(data)) {
-                PlayerClass _class = data.get_class();
-                double armor = _class.matrix.armor[data.getLevel() - 1] - _class.matrix.armor[data.getLevel() - 2];
-                double magicresistance = _class.matrix.magicresistance[data.getLevel() - 1] - _class.matrix.magicresistance[data.getLevel() - 2];
-                data.setArmor(data.getArmor() + (armor / 100) * armorper);
-                data.setMagicresistance(data.getMagicresistance() + (magicresistance / 100) * armorper);
+            StatChangeEvent sevent = ((StatChangeEvent)event);
+            PlayerData data = sevent.getData();
+            if(this.data.equals(data)&& (sevent.getCode().equals(StatList.ARMOR) || sevent.getCode().equals(StatList.MAGICRESISTANCE))) {
+                double armor = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+                sevent.getRef().setData(sevent.getRef().getData().doubleValue() + (armor / 100) * armorper);
             }
         }
 
@@ -257,41 +252,15 @@ public class EntityGolem extends AbstractObject{
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
         }
-    }
 
-    private class itemEventClass extends ItemChangeEventHandle {
-
-        PlayerData data;
-
-        public itemEventClass(PlayerData data) {
-            super();
-            this.data = data;
+        @Override
+        public PlayerData getPlayer() {
+            return data;
         }
 
         @Override
-        public void EventListener(AbstractBaseEvent event) {
-            PlayerData data = ((ItemChangeEvent)event).getData();
-            if(this.data.equals(data)) {
-                ItemStack stack = ((ItemChangeEvent) event).getStack();
-                ItemBase item = (ItemBase) stack.getItem();
-                double armor = item.getstat()[4];
-                double magicresistance = item.getstat()[5];
-                if(((ItemChangeEvent) event).isRemove()){
-                    data.setArmor(data.getArmor() - (armor/100) * armorper);
-                    data.setMagicresistance(data.getMagicresistance() - (magicresistance/100) * armorper);
-
-                }
-                else{
-                    data.setArmor(data.getArmor() + (armor/100) * armorper);
-                    data.setMagicresistance(data.getMagicresistance() + (magicresistance/100) * armorper);
-                }
-            }
-
-        }
-
-        @Override
-        public EventPriority getPriority() {
-            return EventPriority.NORMAL;
+        public StatList getCode() {
+            return code;
         }
     }
 }

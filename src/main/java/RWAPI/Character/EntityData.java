@@ -1,15 +1,23 @@
 package RWAPI.Character;
 
 import RWAPI.Character.buff.Buff;
+import RWAPI.game.event.StatChangeEventHandle;
 import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import RWAPI.util.EntityStatus;
+import RWAPI.util.NetworkUtil;
+import RWAPI.util.StatList;
 import net.minecraft.entity.Entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class EntityData implements Serializable {
+public class EntityData extends NetworkUtil.Abstractmessage {
+
+	private static final long serialVersionUID = 101L;
 
 	private int deathgold = 0;
 
@@ -33,13 +41,15 @@ public class EntityData implements Serializable {
 
 	private Entity entity;
 
+	private Semaphore lock = new Semaphore(1);
+
 	public EntityData(Entity entity, double MaxHealth, double armor, double magicresistance, double ad, double deathexp, int deathgold, String name, double kill_cs) {
 		this.entity = entity;
-		this.data.MaxHealth = MaxHealth;
-		this.data.armor = armor;
-		this.data.magicresistance = magicresistance;
-		this.data.CurrentHealth = this.data.MaxHealth;
-		this.data.ad = ad;
+		this.data.MaxHealth.setData(MaxHealth);
+		this.data.armor.setData(armor);
+		this.data.magicresistance.setData(magicresistance);
+		this.data.CurrentHealth.setData(MaxHealth);
+		this.data.ad.setData(ad);
 		this.data.Enemy = name;
 		this.deathexp = deathexp;
 		this.deathgold = deathgold;
@@ -59,31 +69,31 @@ public class EntityData implements Serializable {
 	}
 
 	public double getMaxHealth() {
-		return this.data.MaxHealth;
+		return this.data.MaxHealth.getData();
 	}
 
 	public double getCurrentHealth() {
-		return this.data.CurrentHealth;
+		return this.data.CurrentHealth.getData();
 	}
 
 	public double getMaxMana() {
-		return this.data.MaxMana;
+		return this.data.MaxMana.getData();
 	}
 
 	public double getCurrentMana() {
-		return this.data.CurrentMana;
+		return this.data.CurrentMana.getData();
 	}
 
 	public double getAd() {
-		return this.data.ad;
+		return this.data.ad.getData();
 	}
 
 	public double getAp() {
-		return this.data.ap;
+		return this.data.ap.getData();
 	}
 
 	public double getMove() {
-		return this.data.move;
+		return this.data.move.getData();
 	}
 
 	public String getName() {
@@ -119,38 +129,48 @@ public class EntityData implements Serializable {
 	}
 
 	public double getArmor(){
-		return this.data.armor;
+		return this.data.armor.getData();
 	}
 
 	public double getMagicresistance(){
-		return this.data.magicresistance;
+		return this.data.magicresistance.getData();
 	}
 
 	public double getArmorpenetration(){
-		return this.data.armorpenetration;
+		return this.data.armorpenetration.getData();
 	}
 
 	public double getMagicpenetration(){
-		return this.data.magicpenetration;
+		return this.data.magicpenetration.getData();
 	}
 
 	public double getArmorpenetrationper(){
-		return this.data.armorpenetrationper;
+		return this.data.armorpenetrationper.getData();
 	}
 
 	public double getMagicpenetrationper(){
-		return this.data.magicpenetrationper;
+		return this.data.magicpenetrationper.getData();
 	}
 
 	public double getTotalShield(){
-		return this.data.totalshield;
+		return this.data.totalshield.getData();
+	}
+
+	public int getSkillacc(){
+		return this.data.skillacc.getData();
 	}
 
 	public List<shield> getShieldList(){
 		return this.Shieldlist;
 	}
 
+	public List<Buff> getBuffList(){
+		return this.buffList;
+	}
 
+	public Semaphore getLock(){
+		return this.lock;
+	}
 
 
 	public Buff getbuff(int idx){
@@ -170,55 +190,55 @@ public class EntityData implements Serializable {
 	}
 
 	public void setMaxHealth(double MaxHealth) {
-		this.data.MaxHealth = MaxHealth;
+		this.data.MaxHealth.setData(MaxHealth);
 	}
 
 	public void setCurrentHealth(double CurrentHealth) {
-		this.data.CurrentHealth = CurrentHealth;
+		this.data.CurrentHealth.setData(CurrentHealth);
 	}
 
 	public void setMaxMana(double MaxMana) {
-		this.data.MaxMana = MaxMana;
+		this.data.MaxMana.setData(MaxMana);
 	}
 
 	public void setCurrentMana(double CurrentMana) {
-		this.data.CurrentMana = CurrentMana;
+		this.data.CurrentMana.setData(CurrentMana);
 	}
 
 	public void setArmor(double armor) {
-		this.data.armor = armor;
+		this.data.armor.setData(armor);
 	}
 
 	public void setMagicresistance(double magicresistance) {
-		this.data.magicresistance = magicresistance;
+		this.data.magicresistance.setData(magicresistance);
 	}
 
 	public void setArmorpenetration(double armorpenetration) {
-		this.data.armorpenetration = armorpenetration;
+		this.data.armorpenetration.setData(armorpenetration);
 	}
 
 	public void setMagicpenetration(double magicpenetration) {
-		this.data.magicpenetration = magicpenetration;
+		this.data.magicpenetration.setData(magicpenetration);
 	}
 
 	public void setArmorpenetrationper(double armorpenetrationper) {
-		this.data.armorpenetrationper = armorpenetrationper;
+		this.data.armorpenetrationper.setData(armorpenetrationper);
 	}
 
 	public void setMagicpenetrationper(double magicpenetrationper) {
-		this.data.magicpenetrationper = magicpenetrationper;
+		this.data.magicpenetrationper.setData(magicpenetrationper);
 	}
 
 	public void setAd(double ad) {
-		this.data.ad = ad;
+		this.data.ad.setData(ad);
 	}
 
 	public void setAp(double ap) {
-		this.data.ap = ap;
+		this.data.ap.setData(ap);
 	}
 
 	public void setMove(double move) {
-		this.data.move = move;
+		this.data.move.setData(move);
 	}
 
 	public void setName(String name) {
@@ -245,6 +265,10 @@ public class EntityData implements Serializable {
 		this.godmode = godmode;
 	}
 
+	public void setSkillacc(int skillacc){
+		this.data.skillacc.setData(skillacc);
+	}
+
 	public void addBuff(Buff buff){
 		this.buffList.add(buff);
 	}
@@ -258,7 +282,11 @@ public class EntityData implements Serializable {
 	}
 
 	public void setTotalShield(double totalshield){
-		this.data.totalshield = totalshield;
+		this.data.totalshield.setData(totalshield);
+	}
+
+	public void setData(ClientData data){
+		this.data = data;
 	}
 
 	public void addShield(shield shield){

@@ -88,7 +88,7 @@ public class ItemBase extends Item{
 		return null;
 	};
 
-	public inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class){
+	public inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx){
 		return null;
 	};
 
@@ -123,6 +123,7 @@ public class ItemBase extends Item{
 	}
 
 	public static abstract class usage_handler extends handler{
+		protected ItemStack stack;
 
 		public usage_handler(PlayerData data, ItemStack stack){
 
@@ -132,8 +133,10 @@ public class ItemBase extends Item{
 
 		}
 
-		public void ItemUse(){
-
+		public void ItemUse(ItemStack stack){
+			if(!this.stack.equals(stack) && this.stack.getItem().equals(stack.getItem())){
+				this.stack = stack;
+			}
 		}
 	}
 
@@ -167,6 +170,10 @@ public class ItemBase extends Item{
 	}
 
 	public interface jungle{
+
+	}
+
+	public interface tear{
 
 	}
 

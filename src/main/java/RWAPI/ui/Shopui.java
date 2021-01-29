@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Shopui extends Container implements IContainerListener {
+	private InventoryPlayer playerInv;
 	public int scroll = 0;
 	public int scrollMax = ModItems.ITEMS.size()%32 == 0 ? ModItems.ITEMS.size()/32:(ModItems.ITEMS.size()/32) + 1;
 	private Inventory inven;
@@ -31,6 +32,7 @@ public class Shopui extends Container implements IContainerListener {
 	public Shopui(InventoryPlayer playerInv) {
 
 		player = (EntityPlayerMP) playerInv.player;
+		this.playerInv = playerInv;
 		list = new ArrayList<>(ModItems.ITEMS);
 		list.sort(new Comparator<ItemBase>() {
 			@Override
@@ -60,14 +62,14 @@ public class Shopui extends Container implements IContainerListener {
 
 		// Player Inventory, Slot 0-8, Slot IDs 36-44
 
-		for (int y = 0; y < 3; ++y) {
+		/*for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 9; ++x) {
 				this.addSlotToContainer(new Slot(playerInv, x + y * 9 + 9, 8 + x * 18, 121+y * 18));
 			}
-		}
+		}*/
 
 		for (int x = 0; x < 9; ++x) {
-			this.addSlotToContainer(new Slot(playerInv, x, 8 + x * 18, 179));
+			this.addSlotToContainer(new Slot(playerInv, x, 8 + x * 18, 123));
 		}
 
 
@@ -86,7 +88,6 @@ public class Shopui extends Container implements IContainerListener {
     }
 
     public void sync(){
-		//System.out.println("run sync");
 		for(int i = 0; i < this.inventorySlots.size();i++) {
 			player.connection.sendPacket(new SPacketSetSlot(this.windowId, i, this.getInventory().get(i)));
 		}
@@ -144,7 +145,7 @@ public class Shopui extends Container implements IContainerListener {
 			}
 		}
 		
-		if(slotId > 65) {
+		if(slotId > (66-27)) {
 			if(dragType==0) {//left click
 				ItemStack stack = this.getSlot(slotId).getStack();
 				
@@ -165,8 +166,8 @@ public class Shopui extends Container implements IContainerListener {
 	private void itemButton(ItemStack stack) {
 		// TODO Auto-generated method stub
 		int x = inventorySlots.size();
-		for(int i =66;i<x;i++) {
-			inventorySlots.remove(inventorySlots.get(66));
+		for(int i =(66-27);i<x;i++) {
+			inventorySlots.remove(inventorySlots.get((66-27)));
 			
 		}
 		currentstack = stack;
@@ -189,7 +190,6 @@ public class Shopui extends Container implements IContainerListener {
 		if(nbt == null){
 			nbt = new NBTTagCompound();
 		}
-		System.out.println("remaingold : " + money);
 		nbt.setInteger("remaingold",money);
 		stack.setTagCompound(nbt);
 
@@ -239,9 +239,8 @@ public class Shopui extends Container implements IContainerListener {
 
 	@Override
 	public void detectAndSendChanges() {
+		player.connection.sendPacket(new SPacketSetSlot(-2, 9, playerInv.getStackInSlot(9)));
 		super.detectAndSendChanges();
-
-
 		//System.out.println("test");
 	}
 

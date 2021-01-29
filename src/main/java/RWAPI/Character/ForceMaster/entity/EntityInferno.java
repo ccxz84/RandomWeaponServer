@@ -42,12 +42,12 @@ public class EntityInferno extends SkillEntity {
             if (result.entityHit instanceof IMob) {
                 IMob mob = (IMob) result.entityHit;
                 target = mob.getData();
-                DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                DamageSource source = DamageSource.causeSkillRangedMagic(attacker, target, this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             } else if (result.entityHit instanceof EntityPlayer) {
                 target = main.game.getPlayerData(result.entityHit.getUniqueID());
-                DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                DamageSource source = DamageSource.causeSkillRangedMagic(attacker, target, this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }

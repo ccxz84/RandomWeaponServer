@@ -1,16 +1,7 @@
 package RWAPI.items.gameItem;
 
-import RWAPI.Character.EntityData;
-import RWAPI.Character.PlayerData;
-import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
-import RWAPI.main;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
-import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class Stinger extends ItemBase {
 
@@ -34,7 +25,7 @@ public class Stinger extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	0,	0,	0,	0.35,	0,	0,	0,	0
+				0,	0,	0,	0,	0,	0,	0,	0.35,	0,	0,	0,	0,10
 		};
 		this.stat = stat;
 	}

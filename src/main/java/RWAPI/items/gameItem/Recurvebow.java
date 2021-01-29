@@ -5,7 +5,6 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -34,7 +33,7 @@ public class Recurvebow extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	0,	0,	0,	0.2,	0,	0,	0,	0
+				0,	0,	0,	0,	0,	0,	0,	0.2,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}
@@ -90,10 +89,16 @@ public class Recurvebow extends ItemBase {
 
 				EntityData data = source.getAttacker();
 
-				if(data.equals(this.data) && source instanceof DamageSource.AttackDamage){
+				if(data.equals(this.data) && source.getAttackType() == DamageSource.AttackType.ATTACK){
 					double aDamage = source.getTarget().getCurrentHealth() - plusdmg > 0 ?
 							plusdmg : source.getTarget().getCurrentHealth();
-					DamageSource sourcee = DamageSource.causeUnknownPhysics(source.getAttacker(),source.getTarget(),aDamage);
+					DamageSource sourcee;
+					if(source.isRanged()){
+						sourcee = DamageSource.causeUnknownRangedPhysics(source.getAttacker(),source.getTarget(),aDamage);
+					}
+					else{
+						sourcee = DamageSource.causeUnknownMeleePhysics(source.getAttacker(),source.getTarget(),aDamage);
+					}
 					DamageSource.attackDamage(sourcee,false);
 					//source.getTarget().setCurrentHealth(source.getTarget().getCurrentHealth() - aDamage);
 					//System.out.println("추가 데미지 : " + aDamage);
@@ -104,6 +109,21 @@ public class Recurvebow extends ItemBase {
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.attacker;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return data;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return null;
 			}
 		}
 	}

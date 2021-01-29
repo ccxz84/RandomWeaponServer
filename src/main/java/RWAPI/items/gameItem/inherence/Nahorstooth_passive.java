@@ -5,7 +5,6 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.main;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.item.ItemStack;
 
@@ -47,9 +46,16 @@ public class Nahorstooth_passive extends ItemBase.inherence_handler{
 
             EntityData data = source.getAttacker();
 
-            if(data.equals(this.data) && source instanceof DamageSource.AttackDamage){
+            if(data.equals(this.data) && source.getAttackType() == DamageSource.AttackType.ATTACK){
                 double adamage = source.getAttacker().getAp() * plusdamageper + plusdamageper;
-                DamageSource sourcee = DamageSource.causeUnknownMagic(source.getAttacker(),source.getTarget(),adamage);
+                DamageSource sourcee;
+                if(source.isRanged()){
+                    sourcee = DamageSource.causeUnknownRangedMagic(source.getAttacker(),source.getTarget(),adamage);
+                }
+                else{
+                    sourcee = DamageSource.causeUnknownMeleeMagic(source.getAttacker(),source.getTarget(),adamage);
+                }
+
                 DamageSource.attackDamage(sourcee,false);
             }
         }
@@ -57,6 +63,21 @@ public class Nahorstooth_passive extends ItemBase.inherence_handler{
         @Override
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
+        }
+
+        @Override
+        public code getEventCode() {
+            return code.attacker;
+        }
+
+        @Override
+        public EntityData getAttacker() {
+            return data;
+        }
+
+        @Override
+        public EntityData getTarget() {
+            return null;
         }
     }
 }

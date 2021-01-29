@@ -22,7 +22,8 @@ public class Fiendishcodex extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	600,	0,	0,	0,	0,	0,	0,	0,	0,	0
+				0,	50,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10
+
 		};
 		this.stat = stat;
 	}

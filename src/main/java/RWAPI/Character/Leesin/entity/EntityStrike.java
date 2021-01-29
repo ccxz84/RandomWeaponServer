@@ -43,7 +43,6 @@ public class EntityStrike extends SkillEntity{
 
 	@Override
 	protected void onImpact(RayTraceResult result) {
-		System.out.println(result.entityHit);
 		// TODO Auto-generated method stub
 		if(result.entityHit != null) {
 			if(!(result.entityHit.getUniqueID().equals(this.thrower.getUniqueID()))) {
@@ -52,13 +51,13 @@ public class EntityStrike extends SkillEntity{
 				if(result.entityHit instanceof IMob) {
 					IMob mob = (IMob) result.entityHit;
 					target = mob.getData();
-					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
+					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillMeleePhysics(attacker, target, this.skilldamage);
 					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 				}
 				else if(result.entityHit instanceof EntityPlayer){
 					target = main.game.getPlayerData(result.entityHit.getUniqueID());
-					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
+					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillMeleePhysics(attacker, target, this.skilldamage);
 					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 				}

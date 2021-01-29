@@ -1,7 +1,9 @@
 package RWAPI.packet;
 
 import RWAPI.Character.PlayerData;
+import RWAPI.init.handler.GuiHandler;
 import RWAPI.util.EntityStatus;
+import net.minecraft.entity.player.EntityPlayerMP;
 import org.lwjgl.input.Keyboard;
 
 import RWAPI.main;
@@ -43,6 +45,12 @@ public class KeyInputPacket implements IMessage {
 				if(main.game.start == GameStatus.PRESTART || main.game.start == GameStatus.START) {
 					PlayerData data = main.game.getPlayerData(ctx.getServerHandler().player.getUniqueID());
 					data.get_class().classInformation(data);
+				}
+			}
+			if(message.keynum == Keyboard.KEY_F){
+				if(main.game.start == GameStatus.PRESTART || main.game.start == GameStatus.START) {
+					EntityPlayerMP player = ctx.getServerHandler().player;
+					player.openGui(main.instance, GuiHandler.MOD_SHOP_SHOW_GUI, player.world, (int)player.posX, (int)player.posY, (int)player.posZ);
 				}
 			}
 			return null;

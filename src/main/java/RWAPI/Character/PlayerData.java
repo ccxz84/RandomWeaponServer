@@ -3,14 +3,15 @@ package RWAPI.Character;
 import RWAPI.Character.buff.Buff;
 import RWAPI.game.event.BaseEvent;
 import RWAPI.game.event.ItemChangeEventHandle;
-import RWAPI.game.event.LevelUpEventHandle;
+import RWAPI.game.event.StatChangeEventHandle;
+import RWAPI.init.ModBuff;
 import RWAPI.init.ModItems;
-import RWAPI.items.gameItem.Hunterstalisman;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.items.skillItem.SkillBase;
 import RWAPI.items.weapon.WeaponBase;
 import RWAPI.main;
 import RWAPI.util.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -59,11 +60,20 @@ public class PlayerData extends EntityData{
 
 	private boolean firstDeath = false;
 
-	private double baseAttackspeed = 0;
-	private double plusAttackspeed = 0;
+	private ClientData.dataRef<Double> baseAttackspeed = new ClientData.dataRef<Double>((double)0);
+	private ClientData.dataRef<Double> plusAttackspeed = new ClientData.dataRef<Double>((double)0);
+
+	private ClientData.dataRef<Double> baseHealthRegen = new ClientData.dataRef<Double>((double)0);
+	private ClientData.dataRef<Double> plusHealthRegen = new ClientData.dataRef<Double>((double)0);
+
+	private ClientData.dataRef<Double> baseManaRegen = new ClientData.dataRef<Double>((double)0);
+	private ClientData.dataRef<Double> plusManaRegen = new ClientData.dataRef<Double>((double)0);
+
 	private int continuouskill = 0;
 
 	private dashtimer dashtimer;
+
+	private boolean GrievousWounds;
 
 	public void setRespawn(){
 		setStatus(EntityStatus.RESPANW);
@@ -84,32 +94,52 @@ public class PlayerData extends EntityData{
 	 * 
 	 */
 
+	public boolean getGrievousWounds(){
+		return this.GrievousWounds;
+	}
+
 	public int getLevel() {
-		return this.data.level;
+		return this.data.level.getData();
 	}
 
 	public double getExp() {
-		return this.data.exp;
+		return this.data.exp.getData();
 	}
 
-	public double getRegenHealth() {
-		return this.data.regenHealth;
+	public double getRegenHealth(){
+		return this.data.regenHealth.getData();
 	}
 
-	public double getRegenMana() {
-		return this.data.regenMana;
+	public double getRegenMana(){
+		return this.data.regenHealth.getData();
 	}
 
 	public double getBaseAttackspeed(){
-		return this.baseAttackspeed;
+		return this.baseAttackspeed.getData();
 	}
 
 	public double getPlusAttackspeed(){
-		return this.plusAttackspeed;
+		return this.plusAttackspeed.getData();
+	}
+
+	public double getBaseHealthRegen(){
+		return this.baseHealthRegen.getData();
+	}
+
+	public double getPlusHealthRegen(){
+		return this.plusHealthRegen.getData();
+	}
+
+	public double getBaseManaRegen(){
+		return this.baseManaRegen.getData();
+	}
+
+	public double getPlusManaRegen(){
+		return this.plusManaRegen.getData();
 	}
 
 	public int getGold() {
-		return this.data.Gold;
+		return this.data.Gold.getData();
 	}
 	
 	public double getCool(int id) {
@@ -145,7 +175,7 @@ public class PlayerData extends EntityData{
 	}
 
 	public double gettotalAttackSpeed() {
-		return this.data.attackSpeed;
+		return this.data.attackSpeed.getData();
 	}
 
 	public int getContinuouskill(){
@@ -161,53 +191,244 @@ public class PlayerData extends EntityData{
 	 * 
 	 */
 
+	public void setGrievousWounds(boolean GrievousWounds){
+		this.GrievousWounds = GrievousWounds;
+	}
+
+	@Override
+	public void setMaxHealth(double MaxHealth) {
+		double prev = this.getMaxHealth();
+		super.setMaxHealth(MaxHealth);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.MAXHEALTH,data.MaxHealth, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setCurrentHealth(double CurrentHealth) {
+		double prev = this.getCurrentHealth();
+		double sub = CurrentHealth - prev >= 0? (CurrentHealth - prev) * (this.GrievousWounds ? 0.6 : 1) : CurrentHealth - prev;
+		super.setCurrentHealth(prev + sub);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.CURRENTHEALTH,data.CurrentHealth, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setMaxMana(double MaxMana) {
+		double prev = this.getMaxMana();
+		super.setMaxMana(MaxMana);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.MAXMANA,data.MaxMana, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setCurrentMana(double CurrentMana) {
+		double prev = this.getCurrentMana();
+		super.setCurrentMana(CurrentMana);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.CURRENTMANA,data.CurrentMana, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setArmor(double armor) {
+		double prev = this.getArmor();
+		super.setArmor(armor);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.ARMOR,data.armor, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setMagicresistance(double magicresistance) {
+		double prev = this.getMagicresistance();
+		super.setMagicresistance(magicresistance);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.MAGICRESISTANCE,data.magicresistance, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setArmorpenetration(double armorpenetration) {
+		double prev = this.getArmorpenetration();
+		super.setArmorpenetration(armorpenetration);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.ARMORPENETRATION,data.armorpenetration, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setMagicpenetration(double magicpenetration) {
+		double prev = this.getMagicpenetration();
+		super.setMagicpenetration(magicpenetration);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.MAGICPENETRATION,data.magicpenetration, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setArmorpenetrationper(double armorpenetrationper) {
+		double prev = this.getArmorpenetrationper();
+		super.setArmorpenetrationper(armorpenetrationper);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.ARMORPENETRATIONPER,data.armorpenetrationper, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setMagicpenetrationper(double magicpenetrationper) {
+		double prev = this.getMagicpenetrationper();
+		super.setMagicpenetrationper(magicpenetrationper);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.MAGICPENETRATIONPER,data.magicpenetrationper, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setAd(double ad) {
+		double prev = this.getAd();
+		super.setAd(ad);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.AD,data.ad, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setAp(double ap) {
+		double prev = this.getAp();
+		super.setAp(ap);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.AP,data.ap, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setMove(double move) {
+		double prev = this.getMove();
+		super.setMove(move);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.MOVE,data.move, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
+
+	@Override
+	public void setSkillacc(int skillacc) {
+		int prev = this.getSkillacc();
+		super.setSkillacc(skillacc);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.SKILLACC,data.skillacc, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+	}
 
 	public void setLevel(int level) {
-		this.data.level = level;
+		this.data.level.setData(level);
 	}
 
 	public void setExp(double exp) {
-		LevelUpEventHandle.LevelUpEvent event = null;
-		if(this.data.level >= ExpList.values().length) {
+
+		StatChangeEventHandle.StatChangeEvent event = null;
+		if(this.data.level.getData() >= ExpList.values().length) {
 			return;
 		}
-		if(exp >= ExpList.getLevelMaxExp(this.data.level)) {
-			event = new LevelUpEventHandle.LevelUpEvent(this);
-			this.data.exp = exp - ExpList.getLevelMaxExp(this.data.level);
+		if(exp >= ExpList.getLevelMaxExp(this.data.level.getData())) {
+			int prev = this.getLevel();
+			this.data.exp.setData(exp - ExpList.getLevelMaxExp(this.data.level.getData()));
 			this.playerclass.Levelup(this);
-			this.data.level++;
-			this.data.expmax = ExpList.getLevelMaxExp(this.data.level);
-			for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
-				main.game.getEventHandler().RunEvent(event, priority);
-			}
+			this.data.level.setData(this.data.level.getData()+1);
+			event = new StatChangeEventHandle.StatChangeEvent(this,StatList.LEVEL,data.level, prev);
+			this.data.expmax.setData(ExpList.getLevelMaxExp(this.data.level.getData()));
 		}
 		else {
-			this.data.exp = exp;
+			double prev = this.getExp();
+			this.data.exp.setData(exp);
+			event = new StatChangeEventHandle.StatChangeEvent(this,StatList.EXP,data.exp, prev);
+		}
+
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
 		}
 	}
 
-	public void setRegenHealth(double regenHealth) {
-		this.data.regenHealth = regenHealth;
+	public void setPlusHealthRegen(double plusHealthRegen){
+		double prev = this.getPlusHealthRegen();
+		this.plusHealthRegen.setData(plusHealthRegen);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.PLUSREGENHEALTH,this.plusHealthRegen, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+		this.data.regenHealth.setData((this.baseHealthRegen.getData() + this.baseHealthRegen.getData() * this.plusHealthRegen.getData()));
 	}
 
-	public void setRegenMana(double regenMana) {
-		this.data.regenMana = regenMana;
+	public void setBaseHealthRegen(double baseHealthRegen){
+		double prev = this.getBaseHealthRegen();
+		this.baseHealthRegen.setData(baseHealthRegen);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.BASEREGENHEALTH,this.baseHealthRegen, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+		this.data.regenHealth.setData(this.baseHealthRegen.getData() + this.baseHealthRegen.getData() * plusHealthRegen.getData());
+	}
+
+	public void setPlusManaRegen(double plusManaRegen){
+		double prev = this.getPlusManaRegen();
+		this.plusManaRegen.setData(plusManaRegen);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.PLUSREGENMANA,this.plusManaRegen, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+		this.data.regenMana.setData((this.baseManaRegen.getData() + this.baseManaRegen.getData() * this.plusManaRegen.getData()));
+	}
+
+	public void setBaseManaRegen(double baseManaRegen){
+		double prev = this.getBaseManaRegen();
+		this.baseManaRegen.setData(baseManaRegen);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.BASEREGENMANA,this.baseAttackspeed, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+		this.data.regenMana.setData(this.baseManaRegen.getData() + this.baseManaRegen.getData() * plusManaRegen.getData());
 	}
 
 	public void setPlusAttackspeed(double plusAttackspeed){
-		this.plusAttackspeed = plusAttackspeed;
-		this.data.attackSpeed = this.baseAttackspeed + this.baseAttackspeed * plusAttackspeed;
-		player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(4.0f*this.data.attackSpeed);
+		double prev = this.getPlusAttackspeed();
+		this.plusAttackspeed.setData(plusAttackspeed);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.PLUSATTACKSPEED,this.plusAttackspeed, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+		this.data.attackSpeed.setData((this.baseAttackspeed.getData() + this.baseAttackspeed.getData() * this.plusAttackspeed.getData()));
+		player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(4.0f*this.data.attackSpeed.getData());
 	}
 
 	public void setBaseAttackspeed(double baseAttackspeed){
-		this.baseAttackspeed = baseAttackspeed;
-		this.data.attackSpeed = this.baseAttackspeed + this.baseAttackspeed * plusAttackspeed;
-		player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(4.0f*this.data.attackSpeed);
+		double prev = this.getBaseAttackspeed();
+		this.baseAttackspeed.setData(baseAttackspeed);
+		StatChangeEventHandle.StatChangeEvent event = new StatChangeEventHandle.StatChangeEvent(this,StatList.BASEATTACKSPEED,this.baseAttackspeed, prev);
+		for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+			main.game.getEventHandler().RunEvent(event, priority);
+		}
+		this.data.attackSpeed.setData(this.baseAttackspeed.getData() + this.baseAttackspeed.getData() * plusAttackspeed.getData());
+		player.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(4.0f*this.data.attackSpeed.getData());
 	}
 
 	public void setGold(int gold) {
-		this.data.Gold = gold;
+		this.data.Gold.setData(gold);
 	}
 	
 	public void setSkill(int id, SkillBase skill) {
@@ -244,25 +465,25 @@ public class PlayerData extends EntityData{
 
 	public void setTotal_score(double total_score) {
 		this.total_score = total_score;
-		data.total_score = getTotal_score();
+		data.total_score.setData(total_score);
 	}
 
 	public void setKill(int kill) {
 		this.kill = kill;
 		setTotal_score(getTotal_score() + 1);
-		data.kill = getKill();
+		data.kill.setData(getKill());
 	}
 
 	public void setDeath(int death) {
 		this.death = death;
 		setTotal_score((float) (getTotal_score() - 0.5));
-		data.death = getDeath();
+		data.death.setData(getDeath());
 	}
 
 	public void setCs(int cs, double score) {
 		setTotal_score(getTotal_score()+score);
 		this.cs = cs;
-		data.cs = cs;
+		data.cs.setData(getCs());
 	}
 
 	public void setKeyinputListener(){
@@ -283,7 +504,7 @@ public class PlayerData extends EntityData{
 
 	public void setDashtimer(){
 		if(this.dashtimer == null){
-			this.dashtimer = new dashtimer(3, this.getPlayer());
+			this.dashtimer = new dashtimer(3, this);
 		}
 		else{
 			this.dashtimer.settimer();
@@ -321,7 +542,7 @@ public class PlayerData extends EntityData{
 	public PlayerData(EntityPlayerMP player){
 		super(null,100,0,0,0,150,300,player.getName(),0);
 		this.player = player;
-		this.data.level = 1;
+		this.data.level.setData(1);
 		this.data = new ClientData(this,false,"",0);
 		this.setEntity(player);
 	}
@@ -343,8 +564,8 @@ public class PlayerData extends EntityData{
 		this.setBaseAttackspeed(_class.attackSpeed);
 		this.setAd(_class.default_ad);
 		this.setAp(_class.default_ap);
-		this.setRegenHealth(_class.default_regenHealth);
-		this.setRegenMana(_class.default_regenMana);
+		this.setBaseHealthRegen(_class.default_regenHealth);
+		this.setBaseManaRegen(_class.default_regenMana);
 		this.setMove(_class.default_move);
 		this.setMagicresistance(_class.default_magicresistance);
 		this.setArmor(_class.default_armor);
@@ -362,6 +583,33 @@ public class PlayerData extends EntityData{
 
 		ItemStack stack1 = new ItemStack(stack.getItem());
 		if(stack1.getItem() instanceof ItemBase){
+			for(Class item : ModItems.NO_OVERLAP_ITEMS){
+				try{
+					item.cast(stack1.getItem());
+					for(int j = 0; j < 9 ; j ++ ){
+						try{
+							boolean flag = false;
+							item.cast(this.getPlayer().inventory.getStackInSlot(j).getItem());
+							for(ItemBase temp : ((ItemBase) stack1.getItem()).down_item){
+								if(temp.equals(this.getPlayer().inventory.getStackInSlot(j).getItem())){
+									System.out.println("temp : " + temp.getUnlocalizedName());
+									System.out.println("item : " + this.getPlayer().inventory.getStackInSlot(j).getItem().getUnlocalizedName());
+									flag = true;
+									break;
+								}
+							}
+							if(!flag)
+								return;
+						}
+						catch (Exception e){
+							continue;
+						}
+					}
+				}catch (Exception e){
+					e.printStackTrace();
+					continue;
+				}
+			}
 			ItemBase item = ((ItemBase)stack1.getItem());
 			int money = item.getGold();
 			List<Integer> list = new ArrayList<Integer>();
@@ -489,8 +737,6 @@ public class PlayerData extends EntityData{
 			this.x = (int) player.posX;
 			this.y = (int) player.posY;
 			this.z = (int) player.posZ;
-			System.out.println(data == null);
-			System.out.println(null == player);
 			MinecraftForge.EVENT_BUS.register(this);
 		}
 
@@ -525,6 +771,7 @@ public class PlayerData extends EntityData{
 		public shopTimer(PlayerData data, EntityPlayerMP player){
 			super(Reference.SHOPUSAGE_TIME,data,player);
 			data.setCurrentHealth(data.getMaxHealth());
+			data.setCurrentMana(data.getMaxMana());
 		}
 
 		@SubscribeEvent
@@ -602,8 +849,8 @@ public class PlayerData extends EntityData{
 		public void InventoryHandler(TickEvent.ServerTickEvent event){
 			if(data.getPlayer().inventory.currentItem != 0){
 				if(data.usageitemhandler[data.getPlayer().inventory.currentItem-1] != null){
-					System.out.println("asdf");
-					data.usageitemhandler[data.getPlayer().inventory.currentItem-1].ItemUse();
+					System.out.println(data.getPlayer().inventory.getStackInSlot(data.getPlayer().inventory.currentItem));
+					data.usageitemhandler[data.getPlayer().inventory.currentItem-1].ItemUse(data.getPlayer().inventory.getStackInSlot(data.getPlayer().inventory.currentItem));
 				}
 
 	    		data.getPlayer().inventory.currentItem = 0;
@@ -630,33 +877,10 @@ public class PlayerData extends EntityData{
 				}catch (Exception e){
 					continue;
 				}
-				/*if(data.getPlayer().inventory.getStackInSlot(idx).getItem().getClass().isInstance() instanceof item){
-					for(int j = 0; j < 9 ; j ++ ){
-						if((data.getPlayer().inventory.getStackInSlot(j).getItem().getClass().equals(item))&& idx != j){
-							//System.out.println(data.getPlayer().inventory.getStackInSlot(j).getItem() + "   " + data.getPlayer().inventory.getStackInSlot(idx).getItem());
-							return true;
-						}
-					}
-				}*/
 			}
 
 			return false;
 		}
-
-		/*public boolean ItemOverlapEvent(ItemBase item){
-			Class _class = item.get_inherence_handler();
-			if(_class == null)
-				return true;
-			for(ItemBase.inherence_handler handler : this.data.inherenceitemhandler){
-				if(handler == null)
-					continue;
-				//System.out.println("대상 : " + handler.getClass());
-				if(_class.equals(handler.getClass())){
-					return true;
-				}
-			}
-			return false;
-		}*/
 
 		public boolean ItemOverlapEvent(ItemBase item, Class<? extends ItemBase.inherence_handler> _class){
 			for(List<ItemBase.inherence_handler> handlers : this.data.inherenceitemhandler){
@@ -691,12 +915,57 @@ public class PlayerData extends EntityData{
 						continue;
 					}
 
-					if(!data.getPlayer().inventory.mainInventory.get(i).equals(ItemStack.EMPTY)){
-						if(data.getPlayer().inventory.mainInventory.get(i).getItem() instanceof ItemBase){
-							ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.HIGHTEST);
-							ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.HIGH);
-							if(!(data.getPlayer().inventory.mainInventory.get(i).getItem() instanceof ItemBase))
-								data.getPlayer().inventory.mainInventory.set(i,ItemStack.EMPTY);
+					if(!inven.getStackInSlot(i).equals(ItemStack.EMPTY)){
+						if(inven.getStackInSlot(i).getItem() instanceof ItemBase){
+							ItemChangeEvent(data,inven.getStackInSlot(i),true,BaseEvent.EventPriority.HIGHTEST);
+							ItemChangeEvent(data,inven.getStackInSlot(i),true,BaseEvent.EventPriority.HIGH);
+							ItemBase item = (ItemBase) inven.getStackInSlot(i).getItem();
+							double[] stat = item.getstat();
+							data.setAd(data.getAd() - stat[0]);
+							data.setAp(data.getAp() - stat[1]);
+
+							data.setMaxHealth(data.getMaxHealth() - stat[2]);
+							data.setCurrentHealth(data.getCurrentHealth() - stat[2]);
+
+							data.setMaxMana(data.getMaxMana() - stat[3]);
+							data.setCurrentMana(data.getCurrentMana() - stat[3]);
+
+							data.setArmor(data.getArmor() - stat[4]);
+							data.setMagicresistance(data.getMagicresistance() - stat[5]);
+
+							data.setMove(data.getMove() - stat[6]);
+							data.setPlusAttackspeed(data.getPlusAttackspeed() - stat[7]);
+							data.setPlusHealthRegen(data.getPlusHealthRegen() - stat[8]);
+							data.setPlusManaRegen(data.getPlusManaRegen() - stat[9]);
+							data.setArmorpenetration(data.getArmorpenetration() - stat[10]);
+							data.setMagicpenetration(data.getMagicpenetration() - stat[11]);
+							data.setSkillacc((int) (data.getSkillacc() - stat[12]));
+
+							ItemChangeEvent(data,inven.getStackInSlot(i),true,BaseEvent.EventPriority.NORMAL);
+							ItemChangeEvent(data,inven.getStackInSlot(i),true,BaseEvent.EventPriority.LOW);
+
+							if(data.basicitemhandler[i-1] != null)
+								data.basicitemhandler[i-1].removeHandler();
+							if(data.inherenceitemhandler[i-1] != null){
+								for(ItemBase.inherence_handler handler : data.inherenceitemhandler[i-1]){
+									handler.removeHandler();
+								}
+							}
+							if(data.usageitemhandler[i-1] != null)
+								data.usageitemhandler[i-1].removeHandler();
+							setItemhandler(i-1,data.basicitemhandler,null);
+							setInherenceitemhandler(i-1,data.inherenceitemhandler,null);
+							setItemhandler(i-1,data.usageitemhandler,null);
+							ItemChangeEvent(data,inven.getStackInSlot(i),true,BaseEvent.EventPriority.LOWEST);
+						}
+					}
+
+					if(!data.getPlayer().inventory.getStackInSlot(i).equals(ItemStack.EMPTY)){
+						if(data.getPlayer().inventory.getStackInSlot(i).getItem() instanceof ItemBase){
+							ItemChangeEvent(data,data.getPlayer().inventory.getStackInSlot(i),false,BaseEvent.EventPriority.HIGHTEST);
+							ItemChangeEvent(data,data.getPlayer().inventory.getStackInSlot(i),false,BaseEvent.EventPriority.HIGH);
+							if(!(data.getPlayer().inventory.getStackInSlot(i).getItem() instanceof ItemBase))
+								data.getPlayer().inventory.setInventorySlotContents(i,ItemStack.EMPTY);
 							else{
 								ItemBase item = (ItemBase) data.getPlayer().inventory.mainInventory.get(i).getItem();
 								double[] stat = item.getstat();
@@ -714,73 +983,30 @@ public class PlayerData extends EntityData{
 
 								data.setMove(data.getMove() + stat[6]);
 								data.setPlusAttackspeed(data.getPlusAttackspeed() + stat[7]);
-								data.setRegenHealth(data.getRegenHealth() + stat[8]);
-								data.setRegenMana(data.getRegenMana() + stat[9]);
+								data.setPlusHealthRegen(data.getPlusHealthRegen() + stat[8]);
+								data.setPlusManaRegen(data.getPlusManaRegen() + stat[9]);
 								data.setArmorpenetration(data.getArmorpenetration() + stat[10]);
 								data.setMagicpenetration(data.getMagicpenetration() + stat[11]);
+								data.setSkillacc((int) (data.getSkillacc() + stat[12]));
 
-								ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.NORMAL);
-								ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.LOW);
-
-								setItemhandler(i-1, data.basicitemhandler, item.create_basic_handler(data,data.getPlayer().inventory.mainInventory.get(i)));
-								setItemhandler(i-1, data.usageitemhandler, item.create_usage_handler(data,data.getPlayer().inventory.mainInventory.get(i)));
+								ItemChangeEvent(data,data.getPlayer().inventory.getStackInSlot(i),false,BaseEvent.EventPriority.NORMAL);
+								ItemChangeEvent(data,data.getPlayer().inventory.getStackInSlot(i),false,BaseEvent.EventPriority.LOW);
+								setItemhandler(i-1, data.basicitemhandler, item.create_basic_handler(data,data.getPlayer().inventory.getStackInSlot(i)));
+								setItemhandler(i-1, data.usageitemhandler, item.create_usage_handler(data,data.getPlayer().inventory.getStackInSlot(i)));
 
 								List<ItemBase.inherence_handler> list = new ArrayList<>();
 								if(item.get_inherence_handler() != null){
 									for(Class<? extends ItemBase.inherence_handler> _class : item.get_inherence_handler()){
 										if(ItemOverlapEvent(item,_class) == false){
-											list.add(item.create_inherence_handler(data,data.getPlayer().inventory.mainInventory.get(i),_class));
+											list.add(item.create_inherence_handler(data,data.getPlayer().inventory.getStackInSlot(i),_class,i));
 										}
 									}
 								}
 
 								setInherenceitemhandler(i-1, data.inherenceitemhandler, list);
 
-								ItemChangeEvent(data,data.getPlayer().inventory.mainInventory.get(i),false,BaseEvent.EventPriority.LOWEST);
+								ItemChangeEvent(data,data.getPlayer().inventory.getStackInSlot(i),false,BaseEvent.EventPriority.LOWEST);
 							}
-						}
-					}
-					if(!inven.getStackInSlot(i).equals(ItemStack.EMPTY)){
-						if(inven.mainInventory.get(i).getItem() instanceof ItemBase){
-							ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.HIGHTEST);
-							ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.HIGH);
-							ItemBase item = (ItemBase) inven.mainInventory.get(i).getItem();
-							double[] stat = item.getstat();
-							data.setAd(data.getAd() - stat[0]);
-							data.setAp(data.getAp() - stat[1]);
-
-							data.setMaxHealth(data.getMaxHealth() - stat[2]);
-							data.setCurrentHealth(data.getCurrentHealth() - stat[2]);
-
-							data.setMaxMana(data.getMaxMana() - stat[3]);
-							data.setCurrentMana(data.getCurrentMana() - stat[3]);
-
-							data.setArmor(data.getArmor() - stat[4]);
-							data.setMagicresistance(data.getMagicresistance() - stat[5]);
-
-							data.setMove(data.getMove() - stat[6]);
-							data.setPlusAttackspeed(data.getPlusAttackspeed() - stat[7]);
-							data.setRegenHealth(data.getRegenHealth() - stat[8]);
-							data.setRegenMana(data.getRegenMana() - stat[9]);
-							data.setArmorpenetration(data.getArmorpenetration() - stat[10]);
-							data.setMagicpenetration(data.getMagicpenetration() - stat[11]);
-
-							ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.NORMAL);
-							ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.LOW);
-
-							if(data.basicitemhandler[i-1] != null)
-								data.basicitemhandler[i-1].removeHandler();
-							if(data.inherenceitemhandler[i-1] != null){
-								for(ItemBase.inherence_handler handler : data.inherenceitemhandler[i-1]){
-									handler.removeHandler();
-								}
-							}
-							if(data.usageitemhandler[i-1] != null)
-								data.usageitemhandler[i-1].removeHandler();
-							setItemhandler(i-1,data.basicitemhandler,null);
-							setInherenceitemhandler(i-1,data.inherenceitemhandler,null);
-							setItemhandler(i-1,data.usageitemhandler,null);
-							ItemChangeEvent(data,inven.mainInventory.get(i),true,BaseEvent.EventPriority.LOWEST);
 						}
 					}
 				}
@@ -862,25 +1088,32 @@ public class PlayerData extends EntityData{
 
 	private class dashtimer extends Buff {
 
-		public dashtimer(double duration, EntityPlayerMP player, double... data) {
-			super(duration, player, data);
+		public dashtimer(double duration, PlayerData player, double... data) {
+			super(duration, player,true,false, data);
 		}
 
 		@Override
 		public void BuffTimer(ServerTickEvent event) throws Throwable {
 			super.BuffTimer(event);
-			player.setSprinting(false);
+			player.getPlayer().setSprinting(false);
 		}
 
 		@Override
 		public void setEffect() {
-			player.setSprinting(false);
+			player.getPlayer().setSprinting(false);
+			player.addBuff(this);
 		}
 
 		@Override
 		public void resetEffect() {
-			player.setSprinting(true);
+			player.getPlayer().setSprinting(true);
+			player.removeBuff(this);
 			resetDashtimer();
+		}
+
+		@Override
+		public ItemStack getBuffIcon() {
+			return new ItemStack(ModBuff.exhaust);
 		}
 
 		public void unregist(){

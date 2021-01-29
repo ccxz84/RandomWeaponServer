@@ -26,7 +26,7 @@ public class EntityMinion extends AbstractMob{
 
 	public EntityMinion(World worldIn) {
 		super(worldIn,new EntityData(null,800f,10f,10f,80f,50,70,"미니언",0.03),
-				new double[]{50,50,10,5,5,10,5});
+				new double[]{50,10,5,5,10,5}, new double[]{800,80,10,10,50,70});
 		if(main.game.start == GameStatus.START){
 			this.getData().setMaxHealth(800+(50 * ((Reference.GAMEITME - main.game.gettimer())/300)));
 			this.getData().setCurrentHealth(800+(50 * ((Reference.GAMEITME - main.game.gettimer())/300)));
@@ -151,7 +151,7 @@ public class EntityMinion extends AbstractMob{
 			if(source.getTrueSource() instanceof EntityPlayer) {
 
 				PlayerData attacker = main.game.getPlayerData(source.getTrueSource().getUniqueID());
-				RWAPI.util.DamageSource.DamageSource sourcee = RWAPI.util.DamageSource.DamageSource.causeAttackPhysics(attacker, data,attacker.getAd());
+				RWAPI.util.DamageSource.DamageSource sourcee = RWAPI.util.DamageSource.DamageSource.causeAttackMeleePhysics(attacker, data,attacker.getAd());
 				RWAPI.util.DamageSource.DamageSource.attackDamage(sourcee,true);
 				EnemyStatHandler.EnemyStatSetter(sourcee);
 			}
@@ -165,7 +165,7 @@ public class EntityMinion extends AbstractMob{
 		// TODO Auto-generated method stub
 		if(entityIn instanceof EntityPlayer) {
 			PlayerData target = main.game.getPlayerData(entityIn.getUniqueID());
-			RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeAttackPhysics(data, target,data.getAd());
+			RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeAttackMeleePhysics(data, target,data.getAd());
 			RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 			EnemyStatHandler.EnemyStatSetter(source);
 		}

@@ -26,8 +26,9 @@ public class Skirmisherssaber extends ItemBase implements ItemBase.jungle{
 
     private final double expPer = 50;
     private final int plusGold = 20;
-    private final double damageper = 10;
-    private final int cooltime = 20;
+    private static final double damageper = 10;
+    private static final int cooltime = 20;
+    public final String usage = "사용 시, 주변의 적에게 공격력의 " +damageper+"%의 물리 피해, 주문력의 "+damageper+"%의 마법 피해를 입힙니다.(쿨타임 "+cooltime+"초)";
 
     public Skirmisherssaber(String name) {
         super(name);
@@ -47,7 +48,7 @@ public class Skirmisherssaber extends ItemBase implements ItemBase.jungle{
     @Override
     protected void initstat() {
         double[] stat = {
-                0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+                0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,10
         };
         this.stat = stat;
     }
@@ -60,6 +61,7 @@ public class Skirmisherssaber extends ItemBase implements ItemBase.jungle{
 
         nbt.setString("basic","미니언 처치 시, "+String.format("%.0f",expPer)+"%의 경험치를 추가로 제공합니다.");
         nbt.setString("inherence","미니언 처치 시, "+plusGold+"의 골드를 추가로 지급합니다.");
+        nbt.setString("usage", usage);
         return super.initCapabilities(stack,nbt);
     }
 
@@ -71,7 +73,7 @@ public class Skirmisherssaber extends ItemBase implements ItemBase.jungle{
     }
 
     @Override
-    public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+    public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
         if(_class.equals(Hunterstalisman_passive.class)){
             return new Hunterstalisman_passive(data,stack,plusGold);
         }
@@ -93,10 +95,7 @@ public class Skirmisherssaber extends ItemBase implements ItemBase.jungle{
     public static class usage_handler extends ItemBase.usage_handler{
 
         PlayerData data;
-        ItemStack stack;
         cool cool;
-        private final int cooltime = 20;
-        private final double damageper = 10;
 
         public usage_handler(PlayerData data, ItemStack stack) {
             super(data,stack);
@@ -124,7 +123,8 @@ public class Skirmisherssaber extends ItemBase implements ItemBase.jungle{
             cool = null;
         }
 
-        public void ItemUse(){
+        public void ItemUse(ItemStack stack){
+            super.ItemUse(stack);
             if(cool != null){
                 return;
             }
@@ -139,9 +139,9 @@ public class Skirmisherssaber extends ItemBase implements ItemBase.jungle{
                     target = ((IMob) mi).getData();
                 }
                 if(target != null){
-                    DamageSource source = DamageSource.causeUnknownMagic(data, target, (data.getAp()/100)*damageper);
+                    DamageSource source = DamageSource.causeUnknownRangedMagic(data, target, (data.getAp()/100)*damageper);
                     DamageSource.attackDamage(source,true);
-                    source = DamageSource.causeUnknownPhysics(data, target, (data.getAd()/100)*damageper);
+                    source = DamageSource.causeUnknownRangedPhysics(data, target, (data.getAd()/100)*damageper);
                     DamageSource.attackDamage(source,true);
                     DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     mi.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(data.getPlayer(), mi), (float)1);
@@ -209,6 +209,21 @@ public class Skirmisherssaber extends ItemBase implements ItemBase.jungle{
             @Override
             public EventPriority getPriority() {
                 return EventPriority.NORMAL;
+            }
+
+            @Override
+            public code getEventCode() {
+                return code.attacker;
+            }
+
+            @Override
+            public EntityData getAttacker() {
+                return data;
+            }
+
+            @Override
+            public EntityData getTarget() {
+                return null;
             }
         }
     }

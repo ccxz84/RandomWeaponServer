@@ -22,8 +22,7 @@ public class Chainvest extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	40	,0,	0,	0,	0,	0,	0,	0
-
+				0,	0,	0,	0,	40,	0,	0,	0,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}

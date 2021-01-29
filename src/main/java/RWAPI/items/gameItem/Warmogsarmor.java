@@ -2,6 +2,7 @@ package RWAPI.items.gameItem;
 
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
+import RWAPI.Character.buff.Buff;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
@@ -17,7 +18,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 public class Warmogsarmor extends ItemBase {
 
 	private final int passivTime = 3;
-	private final double plusHregen = 20;
+	private final double plusHregenper = 0.05;
 
 	public Warmogsarmor(String name) {
 		super(name);
@@ -38,7 +39,7 @@ public class Warmogsarmor extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	800,	0,	0,	0,	0,	0,	10,	0,	0,	0
+				0,	0,	800,	0,	0,	0,	0,	0,	1,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}
@@ -49,7 +50,7 @@ public class Warmogsarmor extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic",passivTime+"초간 피격되지 않은 경우, 체력 재생이 "+String.format("%.1f",plusHregen)+" 증가합니다.");
+		nbt.setString("basic",passivTime+"초간 피격되지 않은 경우, 최대 체력의 "+(int)plusHregenper*5+"%가 1초마다 증가합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -62,10 +63,15 @@ public class Warmogsarmor extends ItemBase {
 
 		EventClass eventClass;
 		PlayerData data;
+		buff buff;
+		ItemStack stack;
+		double maxhealth;
 
 		private handler(PlayerData data, ItemStack stack){
 			super(data,stack);
 			this.data = data;
+			this.stack = stack;
+			this.buff = new buff(0,data,false,false);
 			registerAttackEvent();
 		}
 
@@ -76,11 +82,11 @@ public class Warmogsarmor extends ItemBase {
 
 		@Override
 		public void removeHandler() {
-			if(eventClass.timer == null){
-				data.setRegenHealth(data.getRegenHealth()-15);
-			}
-			else{
+			if(eventClass.timer != null){
 				MinecraftForge.EVENT_BUS.unregister(eventClass.timer);
+			}
+			if(buff != null){
+				buff.unregister();
 			}
 			main.game.getEventHandler().unregister(this.eventClass);
 		}
@@ -115,16 +121,37 @@ public class Warmogsarmor extends ItemBase {
 			}
 
 			public void setregen(){
-				data.setRegenHealth(data.getRegenHealth() + plusHregen);
+				if(buff!= null){
+					buff.unregister();
+				}
+				buff = new buff(0,data,false,false);
 			}
 
 			public void resetregen(){
-				data.setRegenHealth(data.getRegenHealth() - plusHregen);
+				if(buff != null){
+					buff.unregister();
+					buff = null;
+				}
 			}
 
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.target;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return null;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return data;
 			}
 
 			private void resetTimer(){
@@ -157,6 +184,45 @@ public class Warmogsarmor extends ItemBase {
 
 			private void TimerEnd() {
 				eventClass.resetTimer();
+			}
+		}
+
+		private class buff extends Buff {
+
+			ItemStack icon;
+
+			public buff(double duration, PlayerData player, boolean debuff, boolean clean, double... data) {
+				super(duration, player, debuff, clean, data);
+				this.icon = stack.copy();
+			}
+
+			@Override
+			public void BuffTimer(TickEvent.ServerTickEvent event) throws Throwable {
+				++timer;
+				if(timer % 40 == 0){
+					double health = player.getCurrentHealth() + player.getMaxHealth() * plusHregenper >= player.getMaxHealth() ? player.getMaxHealth() : player.getCurrentHealth() + player.getMaxHealth() * plusHregenper;
+					player.setCurrentHealth(health);
+				}
+			}
+
+			@Override
+			public void setEffect() {
+				player.addBuff(this);
+			}
+
+			@Override
+			public void resetEffect() {
+				player.removeBuff(this);
+			}
+
+			public void unregister(){
+				MinecraftForge.EVENT_BUS.unregister(this);
+				resetEffect();
+			}
+
+			@Override
+			public ItemStack getBuffIcon() {
+				return icon;
 			}
 		}
 	}

@@ -3,8 +3,6 @@ package RWAPI.items.gameItem;
 import RWAPI.Character.PlayerData;
 import RWAPI.init.ModItems;
 import RWAPI.items.gameItem.inherence.Coldsteel_passive;
-import RWAPI.items.gameItem.inherence.Lifeline_passive;
-import RWAPI.items.gameItem.inherence.Thorn_passive;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -46,7 +44,7 @@ public class Wardensmail extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	40,	0,	0,	0,	0,	0,	0,	0
+				0,	0,	0,	0,	40,	0,	0,	0,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}
@@ -59,7 +57,7 @@ public class Wardensmail extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(Coldsteel_passive.class)){
 			return new Coldsteel_passive(data,stack,time,minusas);
 		}

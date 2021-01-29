@@ -43,4 +43,9 @@ public class EntityMerchant extends EntityLiving{
 	public void setDead() {
 		super.setDead();
 	}
+
+	@Override
+	protected boolean canDespawn() {
+		return false;
+	}
 }

@@ -50,8 +50,8 @@ public class StartCommand implements ICommand {
 			main.game.start = GameStatus.PRESTART;
 			server.getPlayerList().sendMessage(new TextComponentString("게임이 시작됩니다."));
 			gameStart game = new gameStart(main.game);
+			ClassList.setList();
 			for(PlayerData player : main.game.player().values()) {
-				
 				try {
 					game.appointedClass(player);
 				} catch (CloneNotSupportedException e) {

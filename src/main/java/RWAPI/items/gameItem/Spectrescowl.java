@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 public class Spectrescowl extends ItemBase {
 
 	private final int passiveTime= 5;
-	private final double plusHregen = 7;
+	private final double plusHregen = 1.5;
 
 	public Spectrescowl(String name) {
 		super(name);
@@ -37,7 +37,7 @@ public class Spectrescowl extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	250,	0,	0,	30,	0,	0,	3,	0,	0,	0
+				0,	0,	250,	0,	0,	30,	0,	0,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}
@@ -48,7 +48,7 @@ public class Spectrescowl extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("basic","피격 시,"+passiveTime+" 초 동안 체력 재생이 "+String.format("%.1f",plusHregen)+" 증가합니다.");
+		nbt.setString("basic","피격 시,"+passiveTime+" 초 동안 체력 재생이 "+(int)plusHregen*100+"% 증가합니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -105,6 +105,21 @@ public class Spectrescowl extends ItemBase {
 				return EventPriority.NORMAL;
 			}
 
+			@Override
+			public code getEventCode() {
+				return code.target;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return null;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return data;
+			}
+
 			private void resetTimer(){
 				timer = null;
 			}
@@ -121,7 +136,7 @@ public class Spectrescowl extends ItemBase {
 				MaxTime = time;
 				MinecraftForge.EVENT_BUS.register(this);
 				this.eventClass = eventClass;
-				data.setRegenHealth(data.getRegenHealth() + plusHregen);
+				data.setPlusHealthRegen(data.getPlusHealthRegen() + plusHregen);
 			}
 
 			@SubscribeEvent
@@ -134,7 +149,7 @@ public class Spectrescowl extends ItemBase {
 			}
 
 			private void TimerEnd() {
-				data.setRegenHealth(data.getRegenHealth() - plusHregen);
+				data.setPlusHealthRegen(data.getPlusHealthRegen() - plusHregen);
 				eventClass.resetTimer();
 			}
 		}

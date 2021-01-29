@@ -23,7 +23,7 @@ public class Bootsofswiftness extends ItemBase implements ItemBase.shoes {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	0,	0,	25,	0,	0,	0,	0,	0
+				0,	0,	0,	0,	0,	0,	25,	0,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}

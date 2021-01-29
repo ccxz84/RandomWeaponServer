@@ -56,5 +56,20 @@ public class Hunterstalisman_passive extends ItemBase.inherence_handler{
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
         }
+
+        @Override
+        public code getEventCode() {
+            return code.attacker;
+        }
+
+        @Override
+        public EntityData getAttacker() {
+            return data;
+        }
+
+        @Override
+        public EntityData getTarget() {
+            return null;
+        }
     }
 }

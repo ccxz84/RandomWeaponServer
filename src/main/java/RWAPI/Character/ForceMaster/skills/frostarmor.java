@@ -10,6 +10,7 @@ import RWAPI.main;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -145,13 +146,15 @@ public class frostarmor extends formaster {
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
             data.setSkill(4, (SkillBase) ModSkills.skill.get(ModSkills.frostarmor2.SkillNumber));
 
-            this.coolhandler = new cool(cooldown[lv-1],4, (EntityPlayerMP) player,this);
+            this.coolhandler = new cool(cooldown[lv-1],4, (EntityPlayerMP) player,this,data.getSkillacc());
             this.coolhandler.flag = false;
-            this.timerhandler = new bufftimer(3, (EntityPlayerMP) player,skilldamage[lv-1] + skillApcoe[lv-1] * data.getAp() + skillAdcoe[lv-1] * data.getAd());
+            this.timerhandler = new bufftimer(3, data,skilldamage[lv-1] + skillApcoe[lv-1] * data.getAp() + skillAdcoe[lv-1] * data.getAd());
+            this.raiseevent(data,skillcost[lv-1]);
         }
         else if(data.getSkill(4).equals(ModSkills.skill.get(ModSkills.frostarmor2.SkillNumber))&&timerhandler != null){
             data.setGodmode(false);
             Endbuf();
+            this.raiseevent(data,0);
         }
     }
 
@@ -223,41 +226,46 @@ public class frostarmor extends formaster {
 
     class bufftimer extends Buff {
 
-        PlayerData pdata;
         double posX, posY, posZ;
 
-        public bufftimer(double duration, EntityPlayerMP player, double... data) {
-            super(duration, player, data);
-            posX = player.posX;
-            posY = player.posY;
-            posZ = player.posZ;
+        public bufftimer(double duration, PlayerData player, double... data) {
+            super(duration, player,true,false, data);
+            posX = player.getPlayer().posX;
+            posY = player.getPlayer().posY;
+            posZ = player.getPlayer().posZ;
         }
 
         @Override
         public void BuffTimer(TickEvent.ServerTickEvent event) throws Throwable {
             if(timer > duration) {
-                pdata.setGodmode(false);
+                player.setGodmode(false);
                 Endbuf();
             }
             timer++;
-            pdata.getPlayer().connection.setPlayerLocation(posX,posY,posZ,pdata.getPlayer().rotationYaw,pdata.getPlayer().rotationPitch);
-            pdata.setCool(4, ((float)(duration-timer)/40));
+            player.getPlayer().connection.setPlayerLocation(posX,posY,posZ,player.getPlayer().rotationYaw,player.getPlayer().rotationPitch);
+            player.setCool(4, ((float)(duration-timer)/40));
             if(timer % 20 == 0){
-                double heal = pdata.getCurrentHealth() + data[0]/2 >= pdata.getMaxHealth() ? pdata.getMaxHealth() : pdata.getCurrentHealth() + data[0]/2;
-                pdata.setCurrentHealth(heal);
+                double heal = player.getCurrentHealth() + data[0]/2 >= player.getMaxHealth() ? player.getMaxHealth() : player.getCurrentHealth() + data[0]/2;
+                player.setCurrentHealth(heal);
             }
         }
 
         @Override
         public void setEffect() {
-            pdata = main.game.getPlayerData(player.getUniqueID());
+            player.addBuff(this);
         }
 
         @Override
         public void resetEffect() {
-            pdata.nonWorking = false;
-            pdata.getPlayer().hurtResistantTime=0;
-            pdata.setSkill(4, (SkillBase) ModSkills.skill.get(ModSkills.frostarmor.SkillNumber));
+            player.nonWorking = false;
+            player.getPlayer().hurtResistantTime=0;
+            player.setSkill(4, (SkillBase) ModSkills.skill.get(ModSkills.frostarmor.SkillNumber));
+            player.removeBuff(this);
+        }
+
+        @Override
+        public ItemStack getBuffIcon() {
+            return new ItemStack(ModSkills.frostarmor);
         }
 
         public void unregist(){

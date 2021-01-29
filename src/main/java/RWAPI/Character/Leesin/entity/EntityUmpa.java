@@ -85,13 +85,13 @@ public class EntityUmpa extends SkillEntity {
 				if(result.entityHit instanceof IMob) {
 					IMob mob = (IMob) result.entityHit;
 					target = mob.getData();
-					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
+					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillRangedPhysics(attacker, target, this.skilldamage);
 					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 				}
 				else if(result.entityHit instanceof EntityPlayer){
 					target = main.game.getPlayerData(result.entityHit.getUniqueID());
-					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
+					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillRangedPhysics(attacker, target, this.skilldamage);
 					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 				}

@@ -19,6 +19,7 @@ public class Thornmail extends ItemBase {
 	private final double damage = 25;
 	private final int time = 1;
 	private final double  minusas= 0.15;
+	private final int duration = 3;
 
 
 	public Thornmail(String name) {
@@ -45,7 +46,8 @@ public class Thornmail extends ItemBase {
 		}
 
 		nbt.setString("inherence","기본 공격에 피격 된 경우 "+String.format("%d",(int)damage)+" + 현재 방어력의 "+String.format("%d",(int)armorPer)+" %에 해당하는 마법 피해를 입힙니다.\n"+
-				"기본 공격에 피격 된 경우 "+String.format("%d",(int)time)+"초 동안 "+String.format("%d",(int)0.15*100)+"%의 공격속도가 감소합니다.");
+				"기본 공격에 피격 된 경우 "+String.format("%d",(int)time)+"초 동안 "+String.format("%d",(int)0.15*100)+"%의 공격속도가 감소합니다.\n"+
+				"기본 공격에 피격 된 경우 공격한 적에게 "+duration+"초 동안 치유 감소 효과가 적용됩니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -58,9 +60,9 @@ public class Thornmail extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(Thorn_passive.class)) {
-			return new Thorn_passive(data, stack, damage, armorPer);
+			return new Thorn_passive(data, stack, damage, armorPer,duration);
 		}
 		else if(_class.equals(Coldsteel_passive.class)){
 			return new Coldsteel_passive(data,stack,time,minusas);
@@ -71,7 +73,7 @@ public class Thornmail extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	250,	0,	80,	0,	0,	0,	0,	0,	0,	0
+				0,	0,	250,	0,	80,	0,	0,	0,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}

@@ -2,11 +2,13 @@ package RWAPI.Character.MasterYi.skills;
 
 import RWAPI.Character.*;
 import RWAPI.game.event.PlayerAttackEventHandle;
+import RWAPI.init.ModSkills;
 import RWAPI.main;
 import RWAPI.Character.buff.Buff;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -139,9 +141,9 @@ public class meditation extends MasterYiS {
             data.nonWorking = true;
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
             data.nonWorking = false;
-            cool = new cool(cooldown[lv-1],2, (EntityPlayerMP) player);
-            buft =  new bufftimer(4, (EntityPlayerMP) player,(float)skilldamage[lv-1] + ((float)skillApcoe[lv-1] * data.getAp())/40);
-            data.addBuff(buft);
+            this.raiseevent(data,skillcost[lv-1]);
+            cool = new cool(cooldown[lv-1],2, (EntityPlayerMP) player,data.getSkillacc());
+            buft =  new bufftimer(4, data,(float)skilldamage[lv-1] + ((float)skillApcoe[lv-1] * data.getAp())/40);
         }
     }
 
@@ -166,8 +168,8 @@ public class meditation extends MasterYiS {
 
     class cool extends CooldownHandler {
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
 
         public void reduceCool(){
@@ -178,16 +180,15 @@ public class meditation extends MasterYiS {
     class bufftimer extends Buff {
 
         int x,y,z;
-        PlayerData pdata;
         EventClass eventClass;
 
-        public bufftimer(double duration, EntityPlayerMP player, double... data) {
-            super(duration, player, data);
+        public bufftimer(double duration, PlayerData player, double... data) {
+            super(duration, player,false,false, data);
             registerAttackEvent();
         }
 
         private void registerAttackEvent() {
-            this.eventClass = new EventClass(pdata);
+            this.eventClass = new EventClass(player);
             main.game.getEventHandler().register(this.eventClass);
         }
 
@@ -195,30 +196,35 @@ public class meditation extends MasterYiS {
 
         @Override
         public void setEffect() {
-            x = (int) player.posX;
-            y = (int) player.posY;
-            z = (int) player.posZ;
-            pdata = main.game.getPlayerData(player.getUniqueID());
+            x = (int) player.getPlayer().posX;
+            y = (int) player.getPlayer().posY;
+            z = (int) player.getPlayer().posZ;
+            player.addBuff(this);
         }
 
         @Override
         public void resetEffect() {
-            pdata.getPlayer().hurtResistantTime=0;
-            pdata.getPlayer().maxHurtResistantTime = 0;
-            main.game.getEventHandler().unregister(eventClass);
-            pdata.removeBuff(this);
-            Skillset(player);
+            player.getPlayer().hurtResistantTime=0;
+            player.getPlayer().maxHurtResistantTime = 0;
+            main.game.getEventHandler().unregister(this.eventClass);
+            player.removeBuff(this);
+            Skillset(player.getPlayer());
+        }
+
+        @Override
+        public ItemStack getBuffIcon() {
+            return new ItemStack(ModSkills.meditation);
         }
 
         @Override
         public void BuffTimer(TickEvent.ServerTickEvent event) throws Throwable {
-            if((int)player.posX != x || (int)player.posY != y || (int)player.posZ != z || pdata.nonWorking == true) {
+            if((int)player.getPlayer().posX != x || (int)player.getPlayer().posY != y || (int)player.getPlayer().posZ != z || player.nonWorking == true) {
                 resetEffect();
                 MinecraftForge.EVENT_BUS.unregister(this);
             }
             super.BuffTimer(event);
-            double dehealth = pdata.getMaxHealth() - pdata.getCurrentHealth();
-            pdata.setCurrentHealth((pdata.getCurrentHealth() + data[0] + dehealth * 0.003) > pdata.getMaxHealth() ? pdata.getMaxHealth() : pdata.getCurrentHealth() + data[0] + dehealth * 0.003);
+            double dehealth = player.getMaxHealth() - player.getCurrentHealth();
+            player.setCurrentHealth((player.getCurrentHealth() + data[0] + dehealth * 0.003) > player.getMaxHealth() ? player.getMaxHealth() : player.getCurrentHealth() + data[0] + dehealth * 0.003);
         }
 
         private class EventClass extends PlayerAttackEventHandle {
@@ -250,6 +256,21 @@ public class meditation extends MasterYiS {
             @Override
             public EventPriority getPriority() {
                 return EventPriority.NORMAL;
+            }
+
+            @Override
+            public code getEventCode() {
+                return code.target;
+            }
+
+            @Override
+            public EntityData getAttacker() {
+                return null;
+            }
+
+            @Override
+            public EntityData getTarget() {
+                return data;
             }
         }
     }

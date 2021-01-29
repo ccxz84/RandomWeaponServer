@@ -13,7 +13,9 @@ import RWAPI.main;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class heatwave extends formaster {
@@ -200,11 +202,13 @@ public class heatwave extends formaster {
             posY = wave.posY;
             posZ = wave.posZ;
             player.world.spawnEntity(wave);
-            handler = new cool(3,3, (EntityPlayerMP) player,this);
-            buff = new buff(2, (EntityPlayerMP) player,skilldamage[0][lv-1]);
+            this.raiseevent(data,skillcost[0][lv-1]);
+            handler = new cool(3,3, (EntityPlayerMP) player,this,data.getSkillacc());
+            buff = new buff(2, data,skilldamage[0][lv-1]);
         }
         else if(data.getCurrentMana() > skillcost[1][lv-1]&&data.getSkill(3).equals(ModSkills.skill.get(ModSkills.heatwave2.SkillNumber))&&this.wave != null&& this.handler != null){
             waitend(true,data);
+            this.raiseevent(data,0);
         }
     }
 
@@ -314,8 +318,8 @@ public class heatwave extends formaster {
         PlayerData data;
         boolean waveflag = false;
 
-        public cool(double cool, int id, EntityPlayerMP player, formaster instance) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player, formaster instance, int skillacc) {
+            super((cool + cool * (skillacc / (100 + skillacc))), id, player,true,skillacc);
             this.instance = instance;
             this.data = main.game.getPlayerData(player.getUniqueID());
         }
@@ -350,27 +354,33 @@ public class heatwave extends formaster {
 
         public void setCool(double cool){
             this.waveflag = true;
-            this.cooldown = (int) (cool * 40);
+            int icool = (int) (cool * 40);
+            this.cooldown = icool - icool * (skillacc / (100 + skillacc));
             this.skillTimer = 0;
         }
     }
 
     class buff extends Buff {
-        PlayerData pdata;
 
-        public buff(double duration, EntityPlayerMP player, double... data) {
-            super(duration, player, data);
+        public buff(double duration, PlayerData player, double... data) {
+            super(duration, player,false,true, data);
         }
 
         @Override
         public void setEffect() {
-            pdata = main.game.getPlayerData(player.getUniqueID());
-            pdata.setMove(pdata.getMove() + data[0]);
+            player.setMove(player.getMove() + data[0]);
+            player.addBuff(this);
         }
 
         @Override
         public void resetEffect() {
-            pdata.setMove(pdata.getMove() - data[0]);
+            player.setMove(player.getMove() - data[0]);
+            player.removeBuff(this);
+        }
+
+        @Override
+        public ItemStack getBuffIcon() {
+            return new ItemStack(ModSkills.heatwave);
         }
 
         public void unregist(){

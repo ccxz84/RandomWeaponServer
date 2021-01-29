@@ -60,5 +60,10 @@ public class Rabadonsdeathcap_passive extends ItemBase.inherence_handler{
         public EventPriority getPriority() {
             return this.priority;
         }
+
+        @Override
+        public PlayerData getPlayer() {
+            return data;
+        }
     }
 }

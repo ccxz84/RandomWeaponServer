@@ -23,17 +23,17 @@ public enum ExpList {
 	LV18(0),
 	;
 	
-	private float exp;
+	private double exp;
 	
-	private ExpList(float exp) {
+	private ExpList(double exp) {
 		this.exp = exp;
 	}
 	
-	public float getMaxExp() {
+	public double getMaxExp() {
 		return this.exp;
 	}
 	
-	public static float getLevelMaxExp(int level) {
-		return (int)values()[level].getMaxExp();
+	public static double getLevelMaxExp(int level) {
+		return values()[level].getMaxExp();
 	}
 }

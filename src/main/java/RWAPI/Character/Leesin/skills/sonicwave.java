@@ -8,6 +8,8 @@ import RWAPI.Character.PlayerData;
 import RWAPI.Character.CooldownHandler;
 import RWAPI.Character.Skill;
 import RWAPI.Character.monster.entity.IMob;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.UseSkillEventHandle;
 import RWAPI.init.ModSkills;
 import RWAPI.items.skillItem.SkillBase;
 import RWAPI.main;
@@ -216,15 +218,14 @@ public class sonicwave implements Skill {
         if(data.getCool(1) <= 0 && data.getSkill(1).equals(ModSkills.skill.get(ModSkills.sonicwave.SkillNumber)) && data.getCurrentMana() > skillcost[0][lv-1]){
             data.nonWorking = true;
             data.nonWorking = false;
-            System.out.println(player.getName());
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[0][lv-1]));
             EntityUmpa ls = new EntityUmpa(player.world,player,(float) (skilldamage[0][lv-1]+ skillAdcoe[lv-1] * data.getAd()));
             ls.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.95f, 0);
             //ls.posY -= 1;
             ls.setNoGravity(true);
             player.world.spawnEntity(ls);
-
-            this.handler = new cool(cooldown[lv-1],1,(EntityPlayerMP) player);
+            this.raiseevent(data,skillcost[0][lv-1]);
+            this.handler = new cool(cooldown[lv-1],1,(EntityPlayerMP) player,data.getSkillacc());
             _class.skill0(player);
         }
         else if(data.getSkill(1).equals(ModSkills.skill.get(ModSkills.resonatingstrike.SkillNumber)) && data.getCurrentMana() > skillcost[1][lv-1]){
@@ -239,7 +240,7 @@ public class sonicwave implements Skill {
                 }
                 ((EntityPlayerMP) player).connection.setPlayerLocation(target.getPlayer().posX, target.getPlayer().posY, target.getPlayer().posZ, player.rotationYaw, player.rotationPitch);
                 timer.resonating.getThrower().attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(player, timer.resonating), (float)1);
-                DamageSource source = DamageSource.causeSkillPhysics(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
+                DamageSource source = DamageSource.causeSkillMeleePhysics(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
                 DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
@@ -250,7 +251,7 @@ public class sonicwave implements Skill {
                     return;
                 }
                 ((EntityPlayerMP) player).connection.setPlayerLocation(mob.posX - player.getLookVec().x *1.1, mob.posY, mob.posZ - player.getLookVec().z *1.1, player.rotationYaw, player.rotationPitch);
-                DamageSource source = DamageSource.causeSkillPhysics(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[0][lv-1] * data.getAd()
+                DamageSource source = DamageSource.causeSkillMeleePhysics(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[0][lv-1] * data.getAd()
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
                 DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
@@ -260,8 +261,8 @@ public class sonicwave implements Skill {
             timer.resonating.setDead();
             timer.stop();
             timer = null;
+            this.raiseevent(data,skillcost[1][lv-1]);
             data.setSkill(1, (SkillBase) ModSkills.skill.get(ModSkills.sonicwave.SkillNumber));
-            System.out.println(_class);
             _class.skill0(player);
         }
 
@@ -285,6 +286,14 @@ public class sonicwave implements Skill {
         this.timer = new ResonatingTimer(3,1,thrower,resonating);
     }
 
+    @Override
+    public void raiseevent(PlayerData data,double mana) {
+        UseSkillEventHandle.UseSkillEvent event = new UseSkillEventHandle.UseSkillEvent(data,mana);
+        for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+            main.game.getEventHandler().RunEvent(event,priority);
+        }
+    }
+
     //getter
     public EntityResonating getResonating() {
         return resonating;
@@ -299,8 +308,8 @@ public class sonicwave implements Skill {
     class cool extends CooldownHandler {
         int resonatingtime = 0;
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
 
         @Override
@@ -320,7 +329,7 @@ public class sonicwave implements Skill {
         EntityResonating resonating;
 
         public ResonatingTimer(double cool, int id, EntityPlayerMP player, EntityResonating resonating) {
-            super(cool, id, player);
+            super(cool, id, player,false,0);
             this.resonating = resonating;
             // TODO Auto-generated constructor stub
         }

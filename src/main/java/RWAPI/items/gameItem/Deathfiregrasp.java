@@ -1,18 +1,8 @@
 package RWAPI.items.gameItem;
 
-import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
-import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
-import RWAPI.items.gameItem.inherence.Bladeoftheruinedking_passive;
 import RWAPI.items.gameItem.inherence.Deathfiregrasp_passive;
-import RWAPI.items.gameItem.inherence.Lifeline_passive;
-import RWAPI.items.gameItem.inherence.Thorn_passive;
-import RWAPI.main;
-import RWAPI.util.DamageSource.DamageSource;
-import RWAPI.util.DamageSource.SkillFixedDamageSource;
-import RWAPI.util.DamageSource.SkillMagicDamageSource;
-import RWAPI.util.DamageSource.SkillPhysicsDamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -44,7 +34,8 @@ public class Deathfiregrasp extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	120,	0,	300,	0,	0,	0,	0,	0,	3,	0,	0
+				0,	120,	0,	300,	0,	0,	0,	0,	0,	1.5,	0,	10,	0
+
 		};
 		this.stat = stat;
 	}
@@ -60,7 +51,7 @@ public class Deathfiregrasp extends ItemBase {
 	}
 
 	@Override
-	public inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(Deathfiregrasp_passive.class)){
 			return new Deathfiregrasp_passive(data,stack, reducePercent);
 		}

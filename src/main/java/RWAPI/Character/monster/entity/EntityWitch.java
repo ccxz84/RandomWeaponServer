@@ -3,50 +3,36 @@ package RWAPI.Character.monster.entity;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
-import RWAPI.Character.SkillEntity;
 import RWAPI.Character.ai.PlayerAIHurtByTarget;
-import RWAPI.Character.ai.PlayerAIZombieAttack;
-import RWAPI.Character.ai.PlayerAIZombieAttackObject;
 import RWAPI.game.event.ItemChangeEventHandle;
-import RWAPI.game.event.LevelUpEventHandle;
+import RWAPI.game.event.StatChangeEventHandle;
 import RWAPI.init.ModPotion;
 import RWAPI.items.gameItem.ItemBase;
 import RWAPI.main;
 import RWAPI.util.GameStatus;
 import RWAPI.util.Reference;
+import RWAPI.util.StatList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
-import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
-import java.util.List;
 
 public class EntityWitch extends AbstractObject implements IRangedAttackMob {
 
@@ -56,9 +42,9 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
 
     public EntityWitch(World world) {
         super(world, new EntityData(null,3600f,18f,25f,250f,50,70,"마녀",1),
-                new double[]{170,5,12,5});
+                new double[]{170,5,12,5}, new double[]{3600,145,18,25});
         if(main.game.start == GameStatus.START){
-            int gametime = (Reference.GAMEITME - main.game.gettimer()) - 300 <= 0 ? 0 :  ((Reference.GAMEITME - main.game.gettimer()) - 300)/60;
+            int gametime = ((Reference.GAMEITME - main.game.gettimer())/60) - 5 <= 0 ? 0 : ((Reference.GAMEITME - main.game.gettimer())/60) - 5;
             this.getData().setMaxHealth(3600+(170 * gametime));
             this.getData().setCurrentHealth(3600+(170 * gametime));
             this.getData().setAd(145f +(5 * gametime));
@@ -157,7 +143,6 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
     protected boolean isValidLightLevel() {
         // TODO Auto-generated method stub
         return true;
-
     }
 
     @Override
@@ -175,7 +160,7 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
             if(source.getTrueSource() instanceof EntityPlayer) {
 
                 PlayerData attacker = main.game.getPlayerData(source.getTrueSource().getUniqueID());
-                RWAPI.util.DamageSource.DamageSource sourcee = RWAPI.util.DamageSource.DamageSource.causeAttackPhysics(attacker, data,attacker.getAd());
+                RWAPI.util.DamageSource.DamageSource sourcee = RWAPI.util.DamageSource.DamageSource.causeAttackMeleePhysics(attacker, data,attacker.getAd());
                 RWAPI.util.DamageSource.DamageSource.attackDamage(sourcee,true);
                 RWAPI.util.DamageSource.DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);
             }
@@ -207,7 +192,7 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
 
     @Override
     public int getGametime() {
-        return (Reference.GAMEITME - main.game.gettimer()) - 300 <= 0 ? 0 :  ((Reference.GAMEITME - main.game.gettimer()) - 300)/60;
+        return ((Reference.GAMEITME - main.game.gettimer())/60) - 5 <= 0 ? 0 : ((Reference.GAMEITME - main.game.gettimer())/60) - 5;
     }
 
     @Override
@@ -269,28 +254,29 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
     public void setBuff(PlayerData data) {
         data.setAd(data.getAd() + (data.getAd()/100) * attper);
         data.setAp(data.getAp() + (data.getAp()/100) * attper);
-        main.game.getEventHandler().register(new lvEventClass(data));
-        main.game.getEventHandler().register(new itemEventClass(data));
+        main.game.getEventHandler().register(new lvEventClass(data,StatList.AD));
+        main.game.getEventHandler().register(new lvEventClass(data,StatList.AP));
     }
 
-    private class lvEventClass extends LevelUpEventHandle {
+    private class lvEventClass extends StatChangeEventHandle {
 
         PlayerData data;
+        StatList code;
 
-        public lvEventClass(PlayerData data) {
-            super();
+        public lvEventClass(PlayerData data,StatList code) {
             this.data = data;
+            this.code = code;
         }
 
         @Override
         public void EventListener(AbstractBaseEvent event) {
-            PlayerData data = ((LevelUpEvent)event).getData();
+            StatChangeEvent sevent = ((StatChangeEvent)event);
+            PlayerData data = sevent.getData();
             if(this.data.equals(data)) {
-                PlayerClass _class = data.get_class();
-                double ad = _class.matrix.ad[data.getLevel() - 1] - _class.matrix.ad[data.getLevel() - 2];
-                double ap = _class.matrix.ap[data.getLevel() - 1] - _class.matrix.ap[data.getLevel() - 2];
-                data.setAd(data.getAd() + (ad / 100) * attper);
-                data.setAp(data.getAp() + (ap / 100) * attper);
+                if(this.data.equals(data) && (sevent.getCode().equals(StatList.AD) || sevent.getCode().equals(StatList.AP))){
+                    double ad = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+                    sevent.getRef().setData(sevent.getRef().getData().doubleValue() + (ad / 100) * attper);
+                }
             }
         }
 
@@ -298,41 +284,15 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
         public EventPriority getPriority() {
             return EventPriority.NORMAL;
         }
-    }
 
-    private class itemEventClass extends ItemChangeEventHandle {
-
-        PlayerData data;
-
-        public itemEventClass(PlayerData data) {
-            super();
-            this.data = data;
+        @Override
+        public PlayerData getPlayer() {
+            return data;
         }
 
         @Override
-        public void EventListener(AbstractBaseEvent event) {
-            PlayerData data = ((ItemChangeEvent)event).getData();
-            if(this.data.equals(data)) {
-                ItemStack stack = ((ItemChangeEvent) event).getStack();
-                ItemBase item = (ItemBase) stack.getItem();
-                double ad = item.getstat()[0];
-                double ap = item.getstat()[1];
-                if(((ItemChangeEvent) event).isRemove()){
-                    data.setAd(data.getAd() - (ad/100) * attper);
-                    data.setAp(data.getAp() - (ap/100) * attper);
-
-                }
-                else{
-                    data.setAd(data.getAd() + (ad/100) * attper);
-                    data.setAp(data.getAp() + (ap/100) * attper);
-                }
-            }
-
-        }
-
-        @Override
-        public EventPriority getPriority() {
-            return EventPriority.NORMAL;
+        public StatList getCode() {
+            return code;
         }
     }
 }

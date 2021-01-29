@@ -29,7 +29,7 @@ public class Voidstaff extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	75,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+				0,	75,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}

@@ -110,7 +110,7 @@ public class EntityIcerain extends SkillEntity {
                     target = ((IMob) mi).getData();
                 }
                 if(target != null && attacker != null&& !(mi.equals(this.player))) {
-                    DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage/5);
+                    DamageSource source = DamageSource.causeSkillRangedMagic(attacker, target, this.skilldamage/5);
                     DamageSource.attackDamage(source,true);
                     DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     if(this.ticksExisted % 10 == 0){

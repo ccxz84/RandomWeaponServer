@@ -57,7 +57,7 @@ public class GameBaseEvent{
 			PlayerData target = main.game.getPlayerData(event.getEntityLiving().getUniqueID());
 			PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
 			if(attacker.nonWorking == false){
-				DamageSource source = DamageSource.causeAttackPhysics(attacker, target,attacker.getAd());
+				DamageSource source = DamageSource.causeAttackMeleePhysics(attacker, target,attacker.getAd());
 				DamageSource.attackDamage(source,true);
 				EnemyStatHandler.EnemyStatSetter(source);
 			}

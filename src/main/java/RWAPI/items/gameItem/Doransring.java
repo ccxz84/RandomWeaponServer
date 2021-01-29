@@ -5,9 +5,7 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
 import RWAPI.util.DamageSource.DamageSource;
-import RWAPI.util.DamageSource.SkillFixedDamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -34,7 +32,8 @@ public class Doransring extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	20,	100,	0,	0,	0,	0,	0,	0,	1,	0,	0
+				0,	20,	100,	0,	0,	0,	0,	0,	0,	0.25,	0,	0,	0
+
 		};
 		this.stat = stat;
 	}
@@ -91,7 +90,7 @@ public class Doransring extends ItemBase {
 
 				EntityData data = source.getAttacker();
 
-				if(data.equals(this.data) && (source instanceof DamageSource.SkillDamage)){
+				if(data.equals(this.data) && (source.getAttackType() == DamageSource.AttackType.SKILL)){
 					if(source.getAttacker().getCurrentHealth() < source.getAttacker().getMaxHealth()){
 						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent > source.getAttacker().getMaxHealth() ?
 								source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent;
@@ -103,6 +102,21 @@ public class Doransring extends ItemBase {
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.attacker;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return data;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return null;
 			}
 		}
 

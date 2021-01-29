@@ -12,11 +12,19 @@ public class CooldownHandler {
     protected int id;
     protected EntityPlayerMP player;
     protected PlayerData data;
+    protected int skillacc;
 
 
 
-    public CooldownHandler(double cool,int id,EntityPlayerMP player) {
-        this.cooldown = (int)(cool*40);
+    public CooldownHandler(double cool,int id,EntityPlayerMP player,boolean accflag,int skillacc) {
+        int icool = (int)(cool*40);
+        this.skillacc = skillacc;
+        if(accflag){
+            this.cooldown = (int)(icool - (icool * ((double)skillacc / (100 + skillacc))));
+        }
+        else{
+            this.cooldown = icool;
+        }
         this.id = id;
         this.player = player;
         this.data = main.game.getPlayerData(player.getUniqueID());

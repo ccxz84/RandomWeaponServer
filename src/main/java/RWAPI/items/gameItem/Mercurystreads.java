@@ -3,7 +3,7 @@ package RWAPI.items.gameItem;
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 
-public class Mercurystreads extends ItemBase {
+public class Mercurystreads extends ItemBase implements ItemBase.shoes{
 
 	public Mercurystreads(String name) {
 		super(name);
@@ -23,7 +23,7 @@ public class Mercurystreads extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	0,	25,	20,	0,	0,	0,	0,	0
+				0,	0,	0,	0,	0,	25,	20,	0,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}

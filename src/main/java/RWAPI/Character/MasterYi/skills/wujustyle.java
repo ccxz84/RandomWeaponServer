@@ -2,14 +2,13 @@ package RWAPI.Character.MasterYi.skills;
 
 import RWAPI.Character.*;
 import RWAPI.Character.buff.Buff;
-import RWAPI.Character.monster.entity.IMob;
+import RWAPI.game.event.PlayerAttackEventHandle;
+import RWAPI.init.ModSkills;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.item.ItemStack;
 
 public class wujustyle extends MasterYiS {
 
@@ -135,9 +134,9 @@ public class wujustyle extends MasterYiS {
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(3) <= 0 && data.getCurrentMana() > skillcost[lv-1]&& data.nonWorking == false&& cool == null) {
             data.nonWorking = true;
-            cool = new cool(cooldown[lv-1],3, (EntityPlayerMP) player);
-            buft = new bufftimer(5, (EntityPlayerMP) player,skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd());
-            data.addBuff(buft);
+            this.raiseevent(data,skillcost[lv-1]);
+            cool = new cool(cooldown[lv-1],3, (EntityPlayerMP) player,data.getSkillacc());
+            buft = new bufftimer(5, data,skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd());
             data.nonWorking = false;
         }
     }
@@ -161,8 +160,8 @@ public class wujustyle extends MasterYiS {
 
     class cool extends CooldownHandler {
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
 
         public void reduceCool(){
@@ -172,42 +171,83 @@ public class wujustyle extends MasterYiS {
 
     class bufftimer extends Buff {
 
-        public bufftimer(double duration, EntityPlayerMP player, double... data) {
-            super(duration, player, data);
+        EventClass eventClass;
+
+        public bufftimer(double duration, PlayerData player, double... data) {
+            super(duration, player,false,false, data);
+
         }
 
         @Override
         public void setEffect() {
             // TODO Auto-generated method stub
+            registerAttackEvent();
+            this.player.addBuff(this);
+        }
 
+        private void registerAttackEvent() {
+            this.eventClass = new EventClass(player, data[0]);
+            main.game.getEventHandler().register(this.eventClass);
         }
 
         @Override
         public void resetEffect() {
             // TODO Auto-generated method stub
-            PlayerData pdata = main.game.getPlayerData(player.getUniqueID());
-            pdata.removeBuff(buft);
-            Skillset(player);
+            player.removeBuff(buft);
+            Skillset(player.getPlayer());
+            if(eventClass != null){
+                main.game.getEventHandler().unregister(this.eventClass);
+            }
         }
 
-        @SubscribeEvent(priority = EventPriority.NORMAL)
-        public void attack(LivingAttackEvent event) {
-            if(event.getSource().getTrueSource() != null) {
-                if(event.getSource().getTrueSource().equals(player) && (event.getEntityLiving() instanceof IMob || event.getEntityLiving() instanceof EntityPlayer)) {
-                    EntityData target = null;
-                    if(event.getEntityLiving() instanceof IMob) {
-                        target = ((IMob)event.getEntityLiving()).getData();
-                    }
-                    if(event.getEntityLiving() instanceof EntityPlayer){
-                        target = main.game.getPlayerData(event.getEntityLiving().getUniqueID());
-                    }
-                    if(target != null) {
-                        PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
-                        DamageSource source = DamageSource.causeAttackFixed(attacker,target,data[0]);
-                        DamageSource.attackDamage(source,false);
-                        DamageSource.EnemyStatHandler.EnemyStatSetter(source);
-                    }
+        @Override
+        public ItemStack getBuffIcon() {
+            return new ItemStack(ModSkills.wujustyle);
+        }
+
+        private class EventClass extends PlayerAttackEventHandle {
+            PlayerData data;
+            double damage;
+
+            public EventClass(PlayerData data, double damage) {
+                super();
+                this.data = data;
+                this.damage = damage;
+            }
+
+            @Override
+            public void EventListener(AbstractBaseEvent event) {
+                DamageSource source = ((PlayerAttackEvent)event).getSource();
+                double damage = source.getDamage();
+
+                EntityData data = source.getAttacker();
+
+                if(data.equals(this.data) && source.getAttackType() == DamageSource.AttackType.ATTACK
+                        && source.getDamageType() == DamageSource.DamageType.PHYSICS){
+                    EntityData target = source.getTarget();
+                    DamageSource dsource = DamageSource.causeAttackMeleeFixed(data,target,damage);
+                    DamageSource.attackDamage(dsource,false);
                 }
+            }
+
+            @Override
+            public EventPriority getPriority() {
+                return EventPriority.NORMAL;
+            }
+
+            @Override
+            public code getEventCode() {
+                return code.attacker;
+            }
+
+            @Override
+            public EntityData getAttacker() {
+                return data;
+            }
+
+            @Override
+            public EntityData getTarget() {
+                return null;
             }
         }
     }

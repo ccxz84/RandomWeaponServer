@@ -5,7 +5,6 @@ import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
 import RWAPI.main;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
 import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -32,7 +31,7 @@ public class Doransblade extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				10,	0,	120,	0,	0,	0,	0,	0,	0,	0,	0,	0
+				10,	0,	120,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}
@@ -89,7 +88,8 @@ public class Doransblade extends ItemBase {
 
 				EntityData data = source.getAttacker();
 
-				if(data.equals(this.data) && source instanceof AttackPhysicsDamageSource){
+				if(data.equals(this.data) && source.getAttackType() == DamageSource.AttackType.ATTACK
+						&& source.getDamageType() == DamageSource.DamageType.PHYSICS){
 					if(source.getAttacker().getCurrentHealth() < source.getAttacker().getMaxHealth()){
 						double heal = source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent > source.getAttacker().getMaxHealth() ?
 								source.getAttacker().getMaxHealth() : source.getAttacker().getCurrentHealth() + (damage/100) * vamPercent;
@@ -101,6 +101,21 @@ public class Doransblade extends ItemBase {
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.attacker;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return data;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return null;
 			}
 		}
 

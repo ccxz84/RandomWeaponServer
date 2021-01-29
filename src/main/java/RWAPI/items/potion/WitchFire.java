@@ -29,7 +29,7 @@ public class WitchFire extends PotionBase{
             if(entityLivingBaseIn instanceof EntityPlayerMP && indirectSource instanceof EntityWitch){
                 PlayerData target = main.game.getPlayerData(entityLivingBaseIn.getUniqueID());
                 EntityData attacker = ((EntityWitch) indirectSource).getData();
-                DamageSource dsoucre = DamageSource.causeUnknownMagic(attacker,target,attacker.getAd());
+                DamageSource dsoucre = DamageSource.causeUnknownRangedMagic(attacker,target,attacker.getAd());
                 DamageSource.attackDamage(dsoucre,false);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(dsoucre);
             }

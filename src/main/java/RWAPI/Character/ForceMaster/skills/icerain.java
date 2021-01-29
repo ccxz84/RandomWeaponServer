@@ -185,7 +185,8 @@ public class icerain extends formaster {
                 rain.setNoGravity(true);
                 rain.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.0f, 0);
                 player.world.spawnEntity(rain);
-                this.handler = new cool(cooldown[lv-1], 3, (EntityPlayerMP)player,this);
+                this.raiseevent(data,skillcost[lv-1]);
+                this.handler = new cool(cooldown[lv-1], 3, (EntityPlayerMP)player,this, data.getSkillacc());
                 data.nonWorking = false;
             }
         }

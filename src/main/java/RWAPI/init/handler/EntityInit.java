@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import RWAPI.Character.ForceMaster.entity.*;
+import RWAPI.Character.Kassadin.entity.EntityForcepulse;
+import RWAPI.Character.Kassadin.entity.EntityNullsphere;
 import RWAPI.Character.MasterYi.entity.EntityAlpha;
 import RWAPI.Character.monster.entity.EntityDragon;
 import RWAPI.Character.monster.entity.EntityGolem;
@@ -63,6 +65,8 @@ private static List<registData> data = new ArrayList<registData>();
 		data.add(new registData("heatwave", EntityHeatwave.class,Reference.ENTITY_HEATWAVE));
 		data.add(new registData("tempheatwave", EntitytempHeatwave.class,Reference.ENTITY_TEMPHEATWAVE));
 		data.add(new registData("icerain", EntityIcerain.class,Reference.ENTITY_ICERAIN));
+		data.add(new registData("forcepulse", EntityForcepulse.class,Reference.ENTITY_FORCEPULSE));
+		data.add(new registData("nullsphere", EntityNullsphere.class,Reference.ENTITY_NULLSPHERE));
 
 
 

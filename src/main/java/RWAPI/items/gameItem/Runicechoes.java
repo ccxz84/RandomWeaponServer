@@ -40,7 +40,7 @@ public class Runicechoes extends ItemBase implements ItemBase.jungle{
     @Override
     protected void initstat() {
         double[] stat = {
-                0,	60,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+                0,	60,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,10
         };
         this.stat = stat;
     }
@@ -52,6 +52,13 @@ public class Runicechoes extends ItemBase implements ItemBase.jungle{
         }
 
         nbt.setString("basic","미니언 처치 시, "+String.format("%.0f",expPer)+"%의 경험치를 추가로 제공합니다.");
+        nbt.setString("inherence","미니언 처치 시, "+plusGold+"의 골드를 추가로 지급합니다.");
+        if(type instanceof Stalkersblade){
+            nbt.setString("usage", ((Stalkersblade) type).usage);
+        }
+        else if(type instanceof Skirmisherssaber){
+            nbt.setString("usage", ((Skirmisherssaber) type).usage);
+        }
         return super.initCapabilities(stack,nbt);
     }
 
@@ -63,7 +70,7 @@ public class Runicechoes extends ItemBase implements ItemBase.jungle{
     }
 
     @Override
-    public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+    public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
         if(_class.equals(Hunterstalisman_passive.class)){
             return new Hunterstalisman_passive(data,stack,plusGold);
         }
@@ -132,6 +139,21 @@ public class Runicechoes extends ItemBase implements ItemBase.jungle{
             @Override
             public EventPriority getPriority() {
                 return EventPriority.NORMAL;
+            }
+
+            @Override
+            public code getEventCode() {
+                return code.attacker;
+            }
+
+            @Override
+            public EntityData getAttacker() {
+                return data;
+            }
+
+            @Override
+            public EntityData getTarget() {
+                return null;
             }
         }
     }

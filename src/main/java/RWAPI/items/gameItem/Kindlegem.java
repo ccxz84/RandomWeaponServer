@@ -23,7 +23,8 @@ public class Kindlegem extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	400,	0,	0,	0,	0,	0,	0,	0,	0,	0
+				0,	0,	300,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10
+
 		};
 		this.stat = stat;
 	}

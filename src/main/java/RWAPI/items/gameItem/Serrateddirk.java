@@ -26,7 +26,7 @@ public class Serrateddirk extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				25,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10,	0
+				25,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10,	0,0
 		};
 		this.stat = stat;
 	}

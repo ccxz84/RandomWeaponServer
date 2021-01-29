@@ -4,6 +4,8 @@ import RWAPI.Character.CooldownHandler;
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.Skill;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.UseSkillEventHandle;
 import RWAPI.main;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -138,7 +140,8 @@ public class safeguard implements Skill {
             data.nonWorking = true;
             data.nonWorking = false;
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
-            this.handler = new cool(cooldown[lv-1], 2, (EntityPlayerMP) player);
+            this.raiseevent(data,skillcost[lv-1]);
+            this.handler = new cool(cooldown[lv-1], 2, (EntityPlayerMP) player,data.getSkillacc());
             _class.skill0(player);
         }
     }
@@ -155,8 +158,8 @@ public class safeguard implements Skill {
 
     class cool extends CooldownHandler {
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
 
         @Override
@@ -178,6 +181,14 @@ public class safeguard implements Skill {
                 player.connection.setPlayerLocation(player.posX + x * 0.7, player.posY + y * 0.7, player.posZ + z * 0.7, player.rotationYaw, player.rotationPitch);
             }
             super.skillTimer(event);
+        }
+    }
+
+    @Override
+    public void raiseevent(PlayerData data,double mana) {
+        UseSkillEventHandle.UseSkillEvent event = new UseSkillEventHandle.UseSkillEvent(data,mana);
+        for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+            main.game.getEventHandler().RunEvent(event,priority);
         }
     }
 

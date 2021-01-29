@@ -64,7 +64,7 @@ public class EntityFirestorm extends SkillEntity {
                         Vec3d vec = new Vec3d((this.thrower.posX-mi.posX)/distance, (this.thrower.posY-mi.posY)/distance,(this.thrower.posZ-mi.posZ)/distance);
                         knockBack((EntityLivingBase) mi,this.thrower,1f,vec.x,vec.z);
                     }
-                    DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                    DamageSource source = DamageSource.causeSkillMeleeMagic(attacker, target, this.skilldamage);
                     DamageSource.attackDamage(source,true);
                     DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     mi.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);

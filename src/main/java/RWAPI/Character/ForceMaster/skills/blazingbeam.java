@@ -143,7 +143,8 @@ public class blazingbeam extends formaster {
             blazingbeam.setNoGravity(true);
             blazingbeam.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 1f, 0);
             player.world.spawnEntity(blazingbeam);
-            this.handler = new cool(cooldown[lv-1], 2, (EntityPlayerMP)player,this);
+            this.raiseevent(data,skillcost[lv-1]);
+            this.handler = new cool(cooldown[lv-1], 2, (EntityPlayerMP)player,this,data.getSkillacc());
             data.nonWorking = false;
         }
     }

@@ -38,7 +38,8 @@ public class Youmuusghostblade extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				60,	0,	60,	100,	0,	0,	0,	0,	0,	0,	15,	0
+				60,	0,	0,	0,	0,	0,	0,	0,	0,	0,	15,	0,	10
+
 		};
 		this.stat = stat;
 	}
@@ -61,23 +62,25 @@ public class Youmuusghostblade extends ItemBase {
 	protected class handler extends ItemBase.usage_handler{
 
 		PlayerData data;
-		ItemStack stack;
 		buff buff;
 		cool cool;
+		boolean bbuff = false;
 
 		public handler(PlayerData data, ItemStack stack) {
 			super(data,stack);
 			this.data = data;
 			this.stack = stack;
 			boolean flag = NetworkUtil.getStackData(stack,"buff") != null ? (boolean)NetworkUtil.getStackData(stack,"buff"):false;
-			if(flag){
+			if(NetworkUtil.getCool(stack) != 0){
+				cool = new cool(NetworkUtil.getCool(stack),stack);
+			}
+			/*if(flag){
 				cool = new cool(cooltime,stack);
 				NetworkUtil.setStackData(stack,false,"buff");
 			}
 			else if(NetworkUtil.getCool(stack) != 0){
 				cool = new cool(NetworkUtil.getCool(stack),stack);
-				NetworkUtil.setStackData(stack,false,"buff");
-			}
+			}*/
 		}
 
 		public void removeHandler(){
@@ -90,11 +93,13 @@ public class Youmuusghostblade extends ItemBase {
 				MinecraftForge.EVENT_BUS.unregister(cool);
 				cool = null;
 			}
+			if(bbuff){
+				NetworkUtil.setCool(stack,0);
+			}
 		}
 
 		private void bufreset(){
 			buff = null;
-			NetworkUtil.setStackData(stack,false,"buff");
 			cool = new cool(cooltime,stack);
 		}
 
@@ -107,16 +112,27 @@ public class Youmuusghostblade extends ItemBase {
 				return;
 			}
 
-			buff = new buff(duration,data.getPlayer());
+			buff = new buff(duration,data);
+		}
+
+		@Override
+		public void ItemUse(ItemStack stack) {
+			super.ItemUse(stack);
+			if(cool != null){
+				return;
+			}
+			if(buff != null){
+				return;
+			}
+
+			buff = new buff(duration,data);
 		}
 
 		private class buff extends Buff {
 
-			PlayerData pdata;
-
-			public buff(double duration, EntityPlayerMP player, double... data) {
-				super(duration, player, data);
-				NetworkUtil.setStackData(stack,true,"buff");
+			public buff(double duration, PlayerData player, double... data) {
+				super(duration, player,false,false, data);
+				bbuff = true;
 			}
 
 			@Override
@@ -127,15 +143,22 @@ public class Youmuusghostblade extends ItemBase {
 
 			@Override
 			public void setEffect(){
-				this.pdata = main.game.getPlayerData(player.getUniqueID());
-				this.pdata.setMove(this.pdata.getMove() + plusMove);
+				this.player.setMove(this.player.getMove() + plusMove);
+				this.player.addBuff(this);
 			}
 
 			@Override
 			public void resetEffect() {
-				this.pdata.setMove(this.pdata.getMove() - plusMove);
+				this.player.setMove(this.player.getMove() - plusMove);
 				NetworkUtil.setCool(stack,0);
 				bufreset();
+				this.player.removeBuff(this);
+				bbuff = false;
+			}
+
+			@Override
+			public ItemStack getBuffIcon() {
+				return new ItemStack(stack.getItem());
 			}
 		}
 

@@ -88,8 +88,9 @@ public class EntityAlpha extends SkillEntity {
                 target = main.game.getPlayerData(mini.get(count).getUniqueID());
             }
             if(target != null && attacker != null && target.getCurrentHealth() > 0) {
+                double damage = this.targetData.returndamage(idx,mini.get(count),this.skilldamage);
                 this.targetData.setData(idx++,mini.get(count));
-                DamageSource source = DamageSource.causeSkillPhysics(attacker, target, this.skilldamage);
+                DamageSource source = DamageSource.causeSkillMeleePhysics(attacker, target, damage);
                 DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                 mini.get(count).attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
@@ -121,6 +122,15 @@ public class EntityAlpha extends SkillEntity {
         Entity[] Entitys = new Entity[alphastrike.target_num+1];
         message data = new message();
         //List<Double[]> data = new ArrayList<>();
+
+        public double returndamage(int idx,Entity data,double damage){
+            for(Entity entity : Entitys){
+                if(data.equals(entity)){
+                    damage = damage * 0.3 <= 15? 15 : damage * 0.3;
+                }
+            }
+            return damage;
+        }
 
         public void setData(int idx, Entity data){
             this.Entitys[idx] = data;

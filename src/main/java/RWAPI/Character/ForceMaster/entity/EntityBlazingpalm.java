@@ -47,12 +47,12 @@ public class EntityBlazingpalm extends SkillEntity {
             if (result.entityHit instanceof IMob) {
                 IMob mob = (IMob) result.entityHit;
                 target = mob.getData();
-                DamageSource source = DamageSource.causeAttackPhysics(attacker, target,this.skilldamage);
+                DamageSource source = DamageSource.causeAttackRangedPhysics(attacker, target,this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             } else if (result.entityHit instanceof EntityPlayer) {
                 target = main.game.getPlayerData(result.entityHit.getUniqueID());
-                DamageSource source = DamageSource.causeAttackPhysics(attacker, target,this.skilldamage);
+                DamageSource source = DamageSource.causeAttackRangedPhysics(attacker, target,this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }

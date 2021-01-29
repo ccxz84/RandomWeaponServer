@@ -88,7 +88,7 @@ public class EntityTempest extends SkillEntity{
 					target = ((IMob) mi).getData();
 				}
 				if(target != null && attacker != null) {
-					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillMeleeMagic(attacker, target, this.skilldamage);
 					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 					mi.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);

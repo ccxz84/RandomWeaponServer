@@ -20,8 +20,8 @@ public class Reference {
 	public static final double[] _3rdPOS = {-84 ,62 ,146};
 	public static final double[] OTHERPOS = {-72 ,53, 125};
 
-	public static final int GAMEITME = 2000;
-	public static final int OBJECTTIME = 300;
+	public static final int GAMEITME = 2400;
+	public static final int OBJECTTIME = 60;
 
 
 	public static final int ENTITY_MERCHANT = 100;
@@ -44,6 +44,8 @@ public class Reference {
 	public static final int ENTITY_SNOWBALL = 308;
 	public static final int ENTITY_ICERAIN = 309;
 	public static final int ENTITY_TEMPHEATWAVE = 310;
+	public static final int ENTITY_FORCEPULSE = 311;
+	public static final int ENTITY_NULLSPHERE = 312;
 
 
 	public static final int SHOPUSAGE_TIME = 30;

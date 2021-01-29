@@ -17,6 +17,7 @@ public class Bramblevest extends ItemBase {
 
 	private final double armorPer = 3;
 	private final double damage = 8;
+	private final int duration = 3;
 
 	public Bramblevest(String name) {
 		super(name);
@@ -39,7 +40,8 @@ public class Bramblevest extends ItemBase {
 			nbt = new NBTTagCompound();
 		}
 
-		nbt.setString("inherence","기본 공격에 피격 된 경우 "+String.format("%d",(int)damage)+" + 현재 방어력의 "+String.format("%d",(int)armorPer)+" %에 해당하는 마법 피해를 입힙니다.");
+		nbt.setString("inherence","기본 공격에 피격 된 경우 "+String.format("%d",(int)damage)+" + 현재 방어력의 "+String.format("%d",(int)armorPer)+" %에 해당하는 마법 피해를 입힙니다.\n"+
+				"기본 공격에 피격 된 경우 공격한 적에게 "+duration+"초 동안 치유 감소 효과가 적용됩니다.");
 		return super.initCapabilities(stack,nbt);
 	}
 
@@ -51,10 +53,9 @@ public class Bramblevest extends ItemBase {
 	}
 
 	@Override
-	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
-		System.out.println("덤불 조끼");
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(Thorn_passive.class)){
-			return new Thorn_passive(data,stack,damage,armorPer);
+			return new Thorn_passive(data,stack,damage,armorPer,duration);
 		}
 
 		return null;
@@ -63,7 +64,7 @@ public class Bramblevest extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	0,	0,	35,	0,	0,	0,	0,	0,	0,	0
+				0,	0,	0,	0,	35,	0,	0,	0,	0,	0,	0,	0,	0
 		};
 		this.stat = stat;
 	}

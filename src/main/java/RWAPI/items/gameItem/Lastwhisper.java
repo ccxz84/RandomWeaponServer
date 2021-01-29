@@ -1,12 +1,7 @@
 package RWAPI.items.gameItem;
 
-import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
-import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
-import RWAPI.main;
-import RWAPI.util.DamageSource.AttackPhysicsDamageSource;
-import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,19 +17,19 @@ public class Lastwhisper extends ItemBase {
 		ModItems.ITEMS.add(this);
 		down_item = new ItemBase[2];
 		down_item[0] =ModItems.LongSword;
-		down_item[1] =ModItems.Pickaxe;
+		down_item[1] =ModItems.LongSword;
 		
 		phase = 2;
 		this.name = "최후의 속삭임";
-		this.gold = 1500;
-		refund_gold = 1050;
+		this.gold = 1450;
+		refund_gold = 1015;
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				35,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0
+				20,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}

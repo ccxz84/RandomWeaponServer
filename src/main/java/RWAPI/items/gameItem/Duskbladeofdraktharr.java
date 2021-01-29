@@ -13,6 +13,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
@@ -47,7 +48,8 @@ public class Duskbladeofdraktharr extends ItemBase {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				60,	0,	0,	0,	0,	0,	0,	0,	0,	0,	20,	0
+				60,	0,	0,	0,	0,	0,	0,	0,	0,	0,	20,	0,	10
+
 		};
 		this.stat = stat;
 	}
@@ -110,7 +112,9 @@ public class Duskbladeofdraktharr extends ItemBase {
 			cool = null;
 		}
 
-		public void ItemUse(){
+		@Override
+		public void ItemUse(ItemStack stack){
+			super.ItemUse(stack);
 			if(cool != null){
 				return;
 			}
@@ -120,11 +124,10 @@ public class Duskbladeofdraktharr extends ItemBase {
 
 		private class buff extends Buff {
 
-			PlayerData pdata;
 			double slow;
 
-			public buff(double duration, EntityPlayerMP player, double... data) {
-				super(duration, player, data);
+			public buff(double duration, PlayerData player, double... data) {
+				super(duration, player,true,true, data);
 
 			}
 
@@ -136,15 +139,21 @@ public class Duskbladeofdraktharr extends ItemBase {
 
 			@Override
 			public void setEffect(){
-				this.pdata = main.game.getPlayerData(player.getUniqueID());
-				slow = this.pdata.getMove() * slowPer / 100;
-				this.pdata.setMove(this.pdata.getMove() - slow);
+				slow = player.getMove() * slowPer / 100;
+				this.player.setMove(this.player.getMove() - slow);
+				player.addBuff(this);
 			}
 
 			@Override
 			public void resetEffect() {
-				this.pdata.setMove(this.pdata.getMove() + slow);
+				this.player.setMove(this.player.getMove() + slow);
 				bufreset();
+				player.removeBuff(this);
+			}
+
+			@Override
+			public ItemStack getBuffIcon() {
+				return new ItemStack(ModItems.Duskbladeofdraktharr);
 			}
 		}
 
@@ -187,11 +196,12 @@ public class Duskbladeofdraktharr extends ItemBase {
 					EntityLivingBase etarget = (EntityLivingBase) event.getTarget();
 					PlayerData attacker = main.game.getPlayerData(event.getEntityPlayer().getUniqueID());
 					EntityData target = (etarget instanceof EntityPlayer) ? main.game.getPlayerData(etarget.getUniqueID()) : ((IMob) etarget).getData();
-					DamageSource sourcee = DamageSource.causeUnknownPhysics(attacker, target, damage + adcoe * attacker.getAd());
+					DamageSource sourcee;
+					sourcee = DamageSource.causeUnknownRangedPhysics(attacker, target, damage + adcoe * attacker.getAd());
 					DamageSource.attackDamage(sourcee, true);
 					DamageSource.EnemyStatHandler.EnemyStatSetter(sourcee);
 					if (target instanceof PlayerData)
-						buff = new buff(1, ((PlayerData) target).getPlayer());
+						buff = new buff(1, (PlayerData) target);
 					setcool();
 				}
 			}

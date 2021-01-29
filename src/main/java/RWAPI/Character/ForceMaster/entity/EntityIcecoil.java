@@ -53,15 +53,15 @@ public class EntityIcecoil extends SkillEntity {
             attacker = main.game.getPlayerData(this.player.getUniqueID());
             for(Entity mi : mini) {
                 if(mi instanceof EntityPlayerMP && !(mi.equals(this.player))) {
-                    System.out.println("this player : " +this.player.getName()
-                            + " mi entity : "+ mi.getName());
+                    /*System.out.println("this player : " +this.player.getName()
+                            + " mi entity : "+ mi.getName());*/
                     target = main.game.getPlayerData(((EntityPlayer) mi).getUniqueID());
                 }
                 else if(mi instanceof IMob) {
                     target = ((IMob) mi).getData();
                 }
                 if(target != null && attacker != null&& !(mi.equals(this.player))) {
-                    DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                    DamageSource source = DamageSource.causeSkillRangedMagic(attacker, target, this.skilldamage);
                     DamageSource.attackDamage(source,true);
                     DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     mi.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);

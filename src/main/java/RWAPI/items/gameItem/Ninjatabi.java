@@ -4,9 +4,6 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.init.ModItems;
-import RWAPI.items.gameItem.inherence.Deathfiregrasp_passive;
-import RWAPI.items.gameItem.inherence.Lifeline_passive;
-import RWAPI.items.gameItem.inherence.Thorn_passive;
 import RWAPI.main;
 import RWAPI.util.DamageSource.*;
 import net.minecraft.creativetab.CreativeTabs;
@@ -39,7 +36,7 @@ public class Ninjatabi extends ItemBase implements ItemBase.shoes {
 	@Override
 	protected void initstat() {
 		double[] stat = {
-				0,	0,	400,	0,	15,	0,	20,	0,	0,	0,	0,	0
+				0,	0,	400,	0,	15,	0,	20,	0,	0,	0,	0,	0,0
 		};
 		this.stat = stat;
 	}
@@ -55,7 +52,7 @@ public class Ninjatabi extends ItemBase implements ItemBase.shoes {
 	}
 
 	@Override
-	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class) {
+	public ItemBase.inherence_handler create_inherence_handler(PlayerData data, ItemStack stack, Class<? extends ItemBase.inherence_handler> _class, int idx) {
 		if(_class.equals(inherence_handler.class)){
 			return new inherence_handler(data,stack,reducePercent);
 		}
@@ -109,7 +106,8 @@ public class Ninjatabi extends ItemBase implements ItemBase.shoes {
 
 				EntityData data = source.getTarget();
 
-				if(data.equals(this.data) && source instanceof AttackPhysicsDamageSource ){
+				if(data.equals(this.data) && source.getAttackType() == DamageSource.AttackType.ATTACK
+						&& source.getDamageType() == DamageSource.DamageType.PHYSICS){
 
 					double aDamage =  (source.getDamage()/100)*reducePercent + data.getCurrentHealth() > data.getMaxHealth() ? data.getMaxHealth() : (source.getDamage()/100)*reducePercent + data.getCurrentHealth();
 					data.setCurrentHealth(aDamage);
@@ -121,6 +119,21 @@ public class Ninjatabi extends ItemBase implements ItemBase.shoes {
 			@Override
 			public EventPriority getPriority() {
 				return EventPriority.NORMAL;
+			}
+
+			@Override
+			public code getEventCode() {
+				return code.target;
+			}
+
+			@Override
+			public EntityData getAttacker() {
+				return null;
+			}
+
+			@Override
+			public EntityData getTarget() {
+				return data;
 			}
 		}
 	}

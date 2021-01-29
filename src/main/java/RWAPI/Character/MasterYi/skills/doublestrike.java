@@ -6,6 +6,8 @@ import RWAPI.Character.MasterYi.MasterYi;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.Skill;
 import RWAPI.Character.monster.entity.IMob;
+import RWAPI.game.event.EntityDeathEventHandle;
+import RWAPI.game.event.PlayerAttackEventHandle;
 import RWAPI.main;
 import RWAPI.util.DamageSource.DamageSource;
 import RWAPI.util.EntityStatus;
@@ -22,7 +24,7 @@ public class doublestrike implements Skill {
 
     private MasterYi _class;
     private MasterYiS[] skills = new MasterYiS[4];
-    private doublestrikeHan handler = null;
+    private eventhandle handler = null;
 
     protected final double[] skillAdcoe={
             0.3,
@@ -67,70 +69,76 @@ public class doublestrike implements Skill {
             skills[i-1] = (MasterYiS) _class.getSkill(i);
         }
         data.setCool(0,0);
-        handler = new doublestrikeHan(0,0, (EntityPlayerMP) player,skills);
+        handler = new eventhandle(data);
+        main.game.getEventHandler().register(handler);
     }
 
     @Override
     public void skillEnd(EntityPlayer player) {
         if(handler != null){
-            handler.closeHandler();
+            main.game.getEventHandler().unregister(handler);
         }
 
     }
 
-    class doublestrikeHan extends CooldownHandler {
+    @Override
+    public void raiseevent(PlayerData data, double mana) {
 
-        private MasterYiS[] skills;
+    }
+
+    class eventhandle extends PlayerAttackEventHandle{
+        PlayerData data;
         private int attack;
 
-        public doublestrikeHan(double cool, int id, EntityPlayerMP player, MasterYiS[] skills) {
-            super(cool, id, player);
-            this.skills = skills;
-            this.attack = 0;
+        private eventhandle(PlayerData data){
+            this.data = data;
         }
 
         @Override
-        public void skillTimer(TickEvent.ServerTickEvent event) throws Throwable {
+        public void EventListener(AbstractBaseEvent event) {
+            EntityData attacker = ((PlayerAttackEventHandle.PlayerAttackEvent)event).getSource().getAttacker();
+            EntityData target = ((PlayerAttackEventHandle.PlayerAttackEvent)event).getSource().getTarget();
+            DamageSource dsource = ((PlayerAttackEventHandle.PlayerAttackEvent)event).getSource();
 
-        }
+            if(attacker.equals(this.data) && dsource.getAttackType() == DamageSource.AttackType.ATTACK){
+                int lv = data.getLevel();
+                attack = (attack+1) % 4;
+                ((alphastrike)skills[0]).doublereducecool();
+                if((attack == 3 && target.getCurrentHealth() > 0 && target.getStatus() == EntityStatus.ALIVE)){
+                    DamageSource source = DamageSource.causeAttackMeleePhysics(attacker,target,attacker.getAd() * skillAdcoe[lv-1]);
+                    attack = (attack+1) % 4;
+                    ((alphastrike)skills[0]).doublereducecool();
 
-        @SubscribeEvent(priority = EventPriority.LOWEST)
-        public void attack(LivingAttackEvent event) {
-            if(event.getSource().getTrueSource() != null) {
-                if(event.getSource().getTrueSource().equals(player) && (event.getEntityLiving() instanceof IMob || event.getEntityLiving() instanceof EntityPlayer)) {
-                    EntityData target = null;
-                    if(event.getEntityLiving() instanceof IMob) {
-                        target = ((IMob)event.getEntityLiving()).getData();
-                    }
-                    if(event.getEntityLiving() instanceof EntityPlayer){
-                        target = main.game.getPlayerData(event.getEntityLiving().getUniqueID());
-                    }
-                    if(target != null && !(event.getSource() instanceof EntityDamageSourceIndirect)) {
-                        attack = (attack+1) % 4;
-                        PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
-                        int lv = attacker.getLevel();
-                        ((alphastrike)skills[0]).doublereducecool();
-                        if((attack == 3 && target.getCurrentHealth() > 0 && target.getStatus() == EntityStatus.ALIVE)){
-                            DamageSource source = DamageSource.causeAttackPhysics(attacker,target,attacker.getAd() * skillAdcoe[lv-1]);
-                            attack = (attack+1) % 4;
-                            ((alphastrike)skills[0]).doublereducecool();
-
-                            DamageSource.attackDamage(source,true);
-                            DamageSource.EnemyStatHandler.EnemyStatSetter(source);
-                        }
-                        attacker.setCool(0,attack);
-                        if(target.getCurrentHealth() <= 0 && target instanceof PlayerData) {
-                            for(MasterYiS skill : skills) {
-                                skill.reduceCool();
-                            }
-                        }
+                    DamageSource.attackDamage(source,true);
+                    DamageSource.EnemyStatHandler.EnemyStatSetter(source);
+                }
+                this.data.setCool(0,attack);
+                if(target.getCurrentHealth() <= 0 && target instanceof PlayerData) {
+                    for(MasterYiS skill : skills) {
+                        skill.reduceCool();
                     }
                 }
             }
         }
 
-        public void closeHandler(){
-            MinecraftForge.EVENT_BUS.unregister(this);
+        @Override
+        public EventPriority getPriority() {
+            return EventPriority.NORMAL;
+        }
+
+        @Override
+        public code getEventCode() {
+            return code.attacker;
+        }
+
+        @Override
+        public EntityData getAttacker() {
+            return data;
+        }
+
+        @Override
+        public EntityData getTarget() {
+            return null;
         }
     }
 

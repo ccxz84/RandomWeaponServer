@@ -38,9 +38,11 @@ public class EntityBlazingbeam extends SkillEntity {
         }
         if(!(result.entityHit != null && result.entityHit instanceof Entity)){
             super.setDead();
+            return;
         }
         if(this.thrower == null){
             super.setDead();
+            return;
         }
         else if(!(result.entityHit.getUniqueID().equals(this.thrower.getUniqueID()))) {
             PlayerData attacker = main.game.getPlayerData(this.thrower.getUniqueID());
@@ -48,12 +50,12 @@ public class EntityBlazingbeam extends SkillEntity {
             if (result.entityHit instanceof IMob) {
                 IMob mob = (IMob) result.entityHit;
                 target = mob.getData();
-                DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                DamageSource source = DamageSource.causeSkillRangedMagic(attacker, target, this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             } else if (result.entityHit instanceof EntityPlayer) {
                 target = main.game.getPlayerData(result.entityHit.getUniqueID());
-                DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                DamageSource source = DamageSource.causeSkillRangedMagic(attacker, target, this.skilldamage);
                 DamageSource.attackDamage(source, true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }

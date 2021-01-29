@@ -57,7 +57,7 @@ public class EntityHeatwave extends SkillEntity {
                     target = ((IMob) mi).getData();
                 }
                 if(target != null && attacker != null) {
-                    DamageSource source = DamageSource.causeSkillMagic(attacker, target, this.skilldamage);
+                    DamageSource source = DamageSource.causeSkillRangedMagic(attacker, target, this.skilldamage);
                     DamageSource.attackDamage(source,true);
                     DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                     mi.attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
