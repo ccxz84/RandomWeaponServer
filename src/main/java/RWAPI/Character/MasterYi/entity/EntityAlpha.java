@@ -16,6 +16,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class EntityAlpha extends SkillEntity {
@@ -161,5 +162,7 @@ public class EntityAlpha extends SkillEntity {
     public static class message extends NetworkUtil.Abstractmessage {
         private static final long serialVersionUID = 2L;
         public List<Double[]> data = new ArrayList<>();
+
+        
     }
 }

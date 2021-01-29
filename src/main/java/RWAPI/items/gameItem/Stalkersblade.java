@@ -96,7 +96,6 @@ public class Stalkersblade extends ItemBase implements ItemBase.jungle{
     public static class usage_handler extends ItemBase.usage_handler{
 
         PlayerData data;
-        ItemStack stack;
         buff buff;
         cool cool;
 

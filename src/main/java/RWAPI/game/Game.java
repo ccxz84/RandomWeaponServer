@@ -4,11 +4,14 @@ package RWAPI.game;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import RWAPI.Character.Skill;
 import RWAPI.Character.monster.entity.*;
 import RWAPI.game.event.*;
 import RWAPI.main;
 import RWAPI.Character.PlayerData;
 import RWAPI.util.*;
+import com.google.common.base.Predicate;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
@@ -18,6 +21,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import scala.Int;
+import scala.tools.nsc.transform.SpecializeTypes;
+import scala.xml.dtd.impl.Base;
+
+import java.beans.PropertyChangeSupport;
 
 public class Game {
 	
@@ -172,16 +180,6 @@ public class Game {
 
 				}
 
-				if(object == true && currentTime % 2400 == 0 && objectmob != null && !objectmob.isFlag()){
-					double[] stat = objectmob.getStat();
-					double[] basestat = objectmob.getBasestat();
-					objectmob.getData().setMaxHealth(basestat[0]+(stat[0] * objectmob.getGametime()));
-					objectmob.getData().setCurrentHealth(objectmob.getData().getCurrentHealth()+stat[0]);
-					objectmob.getData().setAd(basestat[1] +(stat[1] * objectmob.getGametime()));
-					objectmob.getData().setArmor(basestat[2] +(stat[2] * objectmob.getGametime()));
-					objectmob.getData().setMagicresistance(basestat[3] +(stat[3] * objectmob.getGametime()));
-				}
-
 				if((currentTime % 12000) == 0){
 					List<AbstractMob> list = server.getWorld(0).getEntities(EntityMinion.class, input -> {
 						if(input instanceof AbstractMob && !(input instanceof AbstractObject)) {
@@ -192,18 +190,13 @@ public class Game {
 
 					for(AbstractMob entity : list){
 						double[] stat = entity.getStat();
-						double[] basestat = entity.getBasestat();
-						try{
-							entity.getData().setMaxHealth(basestat[0]+(stat[0] * ((Reference.GAMEITME - main.game.gettimer())/300)));
-							entity.getData().setCurrentHealth(entity.getData().getCurrentHealth()+stat[0]);
-							entity.getData().setAd(basestat[1] +(stat[1] * ((Reference.GAMEITME - main.game.gettimer())/300)));
-							entity.getData().setArmor(basestat[2] +(stat[2] * ((Reference.GAMEITME - main.game.gettimer())/300)));
-							entity.getData().setMagicresistance(basestat[3] +(stat[3] * ((Reference.GAMEITME - main.game.gettimer())/300)));
-							entity.getData().setDeathExp(basestat[4] +(stat[4] * ((Reference.GAMEITME - main.game.gettimer())/300)));
-							entity.getData().setDeathGold((int) (basestat[5] +((int)stat[5] * ((Reference.GAMEITME - main.game.gettimer())/300))));
-						}catch(NullPointerException e){
-							System.err.println("mob update null pointer exception");
-						}
+						entity.getData().setMaxHealth(entity.getData().getMaxHealth()+(stat[0] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setCurrentHealth(entity.getData().getCurrentHealth()+(stat[0] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setAd(entity.getData().getAd() +(stat[1] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setArmor(entity.getData().getArmor() +(stat[2] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setMagicresistance(entity.getData().getMagicresistance() +(stat[3] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setDeathExp(entity.getData().getDeathExp() +(stat[4] * ((Reference.GAMEITME - main.game.gettimer())/300)));
+						entity.getData().setDeathGold(entity.getData().getDeattGold() +((int)stat[5] * ((Reference.GAMEITME - main.game.gettimer())/300)));
 					}
 				}
 
@@ -430,86 +423,66 @@ public class Game {
 	}
 
 	public static class EventHandler {
-		HashMap<Integer, HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>> eventcodeList = new HashMap<Integer, HashMap<BaseEvent.EventPriority,BaseEvent.AbstractEventList>>();
+		HashMap<Integer, HashMap<BaseEvent.EventPriority,List<BaseEvent>>> eventcodeList = new HashMap<Integer, HashMap<BaseEvent.EventPriority,List<BaseEvent>>>();
 
 		public EventHandler(){
-			HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList> map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
-			map.put(BaseEvent.EventPriority.HIGHTEST,new PlayerAttackEventHandle.PlayerAttackEventList());
-			map.put(BaseEvent.EventPriority.HIGH,new PlayerAttackEventHandle.PlayerAttackEventList());
-			map.put(BaseEvent.EventPriority.NORMAL,new PlayerAttackEventHandle.PlayerAttackEventList());
-			map.put(BaseEvent.EventPriority.LOW,new PlayerAttackEventHandle.PlayerAttackEventList());
-			map.put(BaseEvent.EventPriority.LOWEST,new PlayerAttackEventHandle.PlayerAttackEventList());
+			HashMap<BaseEvent.EventPriority,List<BaseEvent>> map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
 			eventcodeList.put(1,map);
-			map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
-			map.put(BaseEvent.EventPriority.HIGHTEST,new EntityDeathEventHandle.EntityDeathEventList());
-			map.put(BaseEvent.EventPriority.HIGH,new EntityDeathEventHandle.EntityDeathEventList());
-			map.put(BaseEvent.EventPriority.NORMAL,new EntityDeathEventHandle.EntityDeathEventList());
-			map.put(BaseEvent.EventPriority.LOW,new EntityDeathEventHandle.EntityDeathEventList());
-			map.put(BaseEvent.EventPriority.LOWEST,new EntityDeathEventHandle.EntityDeathEventList());
+			map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
 			eventcodeList.put(2,map);
-			map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
-			map.put(BaseEvent.EventPriority.HIGHTEST,new ItemChangeEventHandle.ItemChangeEventList());
-			map.put(BaseEvent.EventPriority.HIGH,new ItemChangeEventHandle.ItemChangeEventList());
-			map.put(BaseEvent.EventPriority.NORMAL,new ItemChangeEventHandle.ItemChangeEventList());
-			map.put(BaseEvent.EventPriority.LOW,new ItemChangeEventHandle.ItemChangeEventList());
-			map.put(BaseEvent.EventPriority.LOWEST,new ItemChangeEventHandle.ItemChangeEventList());
+			map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
 			eventcodeList.put(3,map);
-			map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
-			map.put(BaseEvent.EventPriority.HIGHTEST,new UseSkillEventHandle.UseSkillEventList());
-			map.put(BaseEvent.EventPriority.HIGH,new UseSkillEventHandle.UseSkillEventList());
-			map.put(BaseEvent.EventPriority.NORMAL,new UseSkillEventHandle.UseSkillEventList());
-			map.put(BaseEvent.EventPriority.LOW,new UseSkillEventHandle.UseSkillEventList());
-			map.put(BaseEvent.EventPriority.LOWEST,new UseSkillEventHandle.UseSkillEventList());
-			eventcodeList.put(5,map);
-
-			map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
-			map.put(BaseEvent.EventPriority.HIGHTEST,new StatChangeEventHandle.StatChangeEventList());
-			map.put(BaseEvent.EventPriority.HIGH,new StatChangeEventHandle.StatChangeEventList());
-			map.put(BaseEvent.EventPriority.NORMAL,new StatChangeEventHandle.StatChangeEventList());
-			map.put(BaseEvent.EventPriority.LOW,new StatChangeEventHandle.StatChangeEventList());
-			map.put(BaseEvent.EventPriority.LOWEST,new StatChangeEventHandle.StatChangeEventList());
+			map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
+			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
 			eventcodeList.put(4,map);
 		}
 
 		public void register(BaseEvent eventObject){
-			HashMap<BaseEvent.EventPriority,BaseEvent.AbstractEventList> map = eventcodeList.get(eventObject.EventCode());
+			HashMap<BaseEvent.EventPriority,List<BaseEvent>> map = eventcodeList.get(eventObject.EventCode());
 			if(map != null){
-				BaseEvent.AbstractEventList list = map.get(eventObject.getPriority());
+				List<BaseEvent> list = map.get(eventObject.getPriority());
 				if(list != null){
-					try{
-						list.addlist(eventObject);
-					}
-					catch (NullPointerException | ClassCastException e){
-						e.printStackTrace();;
-					}
+					list.add(eventObject);
 				}
 			}
 		}
 
 		public void unregister(BaseEvent eventObject){
-			HashMap<BaseEvent.EventPriority,BaseEvent.AbstractEventList> map = eventcodeList.get(eventObject.EventCode());
+			HashMap<BaseEvent.EventPriority,List<BaseEvent>> map = eventcodeList.get(eventObject.EventCode());
 			if(map != null){
-				BaseEvent.AbstractEventList list = map.get(eventObject.getPriority());
+				List<BaseEvent> list = map.get(eventObject.getPriority());
 				if(list != null){
-					try{
-						list.removelist(eventObject);
-					}
-					catch (NullPointerException | ClassCastException e){
-						e.printStackTrace();;
-					}
+					list.remove(eventObject);
 				}
 			}
 		}
 
 		public void RunEvent(BaseEvent.AbstractBaseEvent event, BaseEvent.EventPriority priority){
-			HashMap<BaseEvent.EventPriority,BaseEvent.AbstractEventList> map = eventcodeList.get(event.EventCode());
+			HashMap<BaseEvent.EventPriority,List<BaseEvent>> map = eventcodeList.get(event.EventCode());
 			if(map != null){
-				BaseEvent.AbstractEventList list = map.get(priority);
-				try{
-					list.runlist(event);
-				}
-				catch (NullPointerException | ClassCastException e){
-					e.printStackTrace();;
+				List<BaseEvent> list = map.get(priority);
+				for(BaseEvent bevent : list){
+
+					bevent.EventListener(event);
 				}
 			}
 		}
