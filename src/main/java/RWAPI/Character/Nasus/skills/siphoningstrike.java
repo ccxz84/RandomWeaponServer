@@ -326,7 +326,6 @@ public class siphoningstrike implements Skill {
                 else{
                     _class.addStack(6);
                 }
-                unregisterevent();
             }
         }
 

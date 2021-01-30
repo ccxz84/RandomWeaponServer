@@ -48,14 +48,6 @@ public class EntityGolem extends AbstractObject{
         this.getData().setEntity(this);
     }
 
-    @Override
-    protected boolean canDespawn() {
-        if (main.game.start != GameStatus.START || (Reference.GAMEITME - main.game.gettimer()) - 300 < 0){
-            return true;
-        }
-        return false;
-    }
-
     protected void initEntityAI()
     {
         this.tasks.addTask(2, new PlayerAIZombieAttackObject(this, 1.0D, false,8));

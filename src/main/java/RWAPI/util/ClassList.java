@@ -45,7 +45,7 @@ public enum ClassList {
 	}
 	
 	public static PlayerClass getRandomClass() throws CloneNotSupportedException {
-        return list.get((idx++)% values().length).copyClass();
-		//return Nasus.getPlayerClass().copyClass();
+        //return list.get((idx++)% values().length).copyClass();
+		return Nasus.getPlayerClass().copyClass();
     }
 }

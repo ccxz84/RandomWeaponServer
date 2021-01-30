@@ -21,7 +21,7 @@ public class Reference {
 	public static final double[] OTHERPOS = {-72 ,53, 125};
 
 	public static final int GAMEITME = 2400;
-	public static final int OBJECTTIME = 60;
+	public static final int OBJECTTIME = 30;
 
 
 	public static final int ENTITY_MERCHANT = 100;

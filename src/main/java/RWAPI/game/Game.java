@@ -26,6 +26,7 @@ import scala.tools.nsc.transform.SpecializeTypes;
 import scala.xml.dtd.impl.Base;
 
 import java.beans.PropertyChangeSupport;
+import java.util.stream.Collectors;
 
 public class Game {
 	
@@ -112,7 +113,8 @@ public class Game {
 	}
 
 	public void resetObjectTimer(){
-		this.objecttimer = 0;
+		System.out.println("object reset");
+		objecttimer = 0;
 		this.object = false;
 	}
 
@@ -423,66 +425,86 @@ public class Game {
 	}
 
 	public static class EventHandler {
-		HashMap<Integer, HashMap<BaseEvent.EventPriority,List<BaseEvent>>> eventcodeList = new HashMap<Integer, HashMap<BaseEvent.EventPriority,List<BaseEvent>>>();
+		HashMap<Integer, HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>> eventcodeList = new HashMap<Integer, HashMap<BaseEvent.EventPriority,BaseEvent.AbstractEventList>>();
 
 		public EventHandler(){
-			HashMap<BaseEvent.EventPriority,List<BaseEvent>> map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
-			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
+			HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList> map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new PlayerAttackEventHandle.PlayerAttackEventList());
+			map.put(BaseEvent.EventPriority.HIGH,new PlayerAttackEventHandle.PlayerAttackEventList());
+			map.put(BaseEvent.EventPriority.NORMAL,new PlayerAttackEventHandle.PlayerAttackEventList());
+			map.put(BaseEvent.EventPriority.LOW,new PlayerAttackEventHandle.PlayerAttackEventList());
+			map.put(BaseEvent.EventPriority.LOWEST,new PlayerAttackEventHandle.PlayerAttackEventList());
 			eventcodeList.put(1,map);
-			map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
-			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
+			map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new EntityDeathEventHandle.EntityDeathEventList());
+			map.put(BaseEvent.EventPriority.HIGH,new EntityDeathEventHandle.EntityDeathEventList());
+			map.put(BaseEvent.EventPriority.NORMAL,new EntityDeathEventHandle.EntityDeathEventList());
+			map.put(BaseEvent.EventPriority.LOW,new EntityDeathEventHandle.EntityDeathEventList());
+			map.put(BaseEvent.EventPriority.LOWEST,new EntityDeathEventHandle.EntityDeathEventList());
 			eventcodeList.put(2,map);
-			map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
-			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
+			map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new ItemChangeEventHandle.ItemChangeEventList());
+			map.put(BaseEvent.EventPriority.HIGH,new ItemChangeEventHandle.ItemChangeEventList());
+			map.put(BaseEvent.EventPriority.NORMAL,new ItemChangeEventHandle.ItemChangeEventList());
+			map.put(BaseEvent.EventPriority.LOW,new ItemChangeEventHandle.ItemChangeEventList());
+			map.put(BaseEvent.EventPriority.LOWEST,new ItemChangeEventHandle.ItemChangeEventList());
 			eventcodeList.put(3,map);
-			map = new HashMap<BaseEvent.EventPriority,List<BaseEvent>>();
-			map.put(BaseEvent.EventPriority.HIGHTEST,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.HIGH,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.NORMAL,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.LOW,new ArrayList<BaseEvent>());
-			map.put(BaseEvent.EventPriority.LOWEST,new ArrayList<BaseEvent>());
+			map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new UseSkillEventHandle.UseSkillEventList());
+			map.put(BaseEvent.EventPriority.HIGH,new UseSkillEventHandle.UseSkillEventList());
+			map.put(BaseEvent.EventPriority.NORMAL,new UseSkillEventHandle.UseSkillEventList());
+			map.put(BaseEvent.EventPriority.LOW,new UseSkillEventHandle.UseSkillEventList());
+			map.put(BaseEvent.EventPriority.LOWEST,new UseSkillEventHandle.UseSkillEventList());
+			eventcodeList.put(5,map);
+
+			map = new HashMap<BaseEvent.EventPriority, BaseEvent.AbstractEventList>();
+			map.put(BaseEvent.EventPriority.HIGHTEST,new StatChangeEventHandle.StatChangeEventList());
+			map.put(BaseEvent.EventPriority.HIGH,new StatChangeEventHandle.StatChangeEventList());
+			map.put(BaseEvent.EventPriority.NORMAL,new StatChangeEventHandle.StatChangeEventList());
+			map.put(BaseEvent.EventPriority.LOW,new StatChangeEventHandle.StatChangeEventList());
+			map.put(BaseEvent.EventPriority.LOWEST,new StatChangeEventHandle.StatChangeEventList());
 			eventcodeList.put(4,map);
 		}
 
 		public void register(BaseEvent eventObject){
-			HashMap<BaseEvent.EventPriority,List<BaseEvent>> map = eventcodeList.get(eventObject.EventCode());
+			HashMap<BaseEvent.EventPriority,BaseEvent.AbstractEventList> map = eventcodeList.get(eventObject.EventCode());
 			if(map != null){
-				List<BaseEvent> list = map.get(eventObject.getPriority());
+				BaseEvent.AbstractEventList list = map.get(eventObject.getPriority());
 				if(list != null){
-					list.add(eventObject);
+					try{
+						list.addlist(eventObject);
+					}
+					catch (NullPointerException | ClassCastException e){
+						e.printStackTrace();;
+					}
 				}
 			}
 		}
 
 		public void unregister(BaseEvent eventObject){
-			HashMap<BaseEvent.EventPriority,List<BaseEvent>> map = eventcodeList.get(eventObject.EventCode());
+			HashMap<BaseEvent.EventPriority,BaseEvent.AbstractEventList> map = eventcodeList.get(eventObject.EventCode());
 			if(map != null){
-				List<BaseEvent> list = map.get(eventObject.getPriority());
+				BaseEvent.AbstractEventList list = map.get(eventObject.getPriority());
 				if(list != null){
-					list.remove(eventObject);
+					try{
+						list.removelist(eventObject);
+					}
+					catch (NullPointerException | ClassCastException e){
+						e.printStackTrace();;
+					}
 				}
 			}
 		}
 
 		public void RunEvent(BaseEvent.AbstractBaseEvent event, BaseEvent.EventPriority priority){
-			HashMap<BaseEvent.EventPriority,List<BaseEvent>> map = eventcodeList.get(event.EventCode());
+			HashMap<BaseEvent.EventPriority,BaseEvent.AbstractEventList> map = eventcodeList.get(event.EventCode());
 			if(map != null){
-				List<BaseEvent> list = map.get(priority);
-				for(BaseEvent bevent : list){
-
-					bevent.EventListener(event);
+				BaseEvent.AbstractEventList list = map.get(priority);
+				try{
+					list.runlist(event);
+				}
+				catch (NullPointerException | ClassCastException e){
+					e.printStackTrace();;
 				}
 			}
 		}

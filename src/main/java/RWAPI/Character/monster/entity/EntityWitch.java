@@ -41,7 +41,7 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
     public static final int attper = 5;
 
     public EntityWitch(World world) {
-        super(world, new EntityData(null,3600f,18f,25f,250f,50,70,"마녀",1),
+        super(world, new EntityData(null,3600f,18f,25f,250f,300,70,"마녀",1),
                 new double[]{170,5,12,5}, new double[]{3600,145,18,25});
         if(main.game.start == GameStatus.START){
             int gametime = ((Reference.GAMEITME - main.game.gettimer())/60) - 5 <= 0 ? 0 : ((Reference.GAMEITME - main.game.gettimer())/60) - 5;
@@ -193,14 +193,6 @@ public class EntityWitch extends AbstractObject implements IRangedAttackMob {
     @Override
     public int getGametime() {
         return ((Reference.GAMEITME - main.game.gettimer())/60) - 5 <= 0 ? 0 : ((Reference.GAMEITME - main.game.gettimer())/60) - 5;
-    }
-
-    @Override
-    protected boolean canDespawn() {
-        if (main.game.start != GameStatus.START || (Reference.GAMEITME - main.game.gettimer()) - 300 <= 0){
-            return true;
-        }
-        return false;
     }
 
     @Override

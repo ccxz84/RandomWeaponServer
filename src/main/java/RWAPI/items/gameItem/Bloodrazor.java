@@ -145,7 +145,6 @@ public class Bloodrazor extends ItemBase implements ItemBase.jungle{
                     else{
                         damageSource = DamageSource.causeAttackMeleePhysics(attacker,target,(target.getMaxHealth()/100)*damageper);
                     }
-                    System.out.println("damage : " + damageSource.getDamage());
                     DamageSource.attackDamage(damageSource,false);
                     DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                 }

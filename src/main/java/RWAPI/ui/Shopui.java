@@ -145,7 +145,7 @@ public class Shopui extends Container implements IContainerListener {
 			}
 		}
 		
-		if(slotId > (66-27)) {
+		if(slotId > (65-27)) {
 			if(dragType==0) {//left click
 				ItemStack stack = this.getSlot(slotId).getStack();
 				

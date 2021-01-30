@@ -3,6 +3,9 @@ package RWAPI.Character.monster.entity;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.main;
+import RWAPI.util.GameStatus;
+import RWAPI.util.Reference;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -35,5 +38,13 @@ public abstract class AbstractObject extends AbstractMob {
 
     public boolean isFlag(){
         return this.flag;
+    }
+
+    @Override
+    protected boolean canDespawn() {
+        if (main.game.start != GameStatus.START || (Reference.GAMEITME - main.game.gettimer()) - 30 < 0){
+            return true;
+        }
+        return false;
     }
 }
