@@ -165,7 +165,8 @@ public class forcepulse implements Skill {
             sphere.setNoGravity(true);
             sphere.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 5f, 0);
             player.world.spawnEntity(sphere);
-            List<Entity> entities = data.getPlayer().world.getEntitiesWithinAABBExcludingEntity(player,new AxisAlignedBB(player.posX,player.posY,player.posZ
+            List<Entity> entities = data.getPlayer().world.getEntitiesWithinAABBExcludingEntity(player,new AxisAlignedBB(
+                    player.posX + (x >0 ? -1 : 1) ,player.posY,player.posZ+ (z >0 ? -1 : 1)
                     ,player.posX + (x >0 ? 4 : -4),player.posY,player.posZ+ (z >0 ? 4 : -4)).grow(0,0.75,0));
             for(Entity entity : entities){
                 EntityData target = null;

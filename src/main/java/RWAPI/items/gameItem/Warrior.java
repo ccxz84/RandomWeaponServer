@@ -27,7 +27,7 @@ public class Warrior extends ItemBase implements ItemBase.jungle{
         ModItems.ITEMS.add(this);
         down_item = new ItemBase[2];
         down_item[0] = type;
-        down_item[1] = ModItems.Fiendishcodex;
+        down_item[1] = ModItems.Caulfieldswarhammer;
 
         phase = 1;
 

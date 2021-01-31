@@ -333,7 +333,7 @@ public class MasterYi extends PlayerClass {
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"일격 필살"+
 				TextFormatting.RESET +" : 마스터 이가 주변에 있는 4명의 적에게 " +
 				skills[1].getskilldamage()[lv-1] +"(+"+TextFormatting.RED +String.format("%.1f",(skills[1].getskillAdcoe()[lv-1]*data.getAd())) +
-				TextFormatting.RESET + ")의 물리 피해를 입힙니다. 주변의 적이 4명이 아닌경우 마지막 공격 대상에게 나머지 공격을 적중합니다. 같은 대상을 공격 시, 피해량이 30%씩 감소합니다. 최소 피해량은 15입니다. 쿨타임 " +
+				TextFormatting.RESET + ")의 물리 피해를 입힙니다. 주변의 적이 4명이 아닌경우 마지막 공격 대상에게 나머지 공격을 적중합니다. 같은 플레이어를 공격 시, 피해량이 15%씩 감소합니다. 최소 피해량은 15입니다. 쿨타임 " +
 				TextFormatting.GOLD +skills[1].getcooldown()[lv-1]+
 				TextFormatting.RESET+"초 소모값 : " + skills[1].getskillcost()[lv-1] ));
 		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"명상"+

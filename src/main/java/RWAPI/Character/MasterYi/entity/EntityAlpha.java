@@ -125,9 +125,11 @@ public class EntityAlpha extends SkillEntity {
         //List<Double[]> data = new ArrayList<>();
 
         public double returndamage(int idx,Entity data,double damage){
-            for(Entity entity : Entitys){
-                if(data.equals(entity)){
-                    damage = damage * 0.3 <= 15? 15 : damage * 0.3;
+            if(data instanceof EntityPlayerMP){
+                for(Entity entity : Entitys){
+                    if(data.equals(entity)){
+                        damage = damage * 0.15 <= 15? 15 : damage * 0.15;
+                    }
                 }
             }
             return damage;

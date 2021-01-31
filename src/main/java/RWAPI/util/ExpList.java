@@ -20,10 +20,12 @@ public enum ExpList {
 	LV15(1800),
 	LV16(1900),
 	LV17(2000),
-	LV18(0),
-	;
+	LV18(2100),
+	LV19(0);
 	
 	private double exp;
+
+	public static final int maxlevel = 18;
 	
 	private ExpList(double exp) {
 		this.exp = exp;

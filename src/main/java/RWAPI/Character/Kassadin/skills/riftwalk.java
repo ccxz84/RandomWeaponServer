@@ -191,7 +191,6 @@ public class riftwalk implements Skill {
             50,
             50
     };
-
     protected final double[] cooldown = {
             5,
             5,

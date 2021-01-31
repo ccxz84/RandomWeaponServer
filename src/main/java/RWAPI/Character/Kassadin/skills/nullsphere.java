@@ -179,7 +179,7 @@ public class nullsphere implements Skill {
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv - 1]));
             EntityNullsphere sphere = new EntityNullsphere(data.getEntity().world,data.getPlayer(),skilldamage[0][lv-1] + skillApcoe[0][lv-1] * data.getAp());
             sphere.setNoGravity(true);
-            sphere.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 5f, 0);
+            sphere.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 1f, 0);
             player.world.spawnEntity(sphere);
             new buff(duration,data,false,false);
             this.raiseevent(data,skillcost[lv-1]);

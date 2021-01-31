@@ -30,10 +30,11 @@ public enum ClassList {
 
 	public static void setList(){
 		list.clear();
-		for(int i = 0; i < ClassList.values().length-1; i++){
+		idx = 0;
+		for(int i = 0; i < ClassList.values().length-3; i++){
 			while(true){
 				PlayerClass temp = values()[random.nextInt(values().length)]._class;
-				if(temp instanceof RWAPI.Character.Nasus.Nasus){
+				if(!(temp instanceof RWAPI.Character.Nasus.Nasus || temp instanceof RWAPI.Character.Kassadin.Kassadin)){
 					continue;
 				}
 				if(!list.contains(temp)){
@@ -45,7 +46,7 @@ public enum ClassList {
 	}
 	
 	public static PlayerClass getRandomClass() throws CloneNotSupportedException {
-        //return list.get((idx++)% values().length).copyClass();
-		return Nasus.getPlayerClass().copyClass();
+        return list.get((idx++)% values().length).copyClass();
+		//return Nasus.getPlayerClass().copyClass();
     }
 }

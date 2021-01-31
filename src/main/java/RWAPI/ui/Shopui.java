@@ -134,7 +134,7 @@ public class Shopui extends Container implements IContainerListener {
 				}
 			}
 		}
-		if(slotId > 30 && slotId < 57){
+		if(slotId > 30 && slotId < 39){
 			if(dragType==1) {//right click
 				if(this.inventorySlots.get(slotId).getStack().getItem() instanceof ItemBase){
 					ItemBase item = (ItemBase) this.inventorySlots.get(slotId).getStack().getItem();

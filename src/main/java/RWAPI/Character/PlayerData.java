@@ -343,7 +343,7 @@ public class PlayerData extends EntityData{
 	public void setExp(double exp) {
 
 		StatChangeEventHandle.StatChangeEvent event = null;
-		if(this.data.level.getData() >= ExpList.values().length) {
+		if(this.data.level.getData() >= ExpList.maxlevel) {
 			return;
 		}
 		if(exp >= ExpList.getLevelMaxExp(this.data.level.getData())) {
