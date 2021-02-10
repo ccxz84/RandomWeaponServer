@@ -31,12 +31,9 @@ public enum ClassList {
 	public static void setList(){
 		list.clear();
 		idx = 0;
-		for(int i = 0; i < ClassList.values().length-3; i++){
+		for(int i = 0; i < ClassList.values().length; i++){
 			while(true){
 				PlayerClass temp = values()[random.nextInt(values().length)]._class;
-				if(!(temp instanceof RWAPI.Character.Nasus.Nasus || temp instanceof RWAPI.Character.Kassadin.Kassadin)){
-					continue;
-				}
 				if(!list.contains(temp)){
 					list.add(temp);
 					break;
