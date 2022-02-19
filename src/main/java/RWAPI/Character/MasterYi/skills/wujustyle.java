@@ -2,15 +2,13 @@ package RWAPI.Character.MasterYi.skills;
 
 import RWAPI.Character.*;
 import RWAPI.Character.buff.Buff;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.game.event.PlayerAttackEventHandle;
+import RWAPI.init.ModSkills;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraft.item.ItemStack;
 
 public class wujustyle extends MasterYiS {
 
@@ -23,20 +21,106 @@ public class wujustyle extends MasterYiS {
     }
 
     protected final double[] skilldamage={
-            18,20,22,24,26,30,32,34,36,38,41,45
+            18,
+            18.5,
+            19,
+            19.5,
+            20,
+            20.5,
+            21,
+            21.5,
+            23.5,
+            25.5,
+            27.5,
+            29.5,
+            31.5,
+            33.5,
+            35.5,
+            37.5,
+            39.5,
+            41.5
     };
     protected final double[] skillAdcoe={
-            0.3,0.3,0.3,0.3,0.3,0.4,0.4,0.4,0.4,0.4,0.4,0.6
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3
     };
     protected final double[] skillApcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
     protected final double[] skillcost={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
 
     protected final double[] cooldown = {
-            18,17.5,17,16.5,16,15,14.5,14,13.5,13,12,11
+            18,
+            18,
+            18,
+            18,
+            18,
+            15,
+            15,
+            15,
+            12,
+            12,
+            12,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9
+
     };
 
     @Override
@@ -49,14 +133,18 @@ public class wujustyle extends MasterYiS {
         PlayerData data = main.game.getPlayerData(player.getUniqueID());
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(3) <= 0 && data.getCurrentMana() > skillcost[lv-1]&& data.nonWorking == false&& cool == null) {
-            cool = new cool(cooldown[lv-1],3, (EntityPlayerMP) player);
-            buft = new bufftimer(5, (EntityPlayerMP) player,skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd());
+            data.nonWorking = true;
+            this.raiseevent(data,skillcost[lv-1]);
+            cool = new cool(cooldown[lv-1],3, (EntityPlayerMP) player,data.getSkillacc());
+            buft = new bufftimer(5, data,skilldamage[lv-1] + skillAdcoe[lv-1] * data.getAd());
+            data.nonWorking = false;
         }
     }
 
     @Override
     public void Skillset(EntityPlayer player) {
         buft = null;
+        cool = null;
     }
 
     @Override
@@ -72,8 +160,8 @@ public class wujustyle extends MasterYiS {
 
     class cool extends CooldownHandler {
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
 
         public void reduceCool(){
@@ -83,41 +171,109 @@ public class wujustyle extends MasterYiS {
 
     class bufftimer extends Buff {
 
-        public bufftimer(double duration, EntityPlayerMP player, double... data) {
-            super(duration, player, data);
+        EventClass eventClass;
+
+        public bufftimer(double duration, PlayerData player, double... data) {
+            super(duration, player,false,false, data);
+
         }
 
         @Override
         public void setEffect() {
             // TODO Auto-generated method stub
+            registerAttackEvent();
+            this.player.addBuff(this);
+        }
 
+        private void registerAttackEvent() {
+            this.eventClass = new EventClass(player, data[0]);
+            main.game.getEventHandler().register(this.eventClass);
         }
 
         @Override
         public void resetEffect() {
             // TODO Auto-generated method stub
-            Skillset(player);
-        }
-
-        @SubscribeEvent(priority = EventPriority.NORMAL)
-        public void attack(LivingAttackEvent event) {
-            if(event.getSource().getTrueSource() != null) {
-                if(event.getSource().getTrueSource().equals(player) && (event.getEntityLiving() instanceof AbstractMob || event.getEntityLiving() instanceof EntityPlayer)) {
-                    EntityData target = null;
-                    if(event.getEntityLiving() instanceof AbstractMob) {
-                        target = ((AbstractMob)event.getEntityLiving()).getData();
-                    }
-                    if(event.getEntityLiving() instanceof EntityPlayer){
-                        target = main.game.getPlayerData(event.getEntityLiving().getUniqueID());
-                    }
-                    if(target != null) {
-                        PlayerData attacker = main.game.getPlayerData(event.getSource().getTrueSource().getUniqueID());
-                        DamageSource source = new DamageSource(attacker,target, data[0]);
-                        DamageSource.attackDamage(source);
-                        DamageSource.EnemyStatHandler.EnemyStatSetter(source);
-                    }
-                }
+            player.removeBuff(buft);
+            Skillset(player.getPlayer());
+            if(eventClass != null){
+                main.game.getEventHandler().unregister(this.eventClass);
             }
         }
+
+        @Override
+        public ItemStack getBuffIcon() {
+            return new ItemStack(ModSkills.wujustyle);
+        }
+
+        private class EventClass extends PlayerAttackEventHandle {
+            PlayerData data;
+            double damage;
+
+            public EventClass(PlayerData data, double damage) {
+                super();
+                this.data = data;
+                this.damage = damage;
+            }
+
+            @Override
+            public void EventListener(AbstractBaseEvent event) {
+                DamageSource source = ((PlayerAttackEvent)event).getSource();
+                double damage = source.getDamage();
+
+                EntityData data = source.getAttacker();
+
+                if(data.equals(this.data) && source.getAttackType() == DamageSource.AttackType.ATTACK
+                        && source.getDamageType() == DamageSource.DamageType.PHYSICS){
+                    EntityData target = source.getTarget();
+                    DamageSource dsource = DamageSource.causeAttackMeleeFixed(data,target,damage);
+                    DamageSource.attackDamage(dsource,false);
+                }
+            }
+
+            @Override
+            public EventPriority getPriority() {
+                return EventPriority.NORMAL;
+            }
+
+            @Override
+            public code getEventCode() {
+                return code.attacker;
+            }
+
+            @Override
+            public EntityData getAttacker() {
+                return data;
+            }
+
+            @Override
+            public EntityData getTarget() {
+                return null;
+            }
+        }
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage;
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
     }
 }

@@ -7,12 +7,15 @@ import RWAPI.Character.Leesin.entity.EntityUmpa;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.CooldownHandler;
 import RWAPI.Character.Skill;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.UseSkillEventHandle;
 import RWAPI.init.ModSkills;
 import RWAPI.items.skillItem.SkillBase;
 import RWAPI.main;
-import RWAPI.util.DamageSource;
-import net.minecraft.entity.EntityLivingBase;
+import RWAPI.util.DamageSource.DamageSource;
+import RWAPI.util.EntityStatus;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,26 +29,177 @@ public class sonicwave implements Skill {
     private ResonatingTimer timer;
 
     protected final double[][] skilldamage={
-            {100, 102, 104, 106, 108, 110, 112, 114, 116, 118, 120, 122},
-            {110, 114, 118, 122, 124, 130, 132, 134, 136, 138, 140, 200}
+            {
+                    98,
+                    100,
+                    102,
+                    104,
+                    106,
+                    109,
+                    112,
+                    115,
+                    118,
+                    121,
+                    124,
+                    128,
+                    132,
+                    136,
+                    140,
+                    144,
+                    148,
+                    152
+
+            },
+            {
+                    80,
+                    82,
+                    84,
+                    86,
+                    88,
+                    100,
+                    102,
+                    104,
+                    106,
+                    108,
+                    110,
+                    113,
+                    116,
+                    119,
+                    122,
+                    125,
+                    128,
+                    131
+            }
     };
     protected final double[] skillAdcoe={
-            0.4, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.8
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.4,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.6,
+            0.6,
+            0.6,
+            0.6,
+            0.6,
+            0.6,
+            0.6
     };
     protected final double[] skillApcoe={
             0,0,0,0,0,0,0,0,0,0,0,0
     };
     protected final double[][] skillcost={
-            {50,50,55,55,55,70,70,70,75,75,75,90},
-            {50,50,55,55,55,70,70,70,75,75,75,90}
+            {
+                    50,
+                    50,
+                    50,
+                    50,
+                    50,
+                    60,
+                    60,
+                    60,
+                    70,
+                    70,
+                    70,
+                    80,
+                    80,
+                    80,
+                    80,
+                    80,
+                    80,
+                    80
+            },
+            {
+                    50,
+                    50,
+                    50,
+                    50,
+                    50,
+                    55,
+                    55,
+                    55,
+                    60,
+                    60,
+                    60,
+                    65,
+                    65,
+                    65,
+                    65,
+                    65,
+                    65,
+                    65
+
+            }
     };
     protected final double[][] skill1coe={
-            {0.4, 0.4, 0.4, 0.4, 0.4, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5},
-            {0.4, 0.4, 0.4, 0.4, 0.4, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6, 0.7}
+            {
+                    0.4,
+                    0.4,
+                    0.4,
+                    0.4,
+                    0.4,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.6,
+                    0.6,
+                    0.6,
+                    0.6,
+                    0.6,
+                    0.6,
+                    0.6
+            },
+            {
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.3,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35,
+                    0.35
+            }
     };
 
     protected final double[] cooldown = {
-            8, 7.9, 7.9, 7.7, 7.4, 6.5, 6.3, 6.1, 6, 5.8, 5.6, 5
+            11,
+            11,
+            11,
+            11,
+            11,
+            10,
+            10,
+            10,
+            9,
+            9,
+            9,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+
     };
 
     public sonicwave(Leesin _class){
@@ -62,43 +216,57 @@ public class sonicwave implements Skill {
         PlayerData data = main.game.getPlayerData(player.getUniqueID());
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(1) <= 0 && data.getSkill(1).equals(ModSkills.skill.get(ModSkills.sonicwave.SkillNumber)) && data.getCurrentMana() > skillcost[0][lv-1]){
+            data.nonWorking = true;
+            data.nonWorking = false;
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[0][lv-1]));
-            EntityUmpa ls = new EntityUmpa(player.world,player,(float) (skilldamage[1][lv-1]+ skillAdcoe[lv-1] * data.getAd()));
-            ls.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.7f, 0);
+            EntityUmpa ls = new EntityUmpa(player.world,player,(float) (skilldamage[0][lv-1]+ skillAdcoe[lv-1] * data.getAd()));
+            ls.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 0.95f, 0);
+            //ls.posY -= 1;
             ls.setNoGravity(true);
             player.world.spawnEntity(ls);
-
-            this.handler = new cool(cooldown[lv-1],1,(EntityPlayerMP) player);
+            this.raiseevent(data,skillcost[0][lv-1]);
+            this.handler = new cool(cooldown[lv-1],1,(EntityPlayerMP) player,data.getSkillacc());
             _class.skill0(player);
         }
         else if(data.getSkill(1).equals(ModSkills.skill.get(ModSkills.resonatingstrike.SkillNumber)) && data.getCurrentMana() > skillcost[1][lv-1]){
-            data.setCurrentMana((float) (data.getCurrentMana() - skillcost[1][lv-1]));
+            data.nonWorking = true;
+            data.nonWorking = false;
+
+
             if(timer.resonating.getThrower() instanceof EntityPlayer) {
                 PlayerData target = main.game.getPlayerData(timer.resonating.getThrower().getUniqueID());
+                if(target.getStatus() != EntityStatus.ALIVE){
+                    return;
+                }
                 ((EntityPlayerMP) player).connection.setPlayerLocation(target.getPlayer().posX, target.getPlayer().posY, target.getPlayer().posZ, player.rotationYaw, player.rotationPitch);
                 timer.resonating.getThrower().attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(player, timer.resonating), (float)1);
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
+                DamageSource source = DamageSource.causeSkillMeleePhysics(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
-                RWAPI.util.DamageSource.attackDamage(source);
+                DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
-            }else if(timer.resonating.getThrower() instanceof AbstractMob){
-                AbstractMob mob = (AbstractMob) timer.resonating.getThrower();
-                EntityData target = mob.getData();
+            }else if(timer.resonating.getThrower() instanceof IMob){
+                Entity mob = (Entity) timer.resonating.getThrower();
+                EntityData target = ((IMob)mob).getData();
+                if(target.getStatus() != EntityStatus.ALIVE){
+                    return;
+                }
                 ((EntityPlayerMP) player).connection.setPlayerLocation(mob.posX - player.getLookVec().x *1.1, mob.posY, mob.posZ - player.getLookVec().z *1.1, player.rotationYaw, player.rotationPitch);
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[1][lv-1] * data.getAd()
+                DamageSource source = DamageSource.causeSkillMeleePhysics(data, target, (float) (skilldamage[1][lv-1]+ skill1coe[0][lv-1] * data.getAd()
                         + skill1coe[1][lv-1] * (target.getMaxHealth() - target.getCurrentHealth())));
-                RWAPI.util.DamageSource.attackDamage(source);
+                DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
             }
-
+            data.setCurrentMana((float) (data.getCurrentMana() - skillcost[1][lv-1]));
             timer.resonating.getThrower().attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(player, timer.resonating), (float)1);
             timer.resonating.setDead();
             timer.stop();
             timer = null;
+            this.raiseevent(data,skillcost[1][lv-1]);
             data.setSkill(1, (SkillBase) ModSkills.skill.get(ModSkills.sonicwave.SkillNumber));
-            System.out.println(_class);
             _class.skill0(player);
         }
+
+
     }
 
     @Override
@@ -118,6 +286,14 @@ public class sonicwave implements Skill {
         this.timer = new ResonatingTimer(3,1,thrower,resonating);
     }
 
+    @Override
+    public void raiseevent(PlayerData data,double mana) {
+        UseSkillEventHandle.UseSkillEvent event = new UseSkillEventHandle.UseSkillEvent(data,mana);
+        for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+            main.game.getEventHandler().RunEvent(event,priority);
+        }
+    }
+
     //getter
     public EntityResonating getResonating() {
         return resonating;
@@ -132,8 +308,8 @@ public class sonicwave implements Skill {
     class cool extends CooldownHandler {
         int resonatingtime = 0;
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
 
         @Override
@@ -153,7 +329,7 @@ public class sonicwave implements Skill {
         EntityResonating resonating;
 
         public ResonatingTimer(double cool, int id, EntityPlayerMP player, EntityResonating resonating) {
-            super(cool, id, player);
+            super(cool, id, player,false,0);
             this.resonating = resonating;
             // TODO Auto-generated constructor stub
         }
@@ -180,5 +356,42 @@ public class sonicwave implements Skill {
             MinecraftForge.EVENT_BUS.unregister(this);
         }
 
+    }
+
+    public double[] getskilldamage2(){
+        return this.skilldamage[1];
+    }
+
+    public double[][] getskill1coe(){
+        return this.skill1coe;
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage[0];
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost[0];
+    }
+
+    public double[] getskillcost2() {
+        return this.skillcost[1];
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
     }
 }

@@ -5,8 +5,8 @@ import java.util.List;
 import RWAPI.main;
 import RWAPI.Character.EntityData;
 import RWAPI.Character.SkillEntity;
-import RWAPI.Character.monster.entity.AbstractMob;
-import RWAPI.util.DamageSource.EnemyStatHandler;
+import RWAPI.Character.monster.entity.IMob;
+import RWAPI.util.DamageSource.DamageSource.EnemyStatHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,7 +23,7 @@ public class EntityTempest extends SkillEntity{
 		// TODO Auto-generated constructor stub
 	}
 	
-	public EntityTempest(World worldIn, EntityLivingBase playerin, float skilldamage) {
+	public EntityTempest(World worldIn, EntityLivingBase playerin, double skilldamage) {
 		super(worldIn,playerin, skilldamage);
 		this.posX = playerin.posX;
 		this.posY = playerin.posY;
@@ -73,21 +73,23 @@ public class EntityTempest extends SkillEntity{
 	
 	@Override
 	public void setDead() {
-		List<EntityLivingBase> mini =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(3,0,3));
+		if(main.game == null)
+			return;
+		List<Entity> mini =  this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().grow(3,0,3));
 		EntityData target = null;
 		EntityData attacker = null;
 		if(this.thrower instanceof EntityPlayer) {
 			attacker = main.game.getPlayerData(this.thrower.getUniqueID());
-			for(EntityLivingBase mi : mini) {
+			for(Entity mi : mini) {
 				if(mi instanceof EntityPlayerMP && !(mi.equals(this.thrower))) {
 					target = main.game.getPlayerData(((EntityPlayer) mi).getUniqueID());
 				}
-				else if(mi instanceof AbstractMob) {
-					target = ((AbstractMob) mi).getData();
+				else if(mi instanceof IMob) {
+					target = ((IMob) mi).getData();
 				}
 				if(target != null && attacker != null) {
-					RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-					RWAPI.util.DamageSource.attackDamage(source);
+					RWAPI.util.DamageSource.DamageSource source = RWAPI.util.DamageSource.DamageSource.causeSkillMeleeMagic(attacker, target, this.skilldamage);
+					RWAPI.util.DamageSource.DamageSource.attackDamage(source,true);
 					EnemyStatHandler.EnemyStatSetter(source);
 					mi.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
 				}

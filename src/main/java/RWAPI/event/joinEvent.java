@@ -11,6 +11,7 @@ import RWAPI.util.GameStatus;
 import RWAPI.util.Reference;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.world.GameType;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -32,7 +33,9 @@ public class joinEvent {
 			network.registerMessage(InventoryOpenHandler.class, InventoryOpenPacket.class, channel++, Side.SERVER);
 			network.registerMessage(EnemyStatHandler.class, EnemyStatPacket.class, channel++, Side.CLIENT);
 			network.registerMessage(EnemyStatHandler.class, EnemyStatPacket.class, channel++, Side.SERVER);
-
+			network.registerMessage(ShopScrollPacket.ShopScrollHandler.class, ShopScrollPacket.class, channel++, Side.SERVER);
+			network.registerMessage(ShopPurchasePacket.ShopPurchaseHandler.class, ShopPurchasePacket.class, channel++, Side.SERVER);
+			event.player.setGameType(GameType.ADVENTURE);
 		}
 		catch (Exception e){
 			System.out.println("already regist channel");

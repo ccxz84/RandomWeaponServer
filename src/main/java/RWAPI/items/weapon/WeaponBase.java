@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class WeaponBase extends ItemSword  {
 	
@@ -31,7 +32,7 @@ public class WeaponBase extends ItemSword  {
 	
 	public double attack_speed = 0;
 
-	NBTTagCompound nbt;
+	String basename;
 	
 	public WeaponBase(ToolMaterial material,String name) {
 		super(material);
@@ -51,8 +52,6 @@ public class WeaponBase extends ItemSword  {
 		// TODO Auto-generated method stub
 		return super.hitEntity(stack, target, attacker);
 	}
-	
-	
 
 
 	@Override
@@ -80,6 +79,17 @@ public class WeaponBase extends ItemSword  {
 			modifiers.remove(modifier); // Remove it
 			modifiers.add(new AttributeModifier(modifier.getID(), modifier.getName(), modifier.getAmount() + amount, modifier.getOperation())); // Add the new modifier
 		}
+	}
+
+	@Override
+	public ICapabilityProvider initCapabilities(ItemStack stack, NBTTagCompound nbt) {
+		if (nbt == null) {
+			nbt = new NBTTagCompound();
+		}
+
+		nbt.setString("name",basename+" 기본무기");
+		stack.setTagCompound(nbt);
+		return super.initCapabilities(stack, nbt);
 	}
 
 	@Override

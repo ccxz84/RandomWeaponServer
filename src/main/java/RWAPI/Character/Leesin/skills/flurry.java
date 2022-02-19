@@ -19,7 +19,24 @@ public class flurry implements Skill {
     private cool handler;
 
     protected final double[] skilldamage={
-            0.5, 0.54, 0.59, 0.6, 0.6, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.75
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3,
+            0.3
     };
     protected final double[] skillAdcoe={
             0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -32,7 +49,45 @@ public class flurry implements Skill {
     };
 
     protected final double[] cooldown = {
-            3,3,3,3,3,3,3,3,3,3,3,3
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+    };
+
+    protected final double[] skilldamage2={
+            20,
+            20,
+            20,
+            20,
+            20,
+            25,
+            25,
+            25,
+            30,
+            30,
+            30,
+            40,
+            40,
+            40,
+            40,
+            40,
+            40,
+            40
     };
 
     public flurry(PlayerClass _class){
@@ -65,21 +120,56 @@ public class flurry implements Skill {
     public void skillEnd(EntityPlayer player) {
 
     }
+
+    @Override
+    public void raiseevent(PlayerData data, double mana) {
+
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage;
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
+    }
+
+    public double[] getSkilldamage2(){
+        return this.skilldamage2;
+    }
+
     class cool extends CooldownHandler {
         double attackspeed;
 
         public cool(double cool, int id, EntityPlayerMP player, double attackspeed) {
-            super(cool, id, player);
+            super(cool, id, player,false,0);
             this.attackspeed = attackspeed;
             this.data = main.game.getPlayerData(player.getUniqueID());
-            data.setAttackSpeed(this.data.getAttackSpeed() + this.attackspeed);
+            data.setPlusAttackspeed(this.data.getPlusAttackspeed() + this.attackspeed);
         }
 
         @SubscribeEvent
         public void skillTimer(TickEvent.ServerTickEvent event) throws Throwable {
             if(skillTimer > cooldown) {
                 data.setCool(this.id, 0);
-                this.data.setAttackSpeed(this.data.getAttackSpeed() - this.attackspeed);
+                this.data.setPlusAttackspeed(this.data.getPlusAttackspeed() - this.attackspeed);
                 MinecraftForge.EVENT_BUS.unregister(this);
                 handler = null;
                 return;
@@ -92,8 +182,11 @@ public class flurry implements Skill {
         {
             if(event.getEntityPlayer().getUniqueID().equals(player.getUniqueID())) {
                 attack--;
+                PlayerData data = main.game.getPlayerData(player.getUniqueID());
+                int lv = data.getLevel();
+                data.setCurrentMana(data.getCurrentMana() + skilldamage2[lv-1]);
                 if(attack <= 0) {
-                    this.data.setAttackSpeed(this.data.getAttackSpeed() - (float)this.attackspeed);
+                    this.data.setPlusAttackspeed(this.data.getPlusAttackspeed() - (float)this.attackspeed);
                     data.setCool(this.id, 0);
                     handler = null;
                     MinecraftForge.EVENT_BUS.unregister(this);

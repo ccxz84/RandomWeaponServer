@@ -4,7 +4,10 @@ import RWAPI.Character.CooldownHandler;
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.Skill;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.UseSkillEventHandle;
 import RWAPI.main;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -17,20 +20,107 @@ public class safeguard implements Skill {
     private cool handler;
 
     protected final double[] skilldamage={
-            0,0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+
     };
     protected final double[] skillAdcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
     protected final double[] skillApcoe={
-            0,0,0,0,0,0,0,0,0,0,0,0
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
     };
     protected final double[] skillcost={
-            50,50,55,55,55,70,70,70,75,75,75,90
+            50,
+            50,
+            50,
+            50,
+            50,
+            60,
+            60,
+            60,
+            70,
+            70,
+            70,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80,
+            80
+
     };
 
     protected final double[] cooldown = {
-            12, 11.7, 11.5, 11.2, 11, 10, 10.9, 10.8, 10.5, 10.2, 10, 10
+            18,
+            18,
+            18,
+            18,
+            18,
+            16,
+            16,
+            16,
+            14,
+            14,
+            14,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13,
+            13
     };
 
     public safeguard(PlayerClass _class){
@@ -47,8 +137,11 @@ public class safeguard implements Skill {
         PlayerData data = main.game.getPlayerData(player.getUniqueID());
         int lv = main.game.getPlayerData(player.getUniqueID()).getLevel();
         if(data.getCool(2) <= 0 && data.getCurrentMana() > skillcost[lv-1]) {
+            data.nonWorking = true;
+            data.nonWorking = false;
             data.setCurrentMana((float) (data.getCurrentMana() - skillcost[lv-1]));
-            this.handler = new cool(cooldown[lv-1], 2, (EntityPlayerMP) player);
+            this.raiseevent(data,skillcost[lv-1]);
+            this.handler = new cool(cooldown[lv-1], 2, (EntityPlayerMP) player,data.getSkillacc());
             _class.skill0(player);
         }
     }
@@ -65,17 +158,17 @@ public class safeguard implements Skill {
 
     class cool extends CooldownHandler {
 
-        public cool(double cool, int id, EntityPlayerMP player) {
-            super(cool, id, player);
+        public cool(double cool, int id, EntityPlayerMP player,int skillacc) {
+            super(cool, id, player,true,skillacc);
         }
 
         @Override
         public void skillTimer(TickEvent.ServerTickEvent event) throws Throwable {
-            if((this.skillTimer < 20)) {
+            if((this.skillTimer < 15)) {
                 float x = (float) player.getLookVec().x;
                 float y = (float) player.getLookVec().y;
                 float z = (float) player.getLookVec().z;
-                BlockPos pos = new BlockPos(player.posX + x * 0.5,player.posY + y * 0.5,player.posZ + z * 0.5);
+                BlockPos pos = new BlockPos(player.posX + x * 0.7,player.posY + y * 0.7,player.posZ + z * 0.7);
                 if(player.onGround && y < 0) {
                     y=0;
                 }
@@ -84,10 +177,43 @@ public class safeguard implements Skill {
                     y=0;
                     z=0;
                 }
-                //player.move(MoverType.SELF, x * 0.5, y * 0.5, z * 0.5);
-                player.connection.setPlayerLocation(player.posX + x * 0.5, player.posY + y * 0.5, player.posZ + z * 0.5, player.rotationYaw, player.rotationPitch);
+                //player.move(MoverType.PLAYER, x * 0.5, y * 0.5, z * 0.5);
+                player.connection.setPlayerLocation(player.posX + x * 0.7, player.posY + y * 0.7, player.posZ + z * 0.7, player.rotationYaw, player.rotationPitch);
             }
             super.skillTimer(event);
         }
+    }
+
+    @Override
+    public void raiseevent(PlayerData data,double mana) {
+        UseSkillEventHandle.UseSkillEvent event = new UseSkillEventHandle.UseSkillEvent(data,mana);
+        for(BaseEvent.EventPriority priority : BaseEvent.EventPriority.values()){
+            main.game.getEventHandler().RunEvent(event,priority);
+        }
+    }
+
+    @Override
+    public double[] getskilldamage() {
+        return this.skilldamage;
+    }
+
+    @Override
+    public double[] getskillAdcoe() {
+        return this.skillAdcoe;
+    }
+
+    @Override
+    public double[] getskillApcoe() {
+        return this.skillApcoe;
+    }
+
+    @Override
+    public double[] getskillcost() {
+        return this.skillcost;
+    }
+
+    @Override
+    public double[] getcooldown() {
+        return this.cooldown;
     }
 }

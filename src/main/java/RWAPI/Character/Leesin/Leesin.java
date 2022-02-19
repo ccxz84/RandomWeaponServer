@@ -1,89 +1,45 @@
 package RWAPI.Character.Leesin;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import RWAPI.Character.ForceMaster.ForceMaster;
 import RWAPI.Character.Leesin.skills.*;
 import RWAPI.Character.Skill;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 
-import RWAPI.main;
-import RWAPI.Character.EntityData;
 import RWAPI.Character.PlayerClass;
 import RWAPI.Character.PlayerData;
-import RWAPI.Character.Leesin.entity.EntityTempest;
-import RWAPI.Character.Leesin.entity.EntityResonating;
-import RWAPI.Character.Leesin.entity.EntityStrike;
-import RWAPI.Character.Leesin.entity.EntityUmpa;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.game.event.BaseEvent;
+import RWAPI.game.event.StatChangeEventHandle;
+import RWAPI.game.event.UseSkillEventHandle;
 import RWAPI.init.ModSkills;
 import RWAPI.init.ModWeapons;
-import RWAPI.items.skillItem.SkillBase;
-import RWAPI.items.weapon.WeaponBase;
-import RWAPI.items.weapon.leesin;
+import RWAPI.main;
 import RWAPI.util.ClassList;
-import RWAPI.util.DamageSource.EnemyStatHandler;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAreaEffectCloud;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import RWAPI.util.StatList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.MobEffects;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.EnumConnectionState;
-import net.minecraft.network.EnumPacketDirection;
-import net.minecraft.network.Packet;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.server.SPacketCustomPayload;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionType;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 public class Leesin extends PlayerClass{
 
 	//private float[] cool = new float[14];
 
+	private EventClass maxmanahandler,curmanahandler,managenhandler;
+
 	public Leesin(){
-		default_health = 800;
+		default_health = 750;
 		default_mana = 200;
 		
 		default_ad = 80;
 		default_ap = 0;
-		default_move = 107;
+		default_move = 104;
 		
-		default_regenHealth = 1.1f;
-		default_regenMana = 5f;
+		default_regenHealth = 0.7f;
+		default_regenMana = 10f;
 		
 		attackSpeed = 0.4f;
+
+		default_armor = 33;
+		default_magicresistance = 32.1;
 		
 		class_code = ClassList.Leesin;
 		
@@ -109,6 +65,13 @@ public class Leesin extends PlayerClass{
 	@Override
 	public PlayerClass copyClass(){
 		return new Leesin();
+	}
+
+	@Override
+	public void initSkill(PlayerData data) {
+		for(int i = 0 ; i<skills.length; i++){
+			skills[i].Skillset(data.getPlayer());
+		}
 	}
 	
 	public void skill0(EntityPlayer player) {
@@ -142,6 +105,16 @@ public class Leesin extends PlayerClass{
 		skills[4].skillExecute(player);
 		skills[4].skillEnd(player);
 	}
+
+	@Override
+	public void preinitSkill(PlayerData data){
+		this.maxmanahandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST,StatList.MAXMANA);
+		this.curmanahandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST,StatList.CURRENTMANA);
+		this.managenhandler = new EventClass(data,BaseEvent.EventPriority.HIGHTEST,StatList.PLUSREGENMANA);
+		main.game.getEventHandler().register(this.maxmanahandler);
+		main.game.getEventHandler().register(this.curmanahandler);
+		main.game.getEventHandler().register(this.managenhandler);
+	}
 	
 	@Override
 	public void Levelup(PlayerData data) {
@@ -156,23 +129,35 @@ public class Leesin extends PlayerClass{
 			super.hp = this.hp;
 			super.hregen = this.hregen;
 			super.mana = this.mana;
+			super.armor = this.armor;
+			super.magicresistance = this.magicresistance;
 			super.move = this.move;
 			super.mregen = this.mregen;
 			super.attackspeed = this.attackspeed;
 		}
-		final double[] hp = {800,
+		final double[] hp = {
+				750,
+				800,
 				850,
-				885,
-				910,
-				940,
-				1090,
-				1140,
-				1200,
-				1310,
-				1390,
-				1440,
-				1600};
-		final double[] mana = {200,
+				900,
+				950,
+				1010,
+				1070,
+				1130,
+				1210,
+				1290,
+				1370,
+				1450,
+				1530,
+				1610,
+				1690,
+				1770,
+				1850,
+				1930
+		};
+
+		final double[] mana = {
+				200,
 				200,
 				200,
 				200,
@@ -183,46 +168,120 @@ public class Leesin extends PlayerClass{
 				350,
 				350,
 				350,
-				500};
-		final double[] hregen = {1.1,
-				1.2,
+				400,
+				400,
+				400,
+				400,
+				400,
+				400,
+				400
+		};
+		final double[] hregen = {
+				0.7,
+				0.8,
+				0.9,
+				1,
+				1.1,
+				1.3,
 				1.5,
 				1.7,
 				2,
-				4,
-				4.2,
-				4.6,
-				5,
-				5.1,
-				5.4,
-				6.5};
-		final double[] mregen = {5,
-				5,
-				5,
-				5,
-				5,
-				6,
-				6,
-				6,
-				6,
-				6,
-				6,
-				8};
+				2.3,
+				2.6,
+				3,
+				3.4,
+				3.7,
+				4.1,
+				4.5,
+				4.9,
+				5.4
+		};
+		final double[] mregen = {
+				10,
+				10,
+				10,
+				10,
+				10,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15,
+				15
+		};
+
+		final double[] armor = {
+				33,
+				36.5,
+				40,
+				43.5,
+				47,
+				50.5,
+				54,
+				57.5,
+				61,
+				64.5,
+				68,
+				71.5,
+				75,
+				78.5,
+				82,
+				85.5,
+				89,
+				92.5
+
+		};
+
+		final double[] magicresistance = {
+				32.1,
+				33.35,
+				34.6,
+				35.85,
+				37.1,
+				38.35,
+				39.6,
+				40.85,
+				42.1,
+				43.35,
+				44.6,
+				45.85,
+				47.1,
+				48.35,
+				49.6,
+				50.85,
+				52.1,
+				53.35
+
+		};
+
 		final double[] ad = {
 				80,
 				83,
-				87,
-				90,
-				93,
-				110,
+				86,
+				89,
+				92,
+				96,
+				100,
+				104,
+				109,
 				113,
 				117,
-				120,
-				123,
-				127,
-				140
+				121,
+				126,
+				131,
+				136,
+				141,
+				146,
+				151
 		};
-		final double[] ap = {0,
+		final double[] ap = {
 				0,
 				0,
 				0,
@@ -234,34 +293,54 @@ public class Leesin extends PlayerClass{
 				0,
 				0,
 				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0,
+				0
 		};
 		final double[] move = {
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107,
-				107
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104,
+				104
 		};
 		final double[] attackspeed = {
 				0.4,
-				0.43,
-				0.49,
-				0.53,
-				0.56,
-				0.65,
-				0.69,
-				0.72,
-				0.76,
-				0.79,
-				0.82,
-				0.9
+				0.4216,
+				0.4432,
+				0.4648,
+				0.4864,
+				0.508,
+				0.5296,
+				0.5512,
+				0.5728,
+				0.5944,
+				0.616,
+				0.6388,
+				0.6616,
+				0.6844,
+				0.7072,
+				0.73,
+				0.7528,
+				0.7756,
+
 		};
 	}
 
@@ -270,6 +349,95 @@ public class Leesin extends PlayerClass{
 	public void EndGame(EntityPlayerMP player){
 		for(Skill skill : skills){
 			skill.skillEnd(player);
+		}
+	}
+
+	@Override
+	public void classInformation(PlayerData data) {
+		int lv = data.getLevel();
+		sonicwave wave = (sonicwave) skills[1];
+		flurry flurry = (flurry) skills[0];
+		data.getPlayer().sendMessage(new TextComponentString("리 신 : "));
+		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"질풍격"+
+				TextFormatting.RESET +" : 스킬 사용 시, 3초 동안 2회의 기본 공격에 대해 공격속도가 "
+				+ String.format("%.1f",skills[0].getskilldamage()[lv-1]) + " 만큼 증가합니다. 활성화 된 상태에서 적을 공격 시, " +
+				TextFormatting.AQUA + flurry.getSkilldamage2()[lv-1]+
+				TextFormatting.RESET + "의 기력이 회복됩니다."));
+		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"음파"+
+				TextFormatting.RESET +" : 리 신이 불협화음으로 된 음파를 발사하여 적에게 " +
+				String.format("%.1f",skills[1].getskilldamage()[lv-1]) +"(+"+TextFormatting.RED +String.format("%.1f",(skills[1].getskillAdcoe()[lv-1]*data.getAd())) +
+				TextFormatting.RESET + ")의 데미지를 입힙니다. 음파가 적에게 명중하면 3초 안에 공명의 일격을 시전할 수 있습니다. 쿨타임 " +
+				TextFormatting.GOLD +skills[1].getcooldown()[lv-1]+
+				TextFormatting.RESET+"초  소모값 : " + skills[1].getskillcost()[lv-1] ));
+		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"공명의 일격"+
+				TextFormatting.RESET +" : 리 신이 음파를 맞은 적에게 돌진하여 " + String.format("%.1f",wave.getskilldamage2()[lv-1]) + "(+"
+				+TextFormatting.RED +String.format("%.1f",(wave.getskill1coe()[0][lv-1] * data.getAd()))+
+				TextFormatting.RESET +")의 데미지를 입히고, 추가로 적 잃은 체력의 " +
+				TextFormatting.DARK_RED + String.format("%.1f",(wave.getskill1coe()[1][lv-1] *100))+"%"+
+				TextFormatting.RESET + "의 데미지를 입힙니다.  소모값 : " + wave.getskillcost2()[lv-1]));
+		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"방호"+
+				TextFormatting.RESET +" : 리 신이 바라보고 있는 방향으로 일정거리 순간이동 합니다. 쿨타임 : " +
+				TextFormatting.GOLD +skills[2].getcooldown()[lv-1]+
+				TextFormatting.RESET+"초  소모값 : " + skills[2].getskillcost()[lv-1]));
+		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"폭풍" +
+				TextFormatting.RESET +" : 리 신이 1초 동안 정신을 집중하여 바닥을 내리쳐 " + skills[3].getskilldamage()[lv-1] +"(+"+
+				TextFormatting.RED +String.format("%.1f",(skills[3].getskillAdcoe()[lv-1] * data.getAd()))+
+				TextFormatting.RESET +")의 데미지를 입힙니다. 정신 집중 시간에는 " +
+				TextFormatting.DARK_PURPLE + "70%"+
+				TextFormatting.RESET +"의 이동속도가 감소합니다. 쿨타임 : "+
+				TextFormatting.GOLD + skills[3].getcooldown()[lv-1]+
+				TextFormatting.RESET+"초  소모값 : " + skills[3].getskillcost()[lv-1]));
+		data.getPlayer().sendMessage(new TextComponentString(TextFormatting.YELLOW +"용의 분노" +
+				TextFormatting.RESET +" : 리 신이 강력한 돌려차기로 적 플레이어를 " + skills[4].getskilldamage()[lv-1] + "(+"+
+				TextFormatting.RED + String.format("%.1f",(skills[4].getskillAdcoe()[lv-1] * data.getAd()))+
+				TextFormatting.RESET +")의 데미지를 입히며 뒤로 날려보냅니다. 쿨타임 : "+
+				TextFormatting.GOLD + skills[4].getcooldown()[lv-1]+
+				TextFormatting.RESET+"초  소모값 : " + skills[4].getskillcost()[lv-1]));
+	}
+
+	private class EventClass extends StatChangeEventHandle {
+		PlayerData data;
+		EventPriority priority;
+		StatList code;
+
+		public EventClass(PlayerData data, EventPriority priority, StatList code) {
+			this.code = code;
+			this.data = data;
+			this.priority = priority;
+		}
+
+		@Override
+		public void EventListener(BaseEvent.AbstractBaseEvent event) {
+			StatChangeEvent sevent = (StatChangeEvent) event;
+			PlayerData data = sevent.getData();
+
+			if(this.data.equals(data) && sevent.getCode() == StatList.MAXMANA){
+				double mana = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+				sevent.getRef().setData(sevent.getRef().getData().doubleValue() - mana);
+			}
+			if(this.data.equals(data) && sevent.getCode() == StatList.CURRENTMANA){
+				double mana = sevent.getRef().getData().doubleValue() >= data.getMaxMana() ? data.getMaxMana() :  sevent.getRef().getData().doubleValue();
+				sevent.getRef().setData(mana);
+			}
+			if(this.data.equals(data) && sevent.getCode() == StatList.PLUSREGENMANA){
+				double mana = sevent.getRef().getData().doubleValue() - sevent.getPrev().doubleValue() ;
+				sevent.getRef().setData(sevent.getRef().getData().doubleValue() - mana);
+			}
+		}
+
+		@Override
+		public EventPriority getPriority() {
+			return this.priority;
+		}
+
+		@Override
+		public PlayerData getPlayer() {
+			return this.data;
+		}
+
+		@Override
+		public StatList getCode() {
+			return this.code;
 		}
 	}
 }

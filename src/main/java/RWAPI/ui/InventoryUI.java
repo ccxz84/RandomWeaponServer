@@ -1,22 +1,42 @@
 package RWAPI.ui;
 
+import RWAPI.Character.ClientData;
+import RWAPI.Character.PlayerData;
+import RWAPI.Character.buff.Buff;
+import RWAPI.init.ModSkills;
+import RWAPI.items.gameItem.ItemBase;
+import RWAPI.items.inventory.BuffInventory;
+import RWAPI.main;
+import RWAPI.util.GameStatus;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketSetSlot;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.List;
 
 public class InventoryUI extends Container {
 	
 	private InventoryPlayer inven;
+	private BuffInventory buf;
+	private PlayerData data;
 
 	public InventoryUI(InventoryPlayer playerInv) {
 		inven = playerInv;
+		buf = new BuffInventory(playerInv.player);
 		// Player Inventory, Slot 9-35, Slot IDs 9-35
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 9; ++x) {
-				this.addSlotToContainer(new Slot(playerInv, x + y * 9 + 9, 8 + x * 18, 51+y * 18));
+				this.addSlotToContainer(new Slot(buf, (x + y * 9), 8 + x * 18, 51+y * 18));
 			}
 		}
 
@@ -24,8 +44,12 @@ public class InventoryUI extends Container {
 		for (int x = 0; x < 9; ++x) {
 			this.addSlotToContainer(new Slot(playerInv, x, 8 + x * 18, 108));
 		}
-		//this.addSlotToContainer(new Slot(playerInv,9,0,0));
+		if(main.game.start == GameStatus.PRESTART || main.game.start == GameStatus.START){
+			data = main.game.getPlayerData(playerInv.player.getUniqueID());
+		}
 	}
+
+
 
 	@Override
 	public boolean canInteractWith(EntityPlayer playerIn) {
@@ -33,18 +57,46 @@ public class InventoryUI extends Container {
 		return this.inven.isUsableByPlayer(playerIn);
 	}
 
+
+
+
 	@Override
 	public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
 		// TODO Auto-generated method stub
 		//detectAndSendChanges();
-		if(slotId == 0)
+
+		if(slotId <= 27){
 			return ItemStack.EMPTY;
+		}
+
+		if((slotId > 27 && slotId < 36)&& (main.game.start == GameStatus.PRESTART || main.game.start == GameStatus.START)){
+			PlayerData data = main.game.getPlayerData(player.getUniqueID());
+			if(this.inventoryItemStacks.get(slotId).getItem() instanceof ItemBase){
+				ItemBase item = (ItemBase) this.inventoryItemStacks.get(slotId).getItem();
+				double[] stat = item.getstat();
+				if(data.getCurrentHealth() - stat[2] <= 0 || data.getCurrentMana() - stat[3] <= 0){
+					return ItemStack.EMPTY;
+				}
+			}
+		}
+
 		return super.slotClick(slotId, dragType, clickTypeIn, player);
 	}
 
 	@Override
 	public void detectAndSendChanges() {
+		buf.update();
+		sync();
+		((EntityPlayerMP)this.inven.player).connection.sendPacket(new SPacketSetSlot(-2, 9, inven.getStackInSlot(9)));
 		super.detectAndSendChanges();
+	}
+
+	public void sync(){
+		//System.out.println("run sync");
+		for(int i = 0; i < this.inventorySlots.size();i++) {
+			if(i != 27)
+				((EntityPlayerMP)this.inven.player).connection.sendPacket(new SPacketSetSlot(this.windowId, i, this.inventoryItemStacks.get(i)));
+		}
 	}
 	
 

@@ -15,6 +15,7 @@ import RWAPI.init.ModItems;
 import RWAPI.init.handler.GuiHandler;
 import RWAPI.init.handler.RegistryHandler;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeEnd;
 import net.minecraft.world.biome.BiomeHell;
@@ -44,7 +45,7 @@ public class CommonProxy implements IProxy {
 		MinecraftForge.EVENT_BUS.register(new joinEvent());
 		EntityRegistry.addSpawn(EntityMinion.class, 3, 10000, 10000, EnumCreatureType.MONSTER, getAllSpawnBiomes());
 		
-		for(int i = 0; i<72; i++) {
+		/*for(int i = 0; i<72; i++) {
 			if(i==0) {
 				ModItems.temp.add(ModItems.Dagger);
 				continue;
@@ -68,7 +69,7 @@ public class CommonProxy implements IProxy {
 				continue;
 			}
 			ModItems.temp.add(ModItems.VampiricScepter);
-		}
+		}*/
 	}
 
 	@Override

@@ -22,4 +22,29 @@ public class ModSkills {
 	public static final SkillBase meditation = new SkillBase("masteryi","meditation",8);
 	public static final SkillBase wujustyle = new SkillBase("masteryi","wujustyle",9);
 	public static final SkillBase highlander = new SkillBase("masteryi","highlander",10);
+
+	public static final SkillBase blazingpalm = new SkillBase("forcemaster","blazingpalm",11);
+	public static final SkillBase frostpalm = new SkillBase("forcemaster","frostpalm",12);
+	public static final SkillBase firestorm = new SkillBase("forcemaster","firestorm",13);
+	public static final SkillBase icecoil = new SkillBase("forcemaster","icecoil",14);
+	public static final SkillBase blazingbeam = new SkillBase("forcemaster","blazingbeam",15);
+	public static final SkillBase snowball = new SkillBase("forcemaster","snowball",16);
+	public static final SkillBase heatwave = new SkillBase("forcemaster","heatwave",17);
+	public static final SkillBase heatwave2 = new SkillBase("forcemaster","heatwave2",18);
+	public static final SkillBase icerain = new SkillBase("forcemaster","icerain",19);
+	public static final SkillBase inferno = new SkillBase("forcemaster","inferno",20);
+	public static final SkillBase frostarmor = new SkillBase("forcemaster","frostarmor",21);
+	public static final SkillBase frostarmor2 = new SkillBase("forcemaster","frostarmor2",22);
+
+	public static final SkillBase furyofthesands = new SkillBase("nasus","furyofthesands",23);
+	public static final SkillBase siphoningstrike = new SkillBase("nasus","siphoningstrike",24);
+	public static final SkillBase souleater = new SkillBase("nasus","souleater",25);
+	public static final SkillBase spiritfire = new SkillBase("nasus","spiritfire",26);
+	public static final SkillBase wither = new SkillBase("nasus","wither",27);
+
+	public static final SkillBase voidstone = new SkillBase("kassadin","voidstone",28);
+	public static final SkillBase nullsphere = new SkillBase("kassadin","nullsphere",29);
+	public static final SkillBase netherblade = new SkillBase("kassadin","netherblade",30);
+	public static final SkillBase forcepulse = new SkillBase("kassadin","forcepulse",31);
+	public static final SkillBase riftwalk = new SkillBase("kassadin","riftwalk",32);
 }

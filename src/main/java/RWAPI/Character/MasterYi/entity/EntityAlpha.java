@@ -4,11 +4,11 @@ import RWAPI.Character.EntityData;
 import RWAPI.Character.MasterYi.skills.alphastrike;
 import RWAPI.Character.PlayerData;
 import RWAPI.Character.SkillEntity;
-import RWAPI.Character.monster.entity.AbstractMob;
+import RWAPI.Character.monster.entity.IMob;
 import RWAPI.main;
-import RWAPI.packet.AlphastrikePacket;
-import RWAPI.util.DamageSource;
+import RWAPI.util.DamageSource.DamageSource;
 import RWAPI.util.NetworkUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,12 +16,13 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class EntityAlpha extends SkillEntity {
 
     targetData targetData = null;
-    List<EntityLivingBase> mini;
+    List<Entity> mini;
     EntityPlayerMP player;
     int count = 0, idx = 1;
 
@@ -42,7 +43,8 @@ public class EntityAlpha extends SkillEntity {
     }
 
     private void growHitbox() {
-        mini =  this.world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(2,0,2));
+        mini =  this.world.getEntitiesWithinAABB(Entity.class, this.getEntityBoundingBox().grow(2.5,0.75,2.5));
+        mini.remove(this.thrower);
     }
 
     @Override
@@ -53,7 +55,14 @@ public class EntityAlpha extends SkillEntity {
 
     @Override
     public void onUpdate() {
-        NetworkUtil.sendToAll(targetData.getData(),"alphastrike");
+        if(main.game == null){
+            setDead();
+            return;
+        }
+
+        if(targetData != null){
+            NetworkUtil.sendToAll(targetData.getData(),"alphastrike");
+        }
         //main.network.sendToAll(new AlphastrikePacket(targetData.getData()));
         if(ticksExisted > 41) {
             setDead();
@@ -68,24 +77,22 @@ public class EntityAlpha extends SkillEntity {
     private void hit_target() {
         EntityData target = null;
         EntityData attacker = null;
-        if(this.thrower instanceof EntityPlayer) {
+        if(this.thrower instanceof EntityPlayer && mini != null) {
             attacker = main.game.getPlayerData(this.thrower.getUniqueID());
+            if(mini.size() == 0)
+                return;
 
-            for(;mini.get(count).equals(this.thrower);count++) {
-                if (mini.size()-1 == count){
-                    break;
-                }
+            if(mini.get(count) instanceof IMob) {
+                target = ((IMob) mini.get(count)).getData();
             }
-            if(mini.get(count) instanceof EntityPlayerMP && !(mini.get(count).equals(this.thrower))) {
-                target = main.game.getPlayerData(((EntityPlayer) mini.get(count)).getUniqueID());
-            }
-            else if(mini.get(count) instanceof AbstractMob) {
-                target = ((AbstractMob) mini.get(count)).getData();
+            else if(mini.get(count) instanceof EntityPlayer){
+                target = main.game.getPlayerData(mini.get(count).getUniqueID());
             }
             if(target != null && attacker != null && target.getCurrentHealth() > 0) {
+                double damage = this.targetData.returndamage(idx,mini.get(count),this.skilldamage);
                 this.targetData.setData(idx++,mini.get(count));
-                RWAPI.util.DamageSource source = RWAPI.util.DamageSource.causeSkill(attacker, target, this.skilldamage);
-                RWAPI.util.DamageSource.attackDamage(source);
+                DamageSource source = DamageSource.causeSkillMeleePhysics(attacker, target, damage);
+                DamageSource.attackDamage(source,true);
                 DamageSource.EnemyStatHandler.EnemyStatSetter(source);
                 mini.get(count).attackEntityFrom(net.minecraft.util.DamageSource.causeThrownDamage(this, this.getThrower()), (float)1);
             }
@@ -96,6 +103,10 @@ public class EntityAlpha extends SkillEntity {
 
     @Override
     public void setDead() {
+        if(main.game ==null){
+            super.setDead();
+            return;
+        }
 
         if(this.thrower instanceof EntityPlayer) {
             PlayerData attacker = main.game.getPlayerData(this.thrower.getUniqueID());
@@ -109,11 +120,22 @@ public class EntityAlpha extends SkillEntity {
     }
 
     class targetData{
-        EntityLivingBase[] Entitys = new EntityLivingBase[alphastrike.target_num+1];
+        Entity[] Entitys = new Entity[alphastrike.target_num+1];
         message data = new message();
         //List<Double[]> data = new ArrayList<>();
 
-        public void setData(int idx, EntityLivingBase data){
+        public double returndamage(int idx,Entity data,double damage){
+            if(data instanceof EntityPlayerMP){
+                for(Entity entity : Entitys){
+                    if(data.equals(entity)){
+                        damage = damage * 0.15 <= 15? 15 : damage * 0.15;
+                    }
+                }
+            }
+            return damage;
+        }
+
+        public void setData(int idx, Entity data){
             this.Entitys[idx] = data;
         }
 
@@ -142,5 +164,7 @@ public class EntityAlpha extends SkillEntity {
     public static class message extends NetworkUtil.Abstractmessage {
         private static final long serialVersionUID = 2L;
         public List<Double[]> data = new ArrayList<>();
+
+        
     }
 }

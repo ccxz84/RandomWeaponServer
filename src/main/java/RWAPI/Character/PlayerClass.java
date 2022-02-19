@@ -5,6 +5,13 @@ import RWAPI.util.ClassList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentBase;
+import net.minecraft.util.text.TextComponentString;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class PlayerClass implements Cloneable {
 	
@@ -14,15 +21,18 @@ public class PlayerClass implements Cloneable {
 	
 	public String ClassName;
 	
-	public float default_health;
-	public float default_mana;
+	public double default_health;
+	public double default_mana;
 	
-	public float default_ad;
-	public float default_ap;
-	public float default_move;
+	public double default_ad;
+	public double default_ap;
+	public double default_move;
 	
-	public float default_regenHealth;
-	public float default_regenMana;
+	public double default_regenHealth;
+	public double default_regenMana;
+
+	public double default_armor;
+	public double default_magicresistance;
 	
 	public float attackSpeed;
 	
@@ -82,14 +92,16 @@ public class PlayerClass implements Cloneable {
 		int lv = data.getLevel();
 		data.setAd((float) (data.getAd() - matrix.ad[lv-1] + matrix.ad[lv]));
 		data.setAp((float) (data.getAp() - matrix.ap[lv-1] + matrix.ap[lv]));
-		data.setRegenHealth((float) (data.getRegenHealth() - matrix.hregen[lv-1] + matrix.hregen[lv]));
-		data.setRegenMana((float) (data.getRegenMana() - matrix.mregen[lv-1] + matrix.mregen[lv]));
+		data.setBaseHealthRegen((float) (data.getBaseHealthRegen() - matrix.hregen[lv-1] + matrix.hregen[lv]));
+		data.setBaseManaRegen((float) (data.getBaseManaRegen() - matrix.mregen[lv-1] + matrix.mregen[lv]));
 		data.setMaxHealth((float) (data.getMaxHealth() - matrix.hp[lv-1] + matrix.hp[lv]));
 		data.setMaxMana((float) (data.getMaxMana() - matrix.mana[lv-1] + matrix.mana[lv]));
 		data.setCurrentHealth(data.getMaxHealth());
 		data.setCurrentMana(data.getMaxMana());
 		data.setMove((float) (data.getMove() - matrix.move[lv-1] + matrix.move[lv]));
-		data.setAttackSpeed((float) (data.getAttackSpeed() - matrix.attackspeed[lv-1] + matrix.attackspeed[lv]));
+		data.setArmor((float) (data.getArmor() - matrix.armor[lv-1] + matrix.armor[lv]));
+		data.setMagicresistance((float) (data.getMagicresistance() - matrix.magicresistance[lv-1] + matrix.magicresistance[lv]));
+		data.setBaseAttackspeed(matrix.attackspeed[lv]);
 	}
 	
 	
@@ -109,6 +121,8 @@ public class PlayerClass implements Cloneable {
 		public double[] ap;
 		public double[] move;
 		public double[] attackspeed;
+		public double[] armor;
+		public double[] magicresistance;
 	}
 
 	public Skill getSkill(int idx) {
@@ -118,6 +132,22 @@ public class PlayerClass implements Cloneable {
 		return skills;
 	}
 	public void EndGame(EntityPlayerMP player){
+
+	}
+
+	public void classInformation(PlayerData data){
+
+	}
+
+	public void clickEvent(PlayerData data){
+
+	}
+
+	public void initSkill(PlayerData data){
+
+	}
+
+	public void preinitSkill(PlayerData data){
 
 	}
 }

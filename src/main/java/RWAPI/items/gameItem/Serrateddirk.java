@@ -1,7 +1,9 @@
 package RWAPI.items.gameItem;
 
+import RWAPI.Character.PlayerData;
 import RWAPI.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class Serrateddirk extends ItemBase {
@@ -15,26 +17,17 @@ public class Serrateddirk extends ItemBase {
 		down_item[1] = ModItems.LongSword;
 		
 		phase = 2;
+		this.name = "톱날 단검";
+		this.gold = 1100;
+		refund_gold = 770;
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	protected void initstat() {
-		this.stat[0] = 25;
-		this.stat[1] = 0;
-		this.stat[2] = 100;
-		this.stat[3] = 0;
-		this.stat[4] = 0;
-		this.stat[5] = 0;
-		this.stat[6] = 0;
-		this.stat[7] = 0;
-	}
-
-	protected class handler extends ItemBase.handler{
-
-		@Override
-		public void itemHandler(TickEvent.ServerTickEvent event) {
-
-		}
+		double[] stat = {
+				25,	0,	0,	0,	0,	0,	0,	0,	0,	0,	10,	0,0
+		};
+		this.stat = stat;
 	}
 }

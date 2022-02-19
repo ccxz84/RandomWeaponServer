@@ -12,6 +12,7 @@ public class GuiHandler implements IGuiHandler {
 	
 	public static final int MOD_INVENTORY_GUI = 1;
 	public static final int MOD_SHOP_GUI = 2;
+	public static final int MOD_SHOP_SHOW_GUI = 3;
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
@@ -20,7 +21,9 @@ public class GuiHandler implements IGuiHandler {
 		}
 		
 		if(ID == MOD_SHOP_GUI) {
-			
+			return new Shopui(player.inventory);
+		}
+		if(ID == MOD_SHOP_SHOW_GUI) {
 			return new Shopui(player.inventory);
 		}
 		// TODO Auto-generated method stub
